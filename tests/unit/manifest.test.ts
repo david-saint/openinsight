@@ -9,8 +9,8 @@ describe('Manifest Configuration', () => {
 
   it('should have icons defined', () => {
     expect(manifest.icons).toBeDefined();
-    expect(manifest.icons['16']).toBe('logos/logo-transparent.png');
-    expect(manifest.icons['48']).toBe('logos/logo-transparent.png');
-    expect(manifest.icons['128']).toBe('logos/logo-transparent.png');
+    expect(manifest.icons['16']).toBe('logos/icons/icon-16.png');
+    expect(manifest.icons['48']).toBe('logos/icons/icon-48.png');
+    expect(manifest.icons['128']).toBe('logos/icons/icon-128.png');
   });
 });
