@@ -14,7 +14,7 @@ This plan outlines the steps to build the foundational scaffolding for the OpenI
 - [x] Task: Implement typed messaging bus in `src/lib/messaging.ts` (5c0ce87)
 - [x] Task: Create `src/background/background.ts` with message listeners (0b06b2a)
 - [x] Task: Create `src/content/content.ts` with text selection detection (a33e575)
-- [ ] Task: Implement E2E test for text selection and messaging using Playwright
+- [x] Task: Implement E2E test for text selection and messaging using Playwright (f679694)
 - [ ] Task: Conductor - User Manual Verification 'Messaging & Core Logic' (Protocol in workflow.md)
 
 ## Phase 3: Settings & Secure Storage
