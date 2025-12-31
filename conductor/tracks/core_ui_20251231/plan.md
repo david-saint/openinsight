@@ -33,15 +33,15 @@ Implement the selection-based trigger mechanism, isolated from the host page's C
 - [x] Task: TDD - Floating Trigger Component with Lucide Sparkles icon
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Floating Trigger' (Protocol in workflow.md) [verified]
 
-## Phase 4: Refactoring - Dynamic Theming with CSS Variables
+## Phase 4: Refactoring - Dynamic Theming with CSS Variables [checkpoint: 05a0c00]
 
 Migrate from JavaScript-based dynamic classes to CSS variables for theming to ensure cleaner code and better Shadow DOM support.
 
-- [x] Task: TDD - Define CSS variable structure for themes (primary, surface, text) in `index.css`
-- [x] Task: TDD - Update Tailwind config to use CSS variables for colors
-- [x] Task: TDD - Refactor `Options.tsx` to use semantic classes instead of dynamic color props
-- [x] Task: TDD - Ensure CSS variables are injected into Shadow DOM container
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Theming' (Protocol in workflow.md)
+- [x] Task: TDD - Define CSS variable structure for themes (primary, surface, text) in `index.css` [05a0c00]
+- [x] Task: TDD - Update Tailwind config to use CSS variables for colors [05a0c00]
+- [x] Task: TDD - Refactor `Options.tsx` to use semantic classes instead of dynamic color props [05a0c00]
+- [x] Task: TDD - Ensure CSS variables are injected into Shadow DOM container [05a0c00]
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Theming' (Protocol in workflow.md) [05a0c00]
 
 ## Phase 5: Content Script - Analysis Modal
 
