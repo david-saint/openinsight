@@ -212,7 +212,35 @@ const Options: React.FC = () => {
           </Section>
 
           <Section title="Behavior" icon={<Zap size={18} />}>
-            <div className="text-sm text-neutral-500 italic">Trigger Mode Placeholder</div>
+            <div>
+              <label className="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-4">
+                Trigger Mode
+              </label>
+              <div className="flex gap-1 p-1 bg-neutral-100 rounded-lg w-fit">
+                {(['icon', 'immediate'] as const).map((mode) => (
+                  <button
+                    key={mode}
+                    onClick={() => {
+                      const newSettings = { ...settings, triggerMode: mode };
+                      setSettings(newSettings);
+                      saveSettings(newSettings);
+                    }}
+                    className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all ${
+                      settings.triggerMode === mode
+                        ? 'bg-white text-neutral-900 shadow-sm'
+                        : 'text-neutral-500 hover:text-neutral-700'
+                    }`}
+                  >
+                    {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                  </button>
+                ))}
+              </div>
+              <p className="mt-4 text-xs text-neutral-400 leading-relaxed">
+                {settings.triggerMode === 'icon' 
+                  ? 'Show a floating icon when text is selected.' 
+                  : 'Open the analysis modal immediately upon text selection.'}
+              </p>
+            </div>
           </Section>
         </main>
 

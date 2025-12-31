@@ -101,4 +101,15 @@ describe('Options Component', () => {
       accentColor: 'indigo',
     }));
   });
+
+  it('allows changing the trigger mode', async () => {
+    render(<Options />);
+    
+    const immediateButton = await screen.findByRole('button', { name: /immediate/i });
+    fireEvent.click(immediateButton);
+    
+    expect(settings.saveSettings).toHaveBeenCalledWith(expect.objectContaining({
+      triggerMode: 'immediate',
+    }));
+  });
 });
