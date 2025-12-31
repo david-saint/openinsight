@@ -108,7 +108,51 @@ const Options: React.FC = () => {
           </Section>
 
           <Section title="Intelligence" icon={<Cpu size={18} />}>
-            <div className="text-sm text-neutral-500 italic">Model Selection Placeholder</div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div>
+                <label htmlFor="explain-model" className="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-2">
+                  Explain Model
+                </label>
+                <select
+                  id="explain-model"
+                  className="w-full px-3 py-2 bg-neutral-50 border border-neutral-200 rounded text-sm focus:outline-none focus:border-neutral-900 transition-colors appearance-none cursor-pointer"
+                  value={settings.explainModel}
+                  onChange={(e) => {
+                    const newSettings = { ...settings, explainModel: e.target.value };
+                    setSettings(newSettings);
+                    saveSettings(newSettings);
+                  }}
+                >
+                  <option value="google/gemini-2.0-flash-exp:free">Gemini 2.0 Flash (Free)</option>
+                  <option value="anthropic/claude-3-haiku:free">Claude 3 Haiku (Free)</option>
+                  <option value="meta-llama/llama-3.3-70b-instruct">Llama 3.3 70B</option>
+                  <option value="openai/gpt-4o-mini">GPT-4o Mini</option>
+                </select>
+              </div>
+              <div>
+                <label htmlFor="fact-check-model" className="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-2">
+                  Fact-Check Model
+                </label>
+                <select
+                  id="fact-check-model"
+                  className="w-full px-3 py-2 bg-neutral-50 border border-neutral-200 rounded text-sm focus:outline-none focus:border-neutral-900 transition-colors appearance-none cursor-pointer"
+                  value={settings.factCheckModel}
+                  onChange={(e) => {
+                    const newSettings = { ...settings, factCheckModel: e.target.value };
+                    setSettings(newSettings);
+                    saveSettings(newSettings);
+                  }}
+                >
+                  <option value="google/gemini-2.0-flash-exp:free">Gemini 2.0 Flash (Free)</option>
+                  <option value="anthropic/claude-3-haiku:free">Claude 3 Haiku (Free)</option>
+                  <option value="meta-llama/llama-3.3-70b-instruct">Llama 3.3 70B</option>
+                  <option value="openai/gpt-4o-mini">GPT-4o Mini</option>
+                </select>
+              </div>
+            </div>
+            <p className="mt-4 text-xs text-neutral-400 leading-relaxed">
+              OpenInsight uses OpenRouter to access various LLMs. Some models are free, while others require credits.
+            </p>
           </Section>
 
           <Section title="Appearance" icon={<Palette size={18} />}>

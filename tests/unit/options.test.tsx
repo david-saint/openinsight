@@ -64,4 +64,19 @@ describe('Options Component', () => {
     expect(settings.saveApiKey).toHaveBeenCalledWith('new-api-key');
     expect(await screen.findByText(/saved/i)).toBeDefined();
   });
+
+  it('allows changing model preferences', async () => {
+    render(<Options />);
+    
+    const explainSelect = await screen.findByLabelText(/explain model/i);
+    const factCheckSelect = await screen.findByLabelText(/fact-check model/i);
+    
+    fireEvent.change(explainSelect, { target: { value: 'anthropic/claude-3-haiku:free' } });
+    fireEvent.change(factCheckSelect, { target: { value: 'openai/gpt-4o-mini' } });
+    
+    expect(settings.saveSettings).toHaveBeenCalledWith(expect.objectContaining({
+      explainModel: 'anthropic/claude-3-haiku:free',
+      factCheckModel: 'openai/gpt-4o-mini',
+    }));
+  });
 });
