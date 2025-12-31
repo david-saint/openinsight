@@ -19,7 +19,7 @@ Create the dedicated options page where users can manage all extension configura
 - [x] Task: TDD - Model Selection Dropdowns for Explain and Fact-Check models [a4e9371]
 - [x] Task: TDD - Theme Mode Toggle (Light/Dark) with persistence [dddda5d]
 - [x] Task: TDD - Accent Color Selector (Teal, Indigo, Rose, Amber) [b65593d]
-- [ ] Task: TDD - Trigger Mode Toggle (Icon vs. Immediate)
+- [x] Task: TDD - Trigger Mode Toggle (Icon vs. Immediate) [3990bda]
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Options Page' (Protocol in workflow.md)
 
 ## Phase 3: Content Script - Floating Trigger & Shadow DOM
