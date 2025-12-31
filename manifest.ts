@@ -6,9 +6,9 @@ export default defineManifest({
   version: '1.0.0',
   description: 'AI-powered text explanation and fact-checking.',
   icons: {
-    16: 'assets/logos/logo-transparent.png',
-    48: 'assets/logos/logo-transparent.png',
-    128: 'assets/logos/logo-transparent.png',
+    16: 'logos/logo-transparent.png',
+    48: 'logos/logo-transparent.png',
+    128: 'logos/logo-transparent.png',
   },
   permissions: ['storage', 'activeTab'],
   background: {
