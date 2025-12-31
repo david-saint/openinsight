@@ -30,4 +30,26 @@ describe('Project Initialization', () => {
     expect(pkg.dependencies.vite).toBeDefined();
     expect(pkg.dependencies['@crxjs/vite-plugin']).toBeDefined();
   });
+
+  it('should have a vite.config.ts file', () => {
+    expect(fs.existsSync(path.resolve(__dirname, '../../vite.config.ts'))).toBe(true);
+  });
+
+  it('should have a manifest.ts file', () => {
+    expect(fs.existsSync(path.resolve(__dirname, '../../manifest.ts'))).toBe(true);
+  });
+
+  it('should have the correct directory structure', () => {
+    const dirs = [
+      'src/background',
+      'src/content',
+      'src/lib',
+      'src/options',
+      'src/popup',
+    ];
+    dirs.forEach((dir) => {
+      expect(fs.existsSync(path.resolve(__dirname, '../../', dir))).toBe(true);
+      expect(fs.lstatSync(path.resolve(__dirname, '../../', dir)).isDirectory()).toBe(true);
+    });
+  });
 });
