@@ -14,7 +14,7 @@ Establish the basic extension structure, update branding, create the settings mo
 
 Create the dedicated options page where users can manage all extension configurations.
 
-- [ ] Task: TDD - Options Page Layout with Tailwind (Stark whites/Inky blacks theme)
+- [x] Task: TDD - Options Page Layout with Tailwind (Stark whites/Inky blacks theme) [1ca2244]
 - [ ] Task: TDD - API Key Input Component with secure storage via `encryption.ts`
 - [ ] Task: TDD - Model Selection Dropdowns for Explain and Fact-Check models
 - [ ] Task: TDD - Theme Mode Toggle (Light/Dark) with persistence
