@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "OpenInsight",
+  "version": "1.0.0",
+  "description": "AI-powered context explanation and fact-checking.",
+  "permissions": [
+    "storage"
+  ],
+  "action": {
+    "default_popup": "index.html"
+  },
+  "background": {
+    "service_worker": "service-worker.js"
+  }
+}
