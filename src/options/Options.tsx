@@ -18,6 +18,8 @@ const Options: React.FC = () => {
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [apiKey, setApiKey] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [status, setStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
+  const [message, setMessage] = useState('');
 
   useEffect(() => {
     const load = async () => {
@@ -34,10 +36,23 @@ const Options: React.FC = () => {
     load();
   }, []);
 
+  const handleSaveApiKey = async () => {
+    setStatus('saving');
+    try {
+      await saveApiKey(apiKey.trim());
+      setStatus('success');
+      setMessage('API Key saved securely.');
+      setTimeout(() => setStatus('idle'), 3000);
+    } catch (e) {
+      setStatus('error');
+      setMessage('Failed to save API Key.');
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="animate-pulse text-neutral-400">Loading...</div>
+        <div className="animate-pulse text-neutral-400 font-medium tracking-widest uppercase text-xs">Loading Settings</div>
       </div>
     );
   }
@@ -60,7 +75,36 @@ const Options: React.FC = () => {
 
         <main>
           <Section title="Connection" icon={<Globe size={18} />}>
-             <div className="text-sm text-neutral-500 italic">API Configuration Placeholder</div>
+            <div className="max-w-md">
+              <label htmlFor="api-key" className="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-2">
+                OpenRouter API Key
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="password"
+                  id="api-key"
+                  className="flex-1 px-4 py-2 bg-neutral-50 border border-neutral-200 rounded text-sm focus:outline-none focus:border-neutral-900 transition-colors"
+                  placeholder="sk-or-v1-..."
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                />
+                <button
+                  onClick={handleSaveApiKey}
+                  disabled={status === 'saving'}
+                  className="px-6 py-2 bg-neutral-900 text-white text-sm font-medium rounded hover:bg-neutral-800 disabled:bg-neutral-200 transition-colors"
+                >
+                  {status === 'saving' ? 'Saving...' : 'Save'}
+                </button>
+              </div>
+              {status !== 'idle' && (
+                <p className={`mt-3 text-xs font-medium ${status === 'success' ? 'text-teal-600' : 'text-rose-600'}`}>
+                  {message}
+                </p>
+              )}
+              <p className="mt-4 text-xs text-neutral-400 leading-relaxed">
+                Your key is encrypted and stored locally. It never leaves your browser except to communicate with OpenRouter.
+              </p>
+            </div>
           </Section>
 
           <Section title="Intelligence" icon={<Cpu size={18} />}>

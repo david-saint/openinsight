@@ -2,7 +2,7 @@
  * @vitest-environment happy-dom
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import Options from '../../src/options/Options';
 import * as settings from '../../src/lib/settings';
 
@@ -50,5 +50,18 @@ describe('Options Component', () => {
     const logo = await screen.findByAltText('OpenInsight Logo');
     expect(logo).toBeDefined();
     expect(logo.getAttribute('src')).toContain('logo-transparent.png');
+  });
+
+  it('allows saving the API key', async () => {
+    render(<Options />);
+    
+    const input = await screen.findByPlaceholderText('sk-or-v1-...');
+    const saveButton = screen.getByRole('button', { name: /save/i });
+    
+    fireEvent.change(input, { target: { value: 'new-api-key' } });
+    fireEvent.click(saveButton);
+    
+    expect(settings.saveApiKey).toHaveBeenCalledWith('new-api-key');
+    expect(await screen.findByText(/saved/i)).toBeDefined();
   });
 });
