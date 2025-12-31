@@ -17,7 +17,7 @@ Create the dedicated options page where users can manage all extension configura
 - [x] Task: TDD - Options Page Layout with Tailwind (Stark whites/Inky blacks theme) [1ca2244]
 - [x] Task: TDD - API Key Input Component with secure storage via `encryption.ts` [5564b47]
 - [x] Task: TDD - Model Selection Dropdowns for Explain and Fact-Check models [a4e9371]
-- [ ] Task: TDD - Theme Mode Toggle (Light/Dark) with persistence
+- [x] Task: TDD - Theme Mode Toggle (Light/Dark) with persistence [dddda5d]
 - [ ] Task: TDD - Accent Color Selector (Teal, Indigo, Rose, Amber)
 - [ ] Task: TDD - Trigger Mode Toggle (Icon vs. Immediate)
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Options Page' (Protocol in workflow.md)
