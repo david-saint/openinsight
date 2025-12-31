@@ -2,56 +2,53 @@
  * @vitest-environment happy-dom
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
+import { render, screen, cleanup } from '@testing-library/react';
 import Options from '../../src/options/Options';
-import * as storage from '../../src/lib/storage';
+import * as settings from '../../src/lib/settings';
 
-// Mock storage module
-vi.mock('../../src/lib/storage', () => ({
-  getEncrypted: vi.fn(),
-  setEncrypted: vi.fn(),
+// Mock settings module
+vi.mock('../../src/lib/settings', () => ({
+  getSettings: vi.fn(),
+  saveSettings: vi.fn(),
+  getApiKey: vi.fn(),
+  saveApiKey: vi.fn(),
+  DEFAULT_SETTINGS: {
+    theme: 'system',
+    accentColor: 'teal',
+    explainModel: 'google/gemini-2.0-flash-exp:free',
+    factCheckModel: 'google/gemini-2.0-flash-exp:free',
+    triggerMode: 'icon',
+  },
 }));
 
 describe('Options Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(settings.getSettings).mockResolvedValue(settings.DEFAULT_SETTINGS);
+    vi.mocked(settings.getApiKey).mockResolvedValue(undefined);
   });
 
   afterEach(() => {
     cleanup();
   });
 
-  it('renders correctly', async () => {
-    vi.mocked(storage.getEncrypted).mockResolvedValue(undefined);
+  it('renders the header and main sections', async () => {
     render(<Options />);
     
-    expect(screen.getByText('OpenInsight Settings')).toBeDefined();
-    expect(screen.getByLabelText('OpenRouter API Key')).toBeDefined();
+    // Header
+    expect(await screen.findByText('OpenInsight')).toBeDefined();
+    
+    // Sections
+    expect(screen.getByText('Connection')).toBeDefined();
+    expect(screen.getByText('Intelligence')).toBeDefined();
+    expect(screen.getByText('Appearance')).toBeDefined();
+    expect(screen.getByText('Behavior')).toBeDefined();
   });
 
-  it('loads saved API key', async () => {
-    vi.mocked(storage.getEncrypted).mockResolvedValue('test-key');
+  it('contains the branding logo', async () => {
     render(<Options />);
-    
-    await waitFor(() => {
-      const input = screen.getByLabelText('OpenRouter API Key') as HTMLInputElement;
-      expect(input.value).toBe('test-key');
-    });
-  });
-
-  it('saves API key', async () => {
-    vi.mocked(storage.getEncrypted).mockResolvedValue(undefined);
-    render(<Options />);
-    
-    const input = screen.getByLabelText('OpenRouter API Key') as HTMLInputElement;
-    const saveButton = screen.getByText('Save Settings');
-    
-    fireEvent.change(input, { target: { value: 'new-key' } });
-    fireEvent.click(saveButton);
-    
-    await waitFor(() => {
-      expect(storage.setEncrypted).toHaveBeenCalledWith('openrouter_api_key', 'new-key', expect.any(String));
-      expect(screen.getByText('Settings saved successfully!')).toBeDefined();
-    });
+    const logo = await screen.findByAltText('OpenInsight Logo');
+    expect(logo).toBeDefined();
+    expect(logo.getAttribute('src')).toContain('logo-transparent.png');
   });
 });

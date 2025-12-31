@@ -3,6 +3,7 @@
 ## Frontend (UI & Pop-up)
 
 - **Framework:** React
+- **Icons:** Lucide React
 - **Styling:** Tailwind CSS (for rapid, utility-first styling consistent with minimalism)
 - **Build Tool:** Vite with **@crxjs/vite-plugin** (industry-standard Chrome extension bundling with HMR support)
 

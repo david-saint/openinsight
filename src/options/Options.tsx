@@ -1,98 +1,88 @@
 import React, { useState, useEffect } from 'react';
-import { getEncrypted, setEncrypted } from '../lib/storage';
+import { Sparkles, Globe, Cpu, Palette, Zap, Settings as SettingsIcon } from 'lucide-react';
+import { getSettings, saveSettings, getApiKey, saveApiKey, Settings, DEFAULT_SETTINGS } from '../lib/settings';
 
-const APP_key = 'openinsight-local-key'; // Scaffolding key
+const Section: React.FC<{ title: string; icon: React.ReactNode; children: React.ReactNode }> = ({ title, icon, children }) => (
+  <section className="mb-12">
+    <div className="flex items-center gap-2 mb-6 border-b border-neutral-100 pb-2">
+      <div className="text-neutral-900">{icon}</div>
+      <h2 className="text-sm font-semibold uppercase tracking-widest text-neutral-900">{title}</h2>
+    </div>
+    <div className="space-y-6">
+      {children}
+    </div>
+  </section>
+);
 
 const Options: React.FC = () => {
+  const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [apiKey, setApiKey] = useState('');
-  const [status, setStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
-  const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const loadSettings = async () => {
-      // Try to get encrypted key first
+    const load = async () => {
       try {
-        const savedKey = await getEncrypted('openrouter_api_key', APP_key);
-        if (savedKey) {
-          setApiKey(savedKey);
-        }
+        const [s, k] = await Promise.all([getSettings(), getApiKey()]);
+        setSettings(s);
+        setApiKey(k || '');
       } catch (e) {
         console.error('Error loading settings:', e);
+      } finally {
+        setIsLoading(false);
       }
     };
-    loadSettings();
+    load();
   }, []);
 
-  const handleSave = async () => {
-    if (!apiKey.trim()) {
-      setStatus('error');
-      setMessage('API key cannot be empty.');
-      return;
-    }
-
-    setStatus('saving');
-    try {
-      await setEncrypted('openrouter_api_key', apiKey.trim(), APP_key);
-      setStatus('success');
-      setMessage('Settings saved successfully!');
-      setTimeout(() => setStatus('idle'), 3000);
-    } catch (err) {
-      setStatus('error');
-      setMessage('Failed to save settings.');
-      console.error(err);
-    }
-  };
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="animate-pulse text-neutral-400">Loading...</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">OpenInsight Settings</h1>
-          <p className="mt-2 text-gray-600">Configure your OpenRouter API integration</p>
-        </div>
-
-        <div className="space-y-6">
-          <div>
-            <label htmlFor="api-key" className="block text-sm font-medium text-gray-700">
-              OpenRouter API Key
-            </label>
-            <div className="mt-1">
-              <input
-                type="password"
-                id="api-key"
-                className="block w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border"
-                placeholder="sk-or-v1-..."
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-              />
+    <div className="min-h-screen bg-white text-neutral-900 font-sans selection:bg-teal-100 selection:text-teal-900">
+      <div className="max-w-3xl mx-auto px-8 py-20">
+        <header className="mb-20 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <img src="/logos/logo-transparent.png" alt="OpenInsight Logo" className="w-10 h-10" />
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight">OpenInsight</h1>
+              <p className="text-neutral-500 text-sm">Epistemic Clarity Engine</p>
             </div>
-            <p className="mt-2 text-xs text-gray-500">
-              Your API key is stored locally in your browser and never sent to our servers.
-            </p>
           </div>
-
-          <div>
-            <button
-              onClick={handleSave}
-              disabled={status === 'saving'}
-              className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
-                status === 'saving' ? 'opacity-75 cursor-not-allowed' : ''
-              }`}
-            >
-              {status === 'saving' ? 'Saving...' : 'Save Settings'}
-            </button>
+          <div className="text-neutral-300">
+            <SettingsIcon size={20} />
           </div>
+        </header>
 
-          {status !== 'idle' && (
-            <div
-              className={`p-4 rounded-md ${
-                status === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
-              }`}
-            >
-              <p className="text-sm font-medium">{message}</p>
-            </div>
-          )}
-        </div>
+        <main>
+          <Section title="Connection" icon={<Globe size={18} />}>
+             <div className="text-sm text-neutral-500 italic">API Configuration Placeholder</div>
+          </Section>
+
+          <Section title="Intelligence" icon={<Cpu size={18} />}>
+            <div className="text-sm text-neutral-500 italic">Model Selection Placeholder</div>
+          </Section>
+
+          <Section title="Appearance" icon={<Palette size={18} />}>
+            <div className="text-sm text-neutral-500 italic">Theme & Accent Placeholder</div>
+          </Section>
+
+          <Section title="Behavior" icon={<Zap size={18} />}>
+            <div className="text-sm text-neutral-500 italic">Trigger Mode Placeholder</div>
+          </Section>
+        </main>
+
+        <footer className="mt-20 pt-8 border-t border-neutral-100 flex justify-between items-center text-xs text-neutral-400">
+          <p>&copy; 2025 OpenInsight. Designed for focus.</p>
+          <div className="flex gap-4">
+            <a href="#" className="hover:text-neutral-900 transition-colors">Documentation</a>
+            <a href="#" className="hover:text-neutral-900 transition-colors">Privacy</a>
+          </div>
+        </footer>
       </div>
     </div>
   );
