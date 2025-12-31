@@ -2,13 +2,13 @@
 
 This plan outlines the steps to implement the core user interface of OpenInsight, focusing on the in-page trigger, analysis modal, and a comprehensive options page, all adhering to the "Epistemic Minimalism" design philosophy.
 
-## Phase 1: Foundation & Asset Integration
+## Phase 1: Foundation & Asset Integration [checkpoint: 6dceb4d]
 
 Establish the basic extension structure, update branding, create the settings module, and prepare the storage layer.
 
 - [x] Task: Update Extension Icons and Manifest [66fea0c]
 - [x] Task: TDD - Design and Implement Settings Module (`src/lib/settings.ts`) [b891c83]
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Foundation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Foundation' (Protocol in workflow.md) [6dceb4d]
 
 ## Phase 2: Full Options Page Implementation
 
