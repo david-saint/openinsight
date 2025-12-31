@@ -10,7 +10,7 @@ Establish the basic extension structure, update branding, create the settings mo
 - [x] Task: TDD - Design and Implement Settings Module (`src/lib/settings.ts`) [b891c83]
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Foundation' (Protocol in workflow.md) [6dceb4d]
 
-## Phase 2: Full Options Page Implementation
+## Phase 2: Full Options Page Implementation [checkpoint: 354606d]
 
 Create the dedicated options page where users can manage all extension configurations.
 
