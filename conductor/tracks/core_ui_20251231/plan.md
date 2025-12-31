@@ -43,18 +43,18 @@ Migrate from JavaScript-based dynamic classes to CSS variables for theming to en
 - [x] Task: TDD - Ensure CSS variables are injected into Shadow DOM container [05a0c00]
 - [x] Task: Conductor - User Manual Verification 'Phase 4: Theming' (Protocol in workflow.md) [05a0c00]
 
-## Phase 5: Content Script - Analysis Modal
+## Phase 5: Content Script - Analysis Modal [checkpoint: 235b1cb]
 
 Implement the main interaction surface for explaining and fact-checking text.
 
-- [x] Task: TDD - Modal Container with Shadow DOM isolation and positioning
-- [x] Task: TDD - Modal Header with Tabs (Explain/Fact Check) and Close button
-- [x] Task: TDD - Tab Switching Logic with loading state transitions
-- [x] Task: TDD - Explain View with contextual analysis placeholder content
-- [x] Task: TDD - Fact Check View with verification badge and source display
-- [x] Task: TDD - Quick Settings View with hardcoded fields (Theme, Accent, Trigger Mode)
-- [x] Task: TDD - "Open Full Settings" button that opens `options.html`
-- [x] Task: TDD - Modal Responsive Behavior to keep within viewport bounds
+- [x] Task: TDD - Modal Container with Shadow DOM isolation and positioning [235b1cb]
+- [x] Task: TDD - Modal Header with Tabs (Explain/Fact Check) and Close button [235b1cb]
+- [x] Task: TDD - Tab Switching Logic with loading state transitions [235b1cb]
+- [x] Task: TDD - Explain View with contextual analysis placeholder content [235b1cb]
+- [x] Task: TDD - Fact Check View with verification badge and source display [235b1cb]
+- [x] Task: TDD - Quick Settings View with hardcoded fields (Theme, Accent, Trigger Mode) [235b1cb]
+- [x] Task: TDD - "Open Full Settings" button that opens `options.html` [235b1cb]
+- [x] Task: TDD - Modal Responsive Behavior to keep within viewport bounds [235b1cb]
 - [ ] Task: Conductor - User Manual Verification 'Phase 5: Analysis Modal' (Protocol in workflow.md)
 
 ## Phase 6: Polishing & Minimalism Alignment
