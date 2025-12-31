@@ -24,7 +24,7 @@ This plan outlines the steps to build the foundational scaffolding for the OpenI
 - [x] Task: Verify secure storage flow via unit and E2E tests (d1742bc)
 - [x] Task: Conductor - User Manual Verification 'Settings & Secure Storage' (Protocol in workflow.md) (0871dd5)
 
-## Phase 4: Final Verification
+## Phase 4: Final Verification [checkpoint: bb68df7]
 
 - [x] Task: Final manual verification of the extension in Chrome (Developer Mode) (e2f1340)
 - [x] Task: Final code review and cleanup (47f4226)
