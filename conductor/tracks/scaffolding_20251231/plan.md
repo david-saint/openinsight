@@ -21,7 +21,7 @@ This plan outlines the steps to build the foundational scaffolding for the OpenI
 
 - [x] Task: Implement `src/lib/encryption.ts` (Web Crypto API) and `src/lib/storage.ts` (chrome.storage wrapper) (7aff3cf)
 - [x] Task: Build `src/options/Options.tsx` for API key management using React & Tailwind (07ab132)
-- [ ] Task: Verify secure storage flow via unit and E2E tests
+- [x] Task: Verify secure storage flow via unit and E2E tests (d1742bc)
 - [ ] Task: Conductor - User Manual Verification 'Settings & Secure Storage' (Protocol in workflow.md)
 
 ## Phase 4: Final Verification
