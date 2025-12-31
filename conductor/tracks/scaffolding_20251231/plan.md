@@ -3,7 +3,7 @@
 This plan outlines the steps to build the foundational scaffolding and secure API integration for OpenInsight.
 
 ## Phase 1: Project Initialization
-- [~] Task: Initialize Vite project with React and TypeScript
+- [ ] Task: Initialize Vite project with React and TypeScript
 - [ ] Task: Configure Tailwind CSS and project structure
 - [ ] Task: Create basic Chrome extension manifest (v3)
 - [ ] Task: Conductor - User Manual Verification 'Project Initialization' (Protocol in workflow.md)
