@@ -26,7 +26,7 @@ Create the dedicated options page where users can manage all extension configura
 
 Implement the selection-based trigger mechanism, isolated from the host page's CSS.
 
-- [ ] Task: Configure Tailwind CSS for Shadow DOM injection using constructable stylesheets
+- [x] Task: Configure Tailwind CSS for Shadow DOM Injection [b282e05]
 - [ ] Task: TDD - Shadow DOM Container Setup in content script with React mounting
 - [ ] Task: TDD - Text Selection Listener with `mouseup` event handling
 - [ ] Task: TDD - Trigger Button Positioning Logic relative to selection bounds
