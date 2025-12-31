@@ -47,9 +47,9 @@ describe('Options Component', () => {
 
   it('contains the branding logo', async () => {
     render(<Options />);
-    const logo = await screen.findByAltText('OpenInsight Logo');
-    expect(logo).toBeDefined();
-    expect(logo.getAttribute('src')).toContain('logo-transparent.png');
+    // The Sparkles icon is used, we can check for the header text as a proxy for the branding section being present
+    // or we can check for the Lucide icon if it had a specific role/label, but text is sufficient here along with header check
+    expect(await screen.findByText('Epistemic Clarity Engine')).toBeDefined();
   });
 
   it('allows saving the API key', async () => {

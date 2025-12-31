@@ -1,25 +1,52 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Globe, Cpu, Palette, Zap, Settings as SettingsIcon } from 'lucide-react';
-import { getSettings, saveSettings, getApiKey, saveApiKey, Settings, DEFAULT_SETTINGS } from '../lib/settings';
+import { 
+  Sparkles, 
+  Palette, 
+  Zap, 
+  Cpu, 
+  Key, 
+  ChevronDown
+} from 'lucide-react';
+import { getSettings, saveSettings, getApiKey, saveApiKey, DEFAULT_SETTINGS } from '../lib/settings';
+import type { Settings } from '../lib/settings';
 
-const Section: React.FC<{ title: string; icon: React.ReactNode; children: React.ReactNode }> = ({ title, icon, children }) => (
-  <section className="mb-12">
-    <div className="flex items-center gap-2 mb-6 border-b border-neutral-100 pb-2">
-      <div className="text-neutral-900">{icon}</div>
-      <h2 className="text-sm font-semibold uppercase tracking-widest text-neutral-900">{title}</h2>
-    </div>
-    <div className="space-y-6">
-      {children}
-    </div>
-  </section>
-);
+const THEME_COLORS = {
+  teal: {
+    name: "Teal",
+    ring: "ring-teal-500",
+    bg: "bg-teal-500"
+  },
+  indigo: {
+    name: "Indigo",
+    ring: "ring-indigo-500",
+    bg: "bg-indigo-500"
+  },
+  rose: {
+    name: "Rose",
+    ring: "ring-rose-500",
+    bg: "bg-rose-500"
+  },
+  amber: {
+    name: "Amber",
+    ring: "ring-amber-500",
+    bg: "bg-amber-500"
+  },
+} as const;
+
+type ThemeColor = keyof typeof THEME_COLORS;
+
+const MODELS = [
+  { id: "google/gemini-2.0-flash-exp:free", name: "Gemini 2.0 Flash (Free)" },
+  { id: "anthropic/claude-3-haiku:free", name: "Claude 3 Haiku (Free)" },
+  { id: "meta-llama/llama-3.3-70b-instruct", name: "Llama 3.3 70B" },
+  { id: "openai/gpt-4o-mini", name: "GPT-4o Mini" },
+];
 
 const Options: React.FC = () => {
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [apiKey, setApiKey] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [status, setStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
-  const [message, setMessage] = useState('');
+  const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
 
   useEffect(() => {
     const load = async () => {
@@ -36,220 +63,250 @@ const Options: React.FC = () => {
     load();
   }, []);
 
+  const handleSave = async (newSettings: Settings) => {
+    setSettings(newSettings);
+    await saveSettings(newSettings);
+  };
+
   const handleSaveApiKey = async () => {
     setStatus('saving');
     try {
       await saveApiKey(apiKey.trim());
-      setStatus('success');
-      setMessage('API Key saved securely.');
-      setTimeout(() => setStatus('idle'), 3000);
+      setStatus('saved');
+      setTimeout(() => setStatus('idle'), 2000);
     } catch (e) {
       setStatus('error');
-      setMessage('Failed to save API Key.');
     }
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="animate-pulse text-neutral-400 font-medium tracking-widest uppercase text-xs">Loading Settings</div>
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="animate-pulse text-slate-400 font-medium tracking-widest uppercase text-xs">Loading Settings</div>
       </div>
     );
   }
 
+  const C = THEME_COLORS[settings.accentColor as ThemeColor] || THEME_COLORS.teal;
+  const isDark = settings.theme === 'dark';
+
   return (
-    <div className="min-h-screen bg-white text-neutral-900 font-sans selection:bg-teal-100 selection:text-teal-900">
-      <div className="max-w-3xl mx-auto px-8 py-20">
-        <header className="mb-20 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <img src="/logos/logo-transparent.png" alt="OpenInsight Logo" className="w-10 h-10" />
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight">OpenInsight</h1>
-              <p className="text-neutral-500 text-sm">Epistemic Clarity Engine</p>
+    <div className={`min-h-screen font-sans selection:bg-teal-100 selection:text-teal-900 ${isDark ? 'bg-slate-900 text-slate-300' : 'bg-[#F5F5F7] text-slate-900'}`}>
+      <div className="max-w-xl mx-auto px-6 py-12 md:py-20">
+        
+        {/* Header */}
+        <header className="mb-12 text-center">
+          <div className="flex items-center justify-center gap-3 mb-3">
+            <div className={`p-2 rounded-xl ${isDark ? 'bg-slate-800' : 'bg-white shadow-sm'}`}>
+              <Sparkles className={`w-5 h-5 ${isDark ? 'text-slate-200' : 'text-slate-700'}`} />
             </div>
+            <h1 className={`text-xl font-serif font-medium ${isDark ? 'text-slate-100' : 'text-slate-800'}`}>
+              OpenInsight
+            </h1>
           </div>
-          <div className="text-neutral-300">
-            <SettingsIcon size={20} />
-          </div>
+          <p className={`text-xs uppercase tracking-widest font-medium ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+            Epistemic Clarity Engine
+          </p>
         </header>
 
-        <main>
-          <Section title="Connection" icon={<Globe size={18} />}>
-            <div className="max-w-md">
-              <label htmlFor="api-key" className="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-2">
-                OpenRouter API Key
-              </label>
-              <div className="flex gap-2">
-                <input
-                  type="password"
-                  id="api-key"
-                  className="flex-1 px-4 py-2 bg-neutral-50 border border-neutral-200 rounded text-sm focus:outline-none focus:border-neutral-900 transition-colors"
-                  placeholder="sk-or-v1-..."
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                />
-                <button
-                  onClick={handleSaveApiKey}
-                  disabled={status === 'saving'}
-                  className="px-6 py-2 bg-neutral-900 text-white text-sm font-medium rounded hover:bg-neutral-800 disabled:bg-neutral-200 transition-colors"
-                >
-                  {status === 'saving' ? 'Saving...' : 'Save'}
-                </button>
-              </div>
-              {status !== 'idle' && (
-                <p className={`mt-3 text-xs font-medium ${status === 'success' ? 'text-teal-600' : 'text-rose-600'}`}>
-                  {message}
-                </p>
-              )}
-              <p className="mt-4 text-xs text-neutral-400 leading-relaxed">
-                Your key is encrypted and stored locally. It never leaves your browser except to communicate with OpenRouter.
-              </p>
+        <main className={`rounded-2xl shadow-sm border overflow-hidden ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}`}>
+          
+          {/* Section: Connection (API Key) */}
+          <div className={`p-8 border-b ${isDark ? 'border-slate-700' : 'border-slate-100'}`}>
+            <div className="flex items-center gap-2 mb-6 opacity-50">
+               <Key size={14} />
+               <h2 className="text-[10px] font-bold uppercase tracking-wider">Connection</h2>
             </div>
-          </Section>
-
-          <Section title="Intelligence" icon={<Cpu size={18} />}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            
+            <div className="space-y-4">
               <div>
-                <label htmlFor="explain-model" className="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-2">
-                  Explain Model
+                <label htmlFor="api-key" className="block text-xs font-medium mb-2 opacity-70">
+                  OpenRouter API Key
                 </label>
-                <select
-                  id="explain-model"
-                  className="w-full px-3 py-2 bg-neutral-50 border border-neutral-200 rounded text-sm focus:outline-none focus:border-neutral-900 transition-colors appearance-none cursor-pointer"
-                  value={settings.explainModel}
-                  onChange={(e) => {
-                    const newSettings = { ...settings, explainModel: e.target.value };
-                    setSettings(newSettings);
-                    saveSettings(newSettings);
-                  }}
-                >
-                  <option value="google/gemini-2.0-flash-exp:free">Gemini 2.0 Flash (Free)</option>
-                  <option value="anthropic/claude-3-haiku:free">Claude 3 Haiku (Free)</option>
-                  <option value="meta-llama/llama-3.3-70b-instruct">Llama 3.3 70B</option>
-                  <option value="openai/gpt-4o-mini">GPT-4o Mini</option>
-                </select>
-              </div>
-              <div>
-                <label htmlFor="fact-check-model" className="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-2">
-                  Fact-Check Model
-                </label>
-                <select
-                  id="fact-check-model"
-                  className="w-full px-3 py-2 bg-neutral-50 border border-neutral-200 rounded text-sm focus:outline-none focus:border-neutral-900 transition-colors appearance-none cursor-pointer"
-                  value={settings.factCheckModel}
-                  onChange={(e) => {
-                    const newSettings = { ...settings, factCheckModel: e.target.value };
-                    setSettings(newSettings);
-                    saveSettings(newSettings);
-                  }}
-                >
-                  <option value="google/gemini-2.0-flash-exp:free">Gemini 2.0 Flash (Free)</option>
-                  <option value="anthropic/claude-3-haiku:free">Claude 3 Haiku (Free)</option>
-                  <option value="meta-llama/llama-3.3-70b-instruct">Llama 3.3 70B</option>
-                  <option value="openai/gpt-4o-mini">GPT-4o Mini</option>
-                </select>
-              </div>
-            </div>
-            <p className="mt-4 text-xs text-neutral-400 leading-relaxed">
-              OpenInsight uses OpenRouter to access various LLMs. Some models are free, while others require credits.
-            </p>
-          </Section>
-
-          <Section title="Appearance" icon={<Palette size={18} />}>
-            <div>
-              <label className="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-4">
-                Theme Mode
-              </label>
-              <div className="flex gap-1 p-1 bg-neutral-100 rounded-lg w-fit">
-                {(['light', 'dark', 'system'] as const).map((mode) => (
+                <div className="flex gap-2">
+                  <input
+                    type="password"
+                    id="api-key"
+                    className={`flex-1 px-3 py-2.5 bg-transparent border rounded-lg text-sm transition-all focus:outline-none focus:ring-1 ${
+                      isDark 
+                        ? 'border-slate-600 focus:border-slate-500 text-white placeholder-slate-600' 
+                        : 'border-slate-200 focus:border-slate-400 text-slate-900 placeholder-slate-400'
+                    } ${C.ring.replace('ring-', 'focus:ring-')}`}
+                    placeholder="sk-or-v1-..."
+                    value={apiKey}
+                    onChange={(e) => setApiKey(e.target.value)}
+                  />
                   <button
-                    key={mode}
-                    onClick={() => {
-                      const newSettings = { ...settings, theme: mode };
-                      setSettings(newSettings);
-                      saveSettings(newSettings);
-                    }}
-                    className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all ${
-                      settings.theme === mode
-                        ? 'bg-white text-neutral-900 shadow-sm'
-                        : 'text-neutral-500 hover:text-neutral-700'
+                    onClick={handleSaveApiKey}
+                    disabled={status === 'saving'}
+                    className={`px-4 py-2 text-xs font-semibold rounded-lg transition-colors ${
+                      status === 'saved'
+                        ? 'bg-teal-500 text-white' 
+                        : isDark 
+                          ? 'bg-slate-700 hover:bg-slate-600 text-slate-200' 
+                          : 'bg-slate-900 hover:bg-slate-800 text-white'
                     }`}
                   >
-                    {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                    {status === 'saving' ? 'Saving...' : status === 'saved' ? 'Saved' : 'Save'}
                   </button>
-                ))}
+                </div>
+                <p className="mt-3 text-[10px] text-slate-400 leading-relaxed max-w-sm">
+                  Your key is encrypted and stored locally. It never leaves your browser except to communicate with OpenRouter.
+                </p>
               </div>
             </div>
-            <div className="mt-8">
-              <label className="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-4">
-                Accent Color
-              </label>
-              <div className="flex gap-4">
-                {(['teal', 'indigo', 'rose', 'amber'] as const).map((color) => {
-                  const colorMap = {
-                    teal: 'bg-teal-500',
-                    indigo: 'bg-indigo-500',
-                    rose: 'bg-rose-500',
-                    amber: 'bg-amber-500',
-                  };
-                  return (
+          </div>
+
+          {/* Section: Intelligence */}
+          <div className={`p-8 border-b ${isDark ? 'border-slate-700' : 'border-slate-100'}`}>
+            <div className="flex items-center gap-2 mb-6 opacity-50">
+               <Cpu size={14} />
+               <h2 className="text-[10px] font-bold uppercase tracking-wider">Intelligence</h2>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label htmlFor="explain-model" className="text-xs font-medium opacity-70">Explain Model</label>
+                <div className="relative">
+                  <select
+                    id="explain-model"
+                    className={`w-full appearance-none px-3 py-2.5 bg-transparent border rounded-lg text-sm focus:outline-none focus:ring-1 ${
+                      isDark 
+                        ? 'border-slate-600 focus:border-slate-500 text-white' 
+                        : 'border-slate-200 focus:border-slate-400 text-slate-900'
+                    } ${C.ring.replace('ring-', 'focus:ring-')}`}
+                    value={settings.explainModel}
+                    onChange={(e) => handleSave({ ...settings, explainModel: e.target.value })}
+                  >
+                    {MODELS.map((m) => (
+                      <option key={m.id} value={m.id}>{m.name}</option>
+                    ))}
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none opacity-50">
+                    <ChevronDown size={14} />
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="fact-check-model" className="text-xs font-medium opacity-70">Fact-Check Model</label>
+                <div className="relative">
+                  <select
+                    id="fact-check-model"
+                    className={`w-full appearance-none px-3 py-2.5 bg-transparent border rounded-lg text-sm focus:outline-none focus:ring-1 ${
+                         isDark 
+                        ? 'border-slate-600 focus:border-slate-500 text-white' 
+                        : 'border-slate-200 focus:border-slate-400 text-slate-900'
+                    } ${C.ring.replace('ring-', 'focus:ring-')}`}
+                    value={settings.factCheckModel}
+                    onChange={(e) => handleSave({ ...settings, factCheckModel: e.target.value })}
+                  >
+                    {MODELS.map((m) => (
+                      <option key={m.id} value={m.id}>{m.name}</option>
+                    ))}
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none opacity-50">
+                    <ChevronDown size={14} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Section: Appearance */}
+          <div className={`p-8 border-b ${isDark ? 'border-slate-700' : 'border-slate-100'}`}>
+            <div className="flex items-center gap-2 mb-6 opacity-50">
+               <Palette size={14} />
+               <h2 className="text-[10px] font-bold uppercase tracking-wider">Appearance</h2>
+            </div>
+
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium opacity-90">Theme Mode</span>
+                <div className={`flex p-1 rounded-lg ${isDark ? 'bg-slate-900' : 'bg-slate-100'}`}>
+                  {(['light', 'dark', 'system'] as const).map((mode) => (
+                    <button
+                      key={mode}
+                      onClick={() => handleSave({ ...settings, theme: mode })}
+                      className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+                        settings.theme === mode
+                          ? isDark ? 'bg-slate-700 text-white shadow-sm' : 'bg-white text-slate-900 shadow-sm'
+                          : 'text-slate-500 hover:text-slate-700'
+                      }`}
+                    >
+                      {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium opacity-90">Accent Color</span>
+                <div className="flex gap-3">
+                  {(Object.keys(THEME_COLORS) as ThemeColor[]).map((color) => (
                     <button
                       key={color}
-                      aria-label={color}
-                      onClick={() => {
-                        const newSettings = { ...settings, accentColor: color };
-                        setSettings(newSettings);
-                        saveSettings(newSettings);
-                      }}
-                      className={`w-8 h-8 rounded-full transition-all ring-offset-2 ${colorMap[color]} ${
-                        settings.accentColor === color ? 'ring-2 ring-neutral-900' : 'hover:scale-110'
+                      onClick={() => handleSave({ ...settings, accentColor: color })}
+                      className={`w-6 h-6 rounded-full transition-all ring-offset-2 ${THEME_COLORS[color].bg} ${
+                          isDark ? 'ring-offset-slate-800' : 'ring-offset-white'
+                      } ${
+                        settings.accentColor === color 
+                          ? `ring-2 ${THEME_COLORS[color].ring} scale-110` 
+                          : 'hover:scale-110 opacity-70 hover:opacity-100'
                       }`}
+                      aria-label={THEME_COLORS[color].name}
                     />
-                  );
-                })}
+                  ))}
+                </div>
               </div>
             </div>
-          </Section>
-
-          <Section title="Behavior" icon={<Zap size={18} />}>
-            <div>
-              <label className="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-4">
-                Trigger Mode
-              </label>
-              <div className="flex gap-1 p-1 bg-neutral-100 rounded-lg w-fit">
-                {(['icon', 'immediate'] as const).map((mode) => (
-                  <button
-                    key={mode}
-                    onClick={() => {
-                      const newSettings = { ...settings, triggerMode: mode };
-                      setSettings(newSettings);
-                      saveSettings(newSettings);
-                    }}
-                    className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all ${
-                      settings.triggerMode === mode
-                        ? 'bg-white text-neutral-900 shadow-sm'
-                        : 'text-neutral-500 hover:text-neutral-700'
-                    }`}
-                  >
-                    {mode.charAt(0).toUpperCase() + mode.slice(1)}
-                  </button>
-                ))}
-              </div>
-              <p className="mt-4 text-xs text-neutral-400 leading-relaxed">
-                {settings.triggerMode === 'icon' 
-                  ? 'Show a floating icon when text is selected.' 
-                  : 'Open the analysis modal immediately upon text selection.'}
-              </p>
-            </div>
-          </Section>
-        </main>
-
-        <footer className="mt-20 pt-8 border-t border-neutral-100 flex justify-between items-center text-xs text-neutral-400">
-          <p>&copy; 2025 OpenInsight. Designed for focus.</p>
-          <div className="flex gap-4">
-            <a href="#" className="hover:text-neutral-900 transition-colors">Documentation</a>
-            <a href="#" className="hover:text-neutral-900 transition-colors">Privacy</a>
           </div>
+
+           {/* Section: Behavior */}
+           <div className="p-8">
+            <div className="flex items-center gap-2 mb-6 opacity-50">
+               <Zap size={14} />
+               <h2 className="text-[10px] font-bold uppercase tracking-wider">Behavior</h2>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="block text-sm font-medium opacity-90 mb-1">Trigger Action</span>
+                <span className="text-[10px] text-slate-400">
+                  {settings.triggerMode === 'icon' 
+                    ? 'Show icon when text is selected' 
+                    : 'Open immediately on selection'}
+                </span>
+              </div>
+              
+              <div className={`flex p-1 rounded-lg ${isDark ? 'bg-slate-900' : 'bg-slate-100'}`}>
+                <button
+                  onClick={() => handleSave({ ...settings, triggerMode: 'icon' })}
+                  className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all ${
+                    settings.triggerMode === 'icon'
+                       ? isDark ? 'bg-slate-700 text-white shadow-sm' : 'bg-white text-slate-900 shadow-sm'
+                      : 'text-slate-500 hover:text-slate-700'
+                  }`}
+                >
+                  Icon
+                </button>
+                <button
+                  onClick={() => handleSave({ ...settings, triggerMode: 'immediate' })}
+                  className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all ${
+                    settings.triggerMode === 'immediate'
+                       ? isDark ? 'bg-slate-700 text-white shadow-sm' : 'bg-white text-slate-900 shadow-sm'
+                      : 'text-slate-500 hover:text-slate-700'
+                  }`}
+                >
+                  Immediate
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </main>
+        
+        <footer className="mt-12 text-center text-xs text-slate-400 opacity-60">
+          <p>© 2025 OpenInsight • {process.env.NODE_ENV === 'development' ? 'Dev Build' : 'v1.0.0'}</p>
         </footer>
       </div>
     </div>
