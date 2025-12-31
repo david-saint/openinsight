@@ -77,4 +77,4 @@ API keys are stored in `chrome.storage.local` and are encrypted using the Web Cr
 
 ## 📄 License
 
-This project is licensed under the ISC License - see the [package.json](package.json) file for details.
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
