@@ -37,10 +37,10 @@ Implement the selection-based trigger mechanism, isolated from the host page's C
 
 Migrate from JavaScript-based dynamic classes to CSS variables for theming to ensure cleaner code and better Shadow DOM support.
 
-- [ ] Task: TDD - Define CSS variable structure for themes (primary, surface, text) in `index.css`
-- [ ] Task: TDD - Update Tailwind config to use CSS variables for colors
-- [ ] Task: TDD - Refactor `Options.tsx` to use semantic classes instead of dynamic color props
-- [ ] Task: TDD - Ensure CSS variables are injected into Shadow DOM container
+- [x] Task: TDD - Define CSS variable structure for themes (primary, surface, text) in `index.css`
+- [x] Task: TDD - Update Tailwind config to use CSS variables for colors
+- [x] Task: TDD - Refactor `Options.tsx` to use semantic classes instead of dynamic color props
+- [x] Task: TDD - Ensure CSS variables are injected into Shadow DOM container
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Theming' (Protocol in workflow.md)
 
 ## Phase 5: Content Script - Analysis Modal

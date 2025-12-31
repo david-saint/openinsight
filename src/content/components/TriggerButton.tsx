@@ -19,7 +19,7 @@ export const TriggerButton: React.FC<TriggerButtonProps> = ({ position, onTrigge
       className="z-[9999] flex items-center justify-center p-2 rounded-lg bg-white shadow-lg border border-slate-200 hover:bg-slate-50 transition-all transform hover:scale-110 active:scale-95 group"
       aria-label="Analyze with OpenInsight"
     >
-      <Sparkles className="w-4 h-4 text-slate-700 group-hover:text-teal-500 transition-colors" />
+      <Sparkles className="w-4 h-4 text-slate-700 group-hover:text-accent-500 transition-colors" />
     </button>
   );
 };

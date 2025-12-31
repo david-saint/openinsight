@@ -2,12 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { TriggerButton } from './components/TriggerButton';
 import { handleSelection } from './selection';
 import { calculateTriggerPosition, Position } from './positioning';
+import { getSettings, DEFAULT_SETTINGS } from '../lib/settings';
+import type { Settings } from '../lib/settings';
 
 export const ContentApp: React.FC = () => {
   const [triggerPosition, setTriggerPosition] = useState<Position | null>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
 
   useEffect(() => {
+    // Load settings once
+    getSettings().then(setSettings);
+
     const onMouseUp = () => {
       // Small timeout to allow selection to finalize
       setTimeout(() => {
@@ -20,11 +26,6 @@ export const ContentApp: React.FC = () => {
           setIsVisible(false);
         }
       }, 10);
-    };
-
-    const onMouseDown = (e: MouseEvent) => {
-      // Check if clicking outside the component (this is tricky with Shadow DOM)
-      // For now, hide on click start unless it's our button
     };
 
     document.addEventListener('mouseup', onMouseUp);
@@ -42,7 +43,7 @@ export const ContentApp: React.FC = () => {
   if (!isVisible || !triggerPosition) return null;
 
   return (
-    <div className="openinsight-content-root">
+    <div className="openinsight-content-root" data-accent={settings.accentColor}>
       <TriggerButton 
         position={triggerPosition} 
         onTrigger={handleTrigger} 

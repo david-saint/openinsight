@@ -4,6 +4,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { waitFor } from '@testing-library/dom';
 
+// Mock settings to avoid chrome is not defined
+vi.mock('../../src/lib/settings', () => ({
+  getSettings: vi.fn().mockResolvedValue({ accentColor: 'teal' }),
+  DEFAULT_SETTINGS: { accentColor: 'teal' }
+}));
+
 describe('Content Script', () => {
   beforeEach(() => {
     vi.clearAllMocks();

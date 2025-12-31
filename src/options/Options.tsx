@@ -87,11 +87,13 @@ const Options: React.FC = () => {
     );
   }
 
-  const C = THEME_COLORS[settings.accentColor as ThemeColor] || THEME_COLORS.teal;
   const isDark = settings.theme === 'dark';
 
   return (
-    <div className={`min-h-screen font-sans selection:bg-${settings.accentColor}-100 selection:text-${settings.accentColor}-900 ${isDark ? 'bg-slate-900 text-slate-300' : 'bg-[#F5F5F7] text-slate-900'}`}>
+    <div 
+      data-accent={settings.accentColor}
+      className={`min-h-screen font-sans selection:bg-accent-100 selection:text-accent-900 ${isDark ? 'bg-slate-900 text-slate-300' : 'bg-[#F5F5F7] text-slate-900'}`}
+    >
       <div className="max-w-xl mx-auto px-6 py-12 md:py-20">
         
         {/* Header */}
@@ -127,11 +129,11 @@ const Options: React.FC = () => {
                   <input
                     type="password"
                     id="api-key"
-                    className={`flex-1 px-3 py-2.5 bg-transparent border rounded-lg text-sm transition-all focus:outline-none focus:ring-1 ${
+                    className={`flex-1 px-3 py-2.5 bg-transparent border rounded-lg text-sm transition-all focus:outline-none focus:ring-1 focus:ring-accent-500 focus:border-accent-500 ${
                       isDark 
-                        ? 'border-slate-600 focus:border-slate-500 text-white placeholder-slate-600' 
-                        : 'border-slate-200 focus:border-slate-400 text-slate-900 placeholder-slate-400'
-                    } ${C.ring.replace('ring-', 'focus:ring-')}`}
+                        ? 'border-slate-600 text-white placeholder-slate-600' 
+                        : 'border-slate-200 text-slate-900 placeholder-slate-400'
+                    }`}
                     placeholder="sk-or-v1-..."
                     value={apiKey}
                     onChange={(e) => setApiKey(e.target.value)}
@@ -141,7 +143,7 @@ const Options: React.FC = () => {
                     disabled={status === 'saving'}
                     className={`px-4 py-2 text-xs font-semibold rounded-lg transition-colors ${
                       status === 'saved'
-                        ? `${C.bg} text-white` 
+                        ? 'bg-accent-500 text-white' 
                         : isDark 
                           ? 'bg-slate-700 hover:bg-slate-600 text-slate-200' 
                           : 'bg-slate-900 hover:bg-slate-800 text-white'
@@ -170,11 +172,11 @@ const Options: React.FC = () => {
                 <div className="relative">
                   <select
                     id="explain-model"
-                    className={`w-full appearance-none px-3 py-2.5 bg-transparent border rounded-lg text-sm focus:outline-none focus:ring-1 ${
+                    className={`w-full appearance-none px-3 py-2.5 bg-transparent border rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-accent-500 focus:border-accent-500 ${
                       isDark 
-                        ? 'border-slate-600 focus:border-slate-500 text-white' 
-                        : 'border-slate-200 focus:border-slate-400 text-slate-900'
-                    } ${C.ring.replace('ring-', 'focus:ring-')}`}
+                        ? 'border-slate-600 text-white' 
+                        : 'border-slate-200 text-slate-900'
+                    }`}
                     value={settings.explainModel}
                     onChange={(e) => handleSave({ ...settings, explainModel: e.target.value })}
                   >
@@ -192,11 +194,11 @@ const Options: React.FC = () => {
                 <div className="relative">
                   <select
                     id="fact-check-model"
-                    className={`w-full appearance-none px-3 py-2.5 bg-transparent border rounded-lg text-sm focus:outline-none focus:ring-1 ${
+                    className={`w-full appearance-none px-3 py-2.5 bg-transparent border rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-accent-500 focus:border-accent-500 ${
                          isDark 
-                        ? 'border-slate-600 focus:border-slate-500 text-white' 
-                        : 'border-slate-200 focus:border-slate-400 text-slate-900'
-                    } ${C.ring.replace('ring-', 'focus:ring-')}`}
+                        ? 'border-slate-600 text-white' 
+                        : 'border-slate-200 text-slate-900'
+                    }`}
                     value={settings.factCheckModel}
                     onChange={(e) => handleSave({ ...settings, factCheckModel: e.target.value })}
                   >
