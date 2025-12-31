@@ -9,7 +9,7 @@ Establish the basic extension structure, update branding, create the settings mo
 - [x] Task: Update Extension Icons and Manifest [66fea0c]
   - Replace default icons in `public/` (if any) or update `manifest.ts` to point to `assets/logos/logo-transparent.png`.
   - Ensure all necessary permissions (`storage`, `activeTab`) are present in `manifest.ts`.
-- [ ] Task: TDD - Design and Implement Settings Module (`src/lib/settings.ts`)
+- [x] Task: TDD - Design and Implement Settings Module (`src/lib/settings.ts`) [b891c83]
   - Define the `Settings` interface with all user-configurable options (theme, accentColor, apiKey, explainModel, factCheckModel, triggerMode).
   - Implement `getSettings()` and `saveSettings()` functions that use the generic `storage.ts` helpers.
   - Implement `getApiKey()` and `saveApiKey()` functions that use the encrypted storage helpers.
