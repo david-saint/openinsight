@@ -156,7 +156,31 @@ const Options: React.FC = () => {
           </Section>
 
           <Section title="Appearance" icon={<Palette size={18} />}>
-            <div className="text-sm text-neutral-500 italic">Theme & Accent Placeholder</div>
+            <div>
+              <label className="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-4">
+                Theme Mode
+              </label>
+              <div className="flex gap-1 p-1 bg-neutral-100 rounded-lg w-fit">
+                {(['light', 'dark', 'system'] as const).map((mode) => (
+                  <button
+                    key={mode}
+                    onClick={() => {
+                      const newSettings = { ...settings, theme: mode };
+                      setSettings(newSettings);
+                      saveSettings(newSettings);
+                    }}
+                    className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all ${
+                      settings.theme === mode
+                        ? 'bg-white text-neutral-900 shadow-sm'
+                        : 'text-neutral-500 hover:text-neutral-700'
+                    }`}
+                  >
+                    {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="text-sm text-neutral-500 italic mt-8">Accent Color Placeholder</div>
           </Section>
 
           <Section title="Behavior" icon={<Zap size={18} />}>

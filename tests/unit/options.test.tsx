@@ -79,4 +79,15 @@ describe('Options Component', () => {
       factCheckModel: 'openai/gpt-4o-mini',
     }));
   });
+
+  it('allows changing the theme mode', async () => {
+    render(<Options />);
+    
+    const lightButton = await screen.findByRole('button', { name: /light/i });
+    fireEvent.click(lightButton);
+    
+    expect(settings.saveSettings).toHaveBeenCalledWith(expect.objectContaining({
+      theme: 'light',
+    }));
+  });
 });
