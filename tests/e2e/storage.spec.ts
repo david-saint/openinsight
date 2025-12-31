@@ -69,7 +69,10 @@ test('options page saves API key to storage', async () => {
     });
   });
 
-  expect(storageValue).toBe('test-api-key-123');
+  // The stored value should NOT be the plain text key anymore, it should be encrypted
+  expect(storageValue).not.toBe('test-api-key-123');
+  expect(typeof storageValue).toBe('string');
+  expect((storageValue as string).length).toBeGreaterThan(20); // Basic check for encrypted blob
 
   await context.close();
 });

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { getStorage, setStorage } from '../lib/storage';
+import { getEncrypted, setEncrypted } from '../lib/storage';
+
+const APP_key = 'openinsight-local-key'; // Scaffolding key
 
 const Options: React.FC = () => {
   const [apiKey, setApiKey] = useState('');
@@ -7,12 +9,15 @@ const Options: React.FC = () => {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    // Load existing API key (masked or partially visible for security if we wanted, 
-    // but for scaffolding we'll just check if it exists)
     const loadSettings = async () => {
-      const savedKey = await getStorage<string>('openrouter_api_key');
-      if (savedKey) {
-        setApiKey(savedKey);
+      // Try to get encrypted key first
+      try {
+        const savedKey = await getEncrypted('openrouter_api_key', APP_key);
+        if (savedKey) {
+          setApiKey(savedKey);
+        }
+      } catch (e) {
+        console.error('Error loading settings:', e);
       }
     };
     loadSettings();
@@ -27,9 +32,7 @@ const Options: React.FC = () => {
 
     setStatus('saving');
     try {
-      // In a real scenario, we might use setEncrypted here.
-      // For now, we follow the scaffolding plan which suggests basic API key management.
-      await setStorage('openrouter_api_key', apiKey.trim());
+      await setEncrypted('openrouter_api_key', apiKey.trim(), APP_key);
       setStatus('success');
       setMessage('Settings saved successfully!');
       setTimeout(() => setStatus('idle'), 3000);

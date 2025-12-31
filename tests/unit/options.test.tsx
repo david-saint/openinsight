@@ -4,18 +4,13 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
 import Options from '../../src/options/Options';
+import * as storage from '../../src/lib/storage';
 
-// Mock chrome.storage
-const chromeMock = {
-  storage: {
-    local: {
-      get: vi.fn(),
-      set: vi.fn(),
-    },
-  },
-};
-
-vi.stubGlobal('chrome', chromeMock);
+// Mock storage module
+vi.mock('../../src/lib/storage', () => ({
+  getEncrypted: vi.fn(),
+  setEncrypted: vi.fn(),
+}));
 
 describe('Options Component', () => {
   beforeEach(() => {
@@ -27,7 +22,7 @@ describe('Options Component', () => {
   });
 
   it('renders correctly', async () => {
-    chromeMock.storage.local.get.mockResolvedValue({});
+    vi.mocked(storage.getEncrypted).mockResolvedValue(undefined);
     render(<Options />);
     
     expect(screen.getByText('OpenInsight Settings')).toBeDefined();
@@ -35,7 +30,7 @@ describe('Options Component', () => {
   });
 
   it('loads saved API key', async () => {
-    chromeMock.storage.local.get.mockResolvedValue({ openrouter_api_key: 'test-key' });
+    vi.mocked(storage.getEncrypted).mockResolvedValue('test-key');
     render(<Options />);
     
     await waitFor(() => {
@@ -45,7 +40,7 @@ describe('Options Component', () => {
   });
 
   it('saves API key', async () => {
-    chromeMock.storage.local.get.mockResolvedValue({});
+    vi.mocked(storage.getEncrypted).mockResolvedValue(undefined);
     render(<Options />);
     
     const input = screen.getByLabelText('OpenRouter API Key') as HTMLInputElement;
@@ -55,7 +50,7 @@ describe('Options Component', () => {
     fireEvent.click(saveButton);
     
     await waitFor(() => {
-      expect(chromeMock.storage.local.set).toHaveBeenCalledWith({ openrouter_api_key: 'new-key' });
+      expect(storage.setEncrypted).toHaveBeenCalledWith('openrouter_api_key', 'new-key', expect.any(String));
       expect(screen.getByText('Settings saved successfully!')).toBeDefined();
     });
   });
