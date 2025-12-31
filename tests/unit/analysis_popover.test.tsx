@@ -5,7 +5,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import React from 'react';
 import '@testing-library/jest-dom';
-import { AnalysisModal } from '../../src/content/components/AnalysisModal';
+import { AnalysisPopover } from '../../src/content/components/AnalysisPopover';
 import { sendMessage } from '../../src/lib/messaging';
 
 // Mock messaging
@@ -13,7 +13,7 @@ vi.mock('../../src/lib/messaging', () => ({
   sendMessage: vi.fn(),
 }));
 
-describe('Analysis Modal Component', () => {
+describe('Analysis Popover Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(sendMessage).mockResolvedValue({ success: true, result: 'mocked content' });
@@ -21,20 +21,20 @@ describe('Analysis Modal Component', () => {
 
   it('should render when isOpen is true', () => {
     render(
-      <AnalysisModal 
+      <AnalysisPopover 
         isOpen={true} 
         onClose={() => {}} 
         selectionText="test text"
       />
     );
 
-    const modal = screen.getByRole('dialog');
-    expect(modal).toBeInTheDocument();
+    const popover = screen.getByRole('dialog');
+    expect(popover).toBeInTheDocument();
   });
 
   it('should not render when isOpen is false', () => {
     const { queryByRole } = render(
-      <AnalysisModal 
+      <AnalysisPopover 
         isOpen={false} 
         onClose={() => {}} 
         selectionText="test text"
@@ -46,7 +46,7 @@ describe('Analysis Modal Component', () => {
 
   it('should display the selected text', () => {
     render(
-      <AnalysisModal 
+      <AnalysisPopover 
         isOpen={true} 
         onClose={() => {}} 
         selectionText="selected text sample"
@@ -58,7 +58,7 @@ describe('Analysis Modal Component', () => {
 
   it('should display Explain and Fact Check tabs', () => {
     render(
-      <AnalysisModal 
+      <AnalysisPopover 
         isOpen={true} 
         onClose={() => {}} 
         selectionText="test"
@@ -71,7 +71,7 @@ describe('Analysis Modal Component', () => {
 
   it('should have Explain tab active by default', () => {
     render(
-      <AnalysisModal 
+      <AnalysisPopover 
         isOpen={true} 
         onClose={() => {}} 
         selectionText="test"
@@ -90,7 +90,7 @@ describe('Analysis Modal Component', () => {
     const user = userEvent.setup();
     
     render(
-      <AnalysisModal 
+      <AnalysisPopover 
         isOpen={true} 
         onClose={() => {}} 
         selectionText="test"
@@ -106,7 +106,7 @@ describe('Analysis Modal Component', () => {
 
   it('should show loading state in Explain view', () => {
     render(
-      <AnalysisModal 
+      <AnalysisPopover 
         isOpen={true} 
         onClose={() => {}} 
         selectionText="test"
@@ -121,7 +121,7 @@ describe('Analysis Modal Component', () => {
     vi.mocked(sendMessage).mockResolvedValue({ success: true, result: 'This is the explanation.' });
     
     render(
-      <AnalysisModal 
+      <AnalysisPopover 
         isOpen={true} 
         onClose={() => {}} 
         selectionText="test text"
@@ -138,7 +138,7 @@ describe('Analysis Modal Component', () => {
     vi.mocked(sendMessage).mockResolvedValue({ success: true, result: 'This is true.' });
     
     render(
-      <AnalysisModal 
+      <AnalysisPopover 
         isOpen={true} 
         onClose={() => {}} 
         selectionText="test"
@@ -157,7 +157,7 @@ describe('Analysis Modal Component', () => {
     const user = userEvent.setup();
     
     render(
-      <AnalysisModal 
+      <AnalysisPopover 
         isOpen={true} 
         onClose={() => {}} 
         selectionText="test"

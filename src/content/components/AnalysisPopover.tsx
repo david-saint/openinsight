@@ -2,30 +2,36 @@ import React, { useState, useEffect } from 'react';
 import { X, MessageSquare, ShieldCheck, Settings, AlertCircle } from 'lucide-react';
 import { sendMessage } from '../../lib/messaging';
 
-interface AnalysisModalProps {
+interface AnalysisPopoverProps {
   isOpen: boolean;
   onClose: () => void;
   selectionText: string;
   accentColor?: string;
   onAccentChange?: (color: string) => void;
+  position?: { top: number; left: number };
 }
 
 type TabId = 'explain' | 'fact-check' | 'settings';
 
 const ACCENTS = ['teal', 'indigo', 'rose', 'amber'] as const;
 
-export const AnalysisModal: React.FC<AnalysisModalProps> = ({
-  isOpen,
-  onClose,
+export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({ 
+  isOpen, 
+  onClose, 
   selectionText,
   accentColor = 'teal',
-  onAccentChange
+  onAccentChange,
+  position
 }) => {
   const [activeTab, setActiveTab] = useState<TabId>('explain');
   const [data, setData] = useState<Record<'explain' | 'fact-check', TabData>>({
     explain: { content: null, loading: false, error: null },
     'fact-check': { content: null, loading: false, error: null },
   });
+
+  // Close on click outside is handled by the backdrop in modal, 
+  // but for popover we need a different approach if we remove the backdrop.
+  // For now, I will keep a transparent backdrop to handle 'click outside' easily.
 
   useEffect(() => {
     if (isOpen && selectionText) {
@@ -38,7 +44,6 @@ export const AnalysisModal: React.FC<AnalysisModalProps> = ({
       fetchData('explain', selectionText);
     }
   }, [isOpen, selectionText]);
-
   const fetchData = async (tab: 'explain' | 'fact-check', text: string) => {
     setData(prev => ({ ...prev, [tab]: { ...prev[tab], loading: true, error: null } }));
     
@@ -66,14 +71,23 @@ export const AnalysisModal: React.FC<AnalysisModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div 
-      className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-slate-900/20 backdrop-blur-sm"
-      onClick={onClose}
-    >
+    <>
+      {/* Transparent backdrop for click-outside closing */}
+      <div 
+        className="fixed inset-0 z-[9998] bg-transparent"
+        onClick={onClose}
+      />
+      
       <div 
         role="dialog"
         aria-modal="true"
-        className="w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[80vh] animate-in fade-in zoom-in duration-200"
+        className="absolute z-[9999] w-80 bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200 origin-top-left"
+        style={{
+          top: position ? position.top : '50%',
+          left: position ? position.left : '50%',
+          transform: position ? 'none' : 'translate(-50%, -50%)',
+          maxHeight: '400px'
+        }}
         onClick={(e) => e.stopPropagation()}
         data-accent={accentColor}
       >
@@ -247,6 +261,6 @@ export const AnalysisModal: React.FC<AnalysisModalProps> = ({
           </button>
         </div>
       </div>
-    </div>
+    </>
   );
 };

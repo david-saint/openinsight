@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TriggerButton } from './components/TriggerButton';
-import { AnalysisModal } from './components/AnalysisModal';
+import { AnalysisPopover } from './components/AnalysisPopover';
 import { handleSelection } from './selection';
 import { calculateTriggerPosition, Position } from './positioning';
 import { getSettings, DEFAULT_SETTINGS } from '../lib/settings';
@@ -9,7 +9,7 @@ import type { Settings } from '../lib/settings';
 export const ContentApp: React.FC = () => {
   const [triggerPosition, setTriggerPosition] = useState<Position | null>(null);
   const [isVisible, setIsVisible] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [selectionText, setSelectionText] = useState('');
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
 
@@ -21,7 +21,7 @@ export const ContentApp: React.FC = () => {
       // Small timeout to allow selection to finalize
       setTimeout(() => {
         const selectionData = handleSelection();
-        if (selectionData && !isModalOpen) {
+        if (selectionData && !isPopoverOpen) {
           const pos = calculateTriggerPosition(selectionData.rect);
           setTriggerPosition(pos);
           setSelectionText(selectionData.text);
@@ -36,15 +36,15 @@ export const ContentApp: React.FC = () => {
     return () => {
       document.removeEventListener('mouseup', onMouseUp);
     };
-  }, [isModalOpen]);
+  }, [isPopoverOpen]);
 
   const handleTrigger = () => {
     setIsVisible(false);
-    setIsModalOpen(true);
+    setIsPopoverOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
+  const handleClosePopover = () => {
+    setIsPopoverOpen(false);
   };
 
   const handleAccentChange = (color: string) => {
@@ -63,12 +63,13 @@ export const ContentApp: React.FC = () => {
         />
       )}
       
-      <AnalysisModal 
-        isOpen={isModalOpen} 
-        onClose={handleCloseModal}
+      <AnalysisPopover 
+        isOpen={isPopoverOpen} 
+        onClose={handleClosePopover}
         selectionText={selectionText}
         accentColor={settings.accentColor}
         onAccentChange={handleAccentChange}
+        position={triggerPosition || undefined}
       />
     </div>
   );
