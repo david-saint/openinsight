@@ -16,6 +16,6 @@ The core mission of OpenInsight is to bridge the gap between information consump
 ## Key Features
 *   **Contextual Pop-up Interface:** A minimalist, non-intrusive pop-up that appears upon highlighting text, offering immediate "Explain" and "Fact-check" actions.
 *   **Epistemic Minimalism:** A design philosophy focused on clarity and truth, removing UI clutter to keep the user focused on the information.
-*   **Advanced Customization:** Users can tailor their experience by choosing from various themes and selecting their preferred language models via OpenRouter integration.
+*   **Advanced Customization:** Users can tailor their experience by selecting their preferred language models via OpenRouter integration (API key management implemented).
 *   **Performance-First Architecture:** Built for speed and responsiveness to ensure that information retrieval never bottlenecks the reading experience.
-*   **Security & Privacy:** Secure local storage for OpenRouter API keys with strict sandboxing to ensure user credentials and data remain protected.
+*   **Security & Privacy:** Robust security with Web Crypto API encryption for local storage of API keys and process isolation via Background Service Workers.
