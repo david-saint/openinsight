@@ -1,6 +1,10 @@
+import React from 'react';
+import { createRoot, Root } from 'react-dom/client';
 import styles from './style.css?inline';
+import { ContentApp } from './ContentApp';
 
 const ROOT_ID = 'openinsight-root';
+let root: Root | null = null;
 
 export function injectStyles(shadowRoot: ShadowRoot) {
   const styleElement = document.createElement('style');
@@ -8,7 +12,7 @@ export function injectStyles(shadowRoot: ShadowRoot) {
   shadowRoot.appendChild(styleElement);
 }
 
-export function mountContentApp(): ShadowRoot {
+export function mountContentApp() {
   let host = document.getElementById(ROOT_ID);
 
   if (!host) {
@@ -21,12 +25,21 @@ export function mountContentApp(): ShadowRoot {
   if (!shadow) {
     shadow = host.attachShadow({ mode: 'open' });
     injectStyles(shadow);
+    
+    // Create a container for React
+    const reactRoot = document.createElement('div');
+    shadow.appendChild(reactRoot);
+    
+    root = createRoot(reactRoot);
+    root.render(React.createElement(ContentApp));
   }
-
-  return shadow;
 }
 
 export function unmountContentApp() {
+  if (root) {
+    root.unmount();
+    root = null;
+  }
   const host = document.getElementById(ROOT_ID);
   if (host) {
     host.remove();

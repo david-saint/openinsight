@@ -22,16 +22,16 @@ Create the dedicated options page where users can manage all extension configura
 - [x] Task: TDD - Trigger Mode Toggle (Icon vs. Immediate) [3990bda]
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Options Page' (Protocol in workflow.md)
 
-## Phase 3: Content Script - Floating Trigger & Shadow DOM
+## Phase 3: Content Script - Floating Trigger & Shadow DOM [verified]
 
 Implement the selection-based trigger mechanism, isolated from the host page's CSS.
 
 - [x] Task: Configure Tailwind CSS for Shadow DOM Injection [b282e05]
-- [ ] Task: TDD - Shadow DOM Container Setup in content script with React mounting
-- [ ] Task: TDD - Text Selection Listener with `mouseup` event handling
-- [ ] Task: TDD - Trigger Button Positioning Logic relative to selection bounds
-- [ ] Task: TDD - Floating Trigger Component with Lucide Sparkles icon
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Floating Trigger' (Protocol in workflow.md)
+- [x] Task: TDD - Shadow DOM Container Setup in content script with React mounting [90179a1]
+- [x] Task: TDD - Text Selection Listener with `mouseup` event handling
+- [x] Task: TDD - Trigger Button Positioning Logic relative to selection bounds
+- [x] Task: TDD - Floating Trigger Component with Lucide Sparkles icon
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Floating Trigger' (Protocol in workflow.md) [verified]
 
 ## Phase 4: Content Script - Analysis Modal
 

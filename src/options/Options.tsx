@@ -91,7 +91,7 @@ const Options: React.FC = () => {
   const isDark = settings.theme === 'dark';
 
   return (
-    <div className={`min-h-screen font-sans selection:bg-teal-100 selection:text-teal-900 ${isDark ? 'bg-slate-900 text-slate-300' : 'bg-[#F5F5F7] text-slate-900'}`}>
+    <div className={`min-h-screen font-sans selection:bg-${settings.accentColor}-100 selection:text-${settings.accentColor}-900 ${isDark ? 'bg-slate-900 text-slate-300' : 'bg-[#F5F5F7] text-slate-900'}`}>
       <div className="max-w-xl mx-auto px-6 py-12 md:py-20">
         
         {/* Header */}
@@ -141,7 +141,7 @@ const Options: React.FC = () => {
                     disabled={status === 'saving'}
                     className={`px-4 py-2 text-xs font-semibold rounded-lg transition-colors ${
                       status === 'saved'
-                        ? 'bg-teal-500 text-white' 
+                        ? `${C.bg} text-white` 
                         : isDark 
                           ? 'bg-slate-700 hover:bg-slate-600 text-slate-200' 
                           : 'bg-slate-900 hover:bg-slate-800 text-white'
