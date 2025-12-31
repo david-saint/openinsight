@@ -9,13 +9,13 @@ This plan outlines the steps to build the foundational scaffolding for the OpenI
 - [x] Task: Create project directory structure (`src/background`, `src/content`, `src/options`, `src/popup`, `src/lib`) (883c5e7)
 - [x] Task: Conductor - User Manual Verification 'Project Initialization' (Protocol in workflow.md) (8af2132)
 
-## Phase 2: Messaging Infrastructure & Core Logic
+## Phase 2: Messaging Infrastructure & Core Logic [checkpoint: 0151fb8]
 
 - [x] Task: Implement typed messaging bus in `src/lib/messaging.ts` (5c0ce87)
 - [x] Task: Create `src/background/background.ts` with message listeners (0b06b2a)
 - [x] Task: Create `src/content/content.ts` with text selection detection (a33e575)
 - [x] Task: Implement E2E test for text selection and messaging using Playwright (f679694)
-- [ ] Task: Conductor - User Manual Verification 'Messaging & Core Logic' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Messaging & Core Logic' (Protocol in workflow.md) (0151fb8)
 
 ## Phase 3: Settings & Secure Storage
 
