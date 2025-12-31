@@ -57,13 +57,13 @@ Implement the main interaction surface for explaining and fact-checking text.
 - [x] Task: TDD - Modal Responsive Behavior to keep within viewport bounds [235b1cb]
 - [ ] Task: Conductor - User Manual Verification 'Phase 5: Analysis Modal' (Protocol in workflow.md)
 
-## Phase 5.5: Refactoring - Popover & Optimization
+## Phase 5.5: Refactoring - Popover & Optimization [checkpoint: c2f8379]
 
 Refactor the Analysis Modal into a lightweight Popover and optimize the content script bundle size.
 
-- [x] Task: TDD - Refactor AnalysisModal to AnalysisPopover (relative positioning, click-outside to close)
-- [x] Task: Optimize - Implement dynamic import/code-splitting for ContentApp to reduce initial bundle size
-- [ ] Task: Conductor - User Manual Verification 'Phase 5.5: Popover' (Protocol in workflow.md)
+- [x] Task: TDD - Refactor AnalysisModal to AnalysisPopover (relative positioning, click-outside to close) [c2f8379]
+- [x] Task: Optimize - Implement dynamic import/code-splitting for ContentApp to reduce initial bundle size [c2f8379]
+- [x] Task: Conductor - User Manual Verification 'Phase 5.5: Popover' (Protocol in workflow.md) [c2f8379]
 - [ ] Task: Conductor - User Manual Verification 'Phase 5.5: Popover' (Protocol in workflow.md)
 
 ## Phase 6: Polishing & Minimalism Alignment
