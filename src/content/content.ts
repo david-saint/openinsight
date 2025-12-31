@@ -1,13 +1,9 @@
-import styles from './style.css?inline';
+import { mountContentApp } from './mount';
 
 console.log('OpenInsight content script initialized.');
 
-// This function will be used to inject styles into the Shadow DOM
-export function injectStyles(shadowRoot: ShadowRoot) {
-  const styleElement = document.createElement('style');
-  styleElement.textContent = styles;
-  shadowRoot.appendChild(styleElement);
-}
+// Mount the shadow DOM container immediately
+mountContentApp();
 
 document.addEventListener('mouseup', () => {
   const selection = window.getSelection();
