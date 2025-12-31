@@ -9,7 +9,7 @@ This plan outlines the steps to build the foundational scaffolding and secure AP
 - [x] Task: Conductor - User Manual Verification 'Project Initialization' (Protocol in workflow.md) [6ae1307]
 
 ## Phase 2: Security & Storage Implementation
-- [x] Task: Implement Web Cryptography API wrapper for encryption [6b8e381]
+- [ ] Task: Implement Web Cryptography API wrapper for encryption
 - [ ] Task: Create secure storage module for API keys
 - [ ] Task: Build settings page for API key management
 - [ ] Task: Conductor - User Manual Verification 'Security & Storage Implementation' (Protocol in workflow.md)
