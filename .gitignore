@@ -114,3 +114,4 @@ Thumbs.db
 # Chrome Extension artifacts
 *.zip
 *.crx
+.tmp/
