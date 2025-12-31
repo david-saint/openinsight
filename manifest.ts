@@ -5,6 +5,11 @@ export default defineManifest({
   name: 'OpenInsight',
   version: '1.0.0',
   description: 'AI-powered text explanation and fact-checking.',
+  icons: {
+    16: 'assets/logos/logo-transparent.png',
+    48: 'assets/logos/logo-transparent.png',
+    128: 'assets/logos/logo-transparent.png',
+  },
   permissions: ['storage', 'activeTab'],
   background: {
     service_worker: 'src/background/background.ts',
