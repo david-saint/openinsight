@@ -180,7 +180,35 @@ const Options: React.FC = () => {
                 ))}
               </div>
             </div>
-            <div className="text-sm text-neutral-500 italic mt-8">Accent Color Placeholder</div>
+            <div className="mt-8">
+              <label className="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-4">
+                Accent Color
+              </label>
+              <div className="flex gap-4">
+                {(['teal', 'indigo', 'rose', 'amber'] as const).map((color) => {
+                  const colorMap = {
+                    teal: 'bg-teal-500',
+                    indigo: 'bg-indigo-500',
+                    rose: 'bg-rose-500',
+                    amber: 'bg-amber-500',
+                  };
+                  return (
+                    <button
+                      key={color}
+                      aria-label={color}
+                      onClick={() => {
+                        const newSettings = { ...settings, accentColor: color };
+                        setSettings(newSettings);
+                        saveSettings(newSettings);
+                      }}
+                      className={`w-8 h-8 rounded-full transition-all ring-offset-2 ${colorMap[color]} ${
+                        settings.accentColor === color ? 'ring-2 ring-neutral-900' : 'hover:scale-110'
+                      }`}
+                    />
+                  );
+                })}
+              </div>
+            </div>
           </Section>
 
           <Section title="Behavior" icon={<Zap size={18} />}>

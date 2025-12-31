@@ -90,4 +90,15 @@ describe('Options Component', () => {
       theme: 'light',
     }));
   });
+
+  it('allows changing the accent color', async () => {
+    render(<Options />);
+    
+    const indigoButton = await screen.findByLabelText(/indigo/i);
+    fireEvent.click(indigoButton);
+    
+    expect(settings.saveSettings).toHaveBeenCalledWith(expect.objectContaining({
+      accentColor: 'indigo',
+    }));
+  });
 });
