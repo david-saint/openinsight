@@ -17,7 +17,7 @@ This plan outlines the steps to build the foundational scaffolding for the OpenI
 - [x] Task: Implement E2E test for text selection and messaging using Playwright (f679694)
 - [x] Task: Conductor - User Manual Verification 'Messaging & Core Logic' (Protocol in workflow.md) (0151fb8)
 
-## Phase 3: Settings & Secure Storage
+## Phase 3: Settings & Secure Storage [checkpoint: addae45]
 
 - [x] Task: Implement `src/lib/encryption.ts` (Web Crypto API) and `src/lib/storage.ts` (chrome.storage wrapper) (7aff3cf)
 - [x] Task: Build `src/options/Options.tsx` for API key management using React & Tailwind (07ab132)
