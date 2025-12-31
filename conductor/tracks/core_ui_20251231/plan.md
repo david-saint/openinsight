@@ -10,7 +10,7 @@ Establish the basic extension structure, update branding, create the settings mo
 - [x] Task: TDD - Design and Implement Settings Module (`src/lib/settings.ts`) [b891c83]
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Foundation' (Protocol in workflow.md) [6dceb4d]
 
-## Phase 2: Full Options Page Implementation [checkpoint: 354606d]
+## Phase 2: Full Options Page Implementation [checkpoint: 1497a19]
 
 Create the dedicated options page where users can manage all extension configurations.
 
@@ -20,7 +20,7 @@ Create the dedicated options page where users can manage all extension configura
 - [x] Task: TDD - Theme Mode Toggle (Light/Dark) with persistence [dddda5d]
 - [x] Task: TDD - Accent Color Selector (Teal, Indigo, Rose, Amber) [b65593d]
 - [x] Task: TDD - Trigger Mode Toggle (Icon vs. Immediate) [3990bda]
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Options Page' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Options Page' (Protocol in workflow.md) [1497a19]
 
 ## Phase 3: Content Script - Floating Trigger & Shadow DOM [verified]
 
@@ -33,7 +33,17 @@ Implement the selection-based trigger mechanism, isolated from the host page's C
 - [x] Task: TDD - Floating Trigger Component with Lucide Sparkles icon
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Floating Trigger' (Protocol in workflow.md) [verified]
 
-## Phase 4: Content Script - Analysis Modal
+## Phase 4: Refactoring - Dynamic Theming with CSS Variables
+
+Migrate from JavaScript-based dynamic classes to CSS variables for theming to ensure cleaner code and better Shadow DOM support.
+
+- [ ] Task: TDD - Define CSS variable structure for themes (primary, surface, text) in `index.css`
+- [ ] Task: TDD - Update Tailwind config to use CSS variables for colors
+- [ ] Task: TDD - Refactor `Options.tsx` to use semantic classes instead of dynamic color props
+- [ ] Task: TDD - Ensure CSS variables are injected into Shadow DOM container
+- [ ] Task: Conductor - User Manual Verification 'Phase 4: Theming' (Protocol in workflow.md)
+
+## Phase 5: Content Script - Analysis Modal
 
 Implement the main interaction surface for explaining and fact-checking text.
 
@@ -45,9 +55,9 @@ Implement the main interaction surface for explaining and fact-checking text.
 - [ ] Task: TDD - Quick Settings View with hardcoded fields (Theme, Accent, Trigger Mode)
 - [ ] Task: TDD - "Open Full Settings" button that opens `options.html`
 - [ ] Task: TDD - Modal Responsive Behavior to keep within viewport bounds
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Analysis Modal' (Protocol in workflow.md)
+- [ ] Task: Conductor - User Manual Verification 'Phase 5: Analysis Modal' (Protocol in workflow.md)
 
-## Phase 5: Polishing & Minimalism Alignment
+## Phase 6: Polishing & Minimalism Alignment
 
 Refine the UI to strictly follow the "Epistemic Minimalism" philosophy and ensure consistency.
 
@@ -58,4 +68,4 @@ Refine the UI to strictly follow the "Epistemic Minimalism" philosophy and ensur
 - [ ] Task: E2E Test - Tab switching between Explain and Fact Check views
 - [ ] Task: E2E Test - Quick Settings toggle and theme change application
 - [ ] Task: E2E Test - "Open Full Settings" navigates to options page
-- [ ] Task: Conductor - User Manual Verification 'Phase 5: Polishing' (Protocol in workflow.md)
+- [ ] Task: Conductor - User Manual Verification 'Phase 6: Polishing' (Protocol in workflow.md)
