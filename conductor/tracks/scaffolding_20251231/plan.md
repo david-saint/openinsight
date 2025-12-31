@@ -5,7 +5,7 @@ This plan outlines the steps to build the foundational scaffolding for the OpenI
 ## Phase 1: Project Initialization & Scaffolding
 
 - [x] Task: Initialize project with Vite, CRXJS, React, TypeScript, and Tailwind CSS (9365989)
-- [ ] Task: Configure `vite.config.ts` with CRXJS and `manifest.ts`
+- [x] Task: Configure `vite.config.ts` with CRXJS and `manifest.ts` (650ee48)
 - [ ] Task: Create project directory structure (`src/background`, `src/content`, `src/options`, `src/popup`, `src/lib`)
 - [ ] Task: Conductor - User Manual Verification 'Project Initialization' (Protocol in workflow.md)
 
