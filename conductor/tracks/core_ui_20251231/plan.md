@@ -47,14 +47,14 @@ Migrate from JavaScript-based dynamic classes to CSS variables for theming to en
 
 Implement the main interaction surface for explaining and fact-checking text.
 
-- [ ] Task: TDD - Modal Container with Shadow DOM isolation and positioning
-- [ ] Task: TDD - Modal Header with Tabs (Explain/Fact Check) and Close button
-- [ ] Task: TDD - Tab Switching Logic with loading state transitions
-- [ ] Task: TDD - Explain View with contextual analysis placeholder content
-- [ ] Task: TDD - Fact Check View with verification badge and source display
-- [ ] Task: TDD - Quick Settings View with hardcoded fields (Theme, Accent, Trigger Mode)
-- [ ] Task: TDD - "Open Full Settings" button that opens `options.html`
-- [ ] Task: TDD - Modal Responsive Behavior to keep within viewport bounds
+- [x] Task: TDD - Modal Container with Shadow DOM isolation and positioning
+- [x] Task: TDD - Modal Header with Tabs (Explain/Fact Check) and Close button
+- [x] Task: TDD - Tab Switching Logic with loading state transitions
+- [x] Task: TDD - Explain View with contextual analysis placeholder content
+- [x] Task: TDD - Fact Check View with verification badge and source display
+- [x] Task: TDD - Quick Settings View with hardcoded fields (Theme, Accent, Trigger Mode)
+- [x] Task: TDD - "Open Full Settings" button that opens `options.html`
+- [x] Task: TDD - Modal Responsive Behavior to keep within viewport bounds
 - [ ] Task: Conductor - User Manual Verification 'Phase 5: Analysis Modal' (Protocol in workflow.md)
 
 ## Phase 6: Polishing & Minimalism Alignment
