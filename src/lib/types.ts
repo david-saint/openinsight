@@ -49,3 +49,20 @@ export interface AppError {
   message: string;
   code?: string;
 }
+
+export type BackendMessageType = 
+  | 'BACKEND_EXPLAIN' 
+  | 'BACKEND_FACT_CHECK' 
+  | 'BACKEND_FETCH_MODELS' 
+  | 'BACKEND_TEST_KEY';
+
+export interface BackendMessage {
+  type: BackendMessageType;
+  payload?: any;
+}
+
+export interface BackendResponse<T> {
+  success: boolean;
+  result?: T;
+  error?: AppError;
+}
