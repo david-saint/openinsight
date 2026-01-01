@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { getSettings, saveSettings, getApiKey, saveApiKey, DEFAULT_SETTINGS } from '../lib/settings.js';
 import type { Settings } from '../lib/settings.js';
 import { THEME_COLORS, MODELS } from './constants.js';
+import { BackendClient } from '../lib/backend-client.js';
+import { AppError } from '../lib/types.js';
 
 // Components
 import { Header } from './components/Header.js';
@@ -10,11 +12,17 @@ import { IntelligenceSection } from './components/IntelligenceSection.js';
 import { AppearanceSection } from './components/AppearanceSection.js';
 import { BehaviorSection } from './components/BehaviorSection.js';
 import { Footer } from './components/Footer.js';
+import { Toast } from './components/Toast.js';
 
 const Options: React.FC = () => {
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [apiKey, setApiKey] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  
+  // API Key Testing state
+  const [isTesting, setIsTesting] = useState(false);
+  const [testStatus, setTestStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [toast, setToast] = useState<{ message: string, type: 'success' | 'error' } | null>(null);
 
   useEffect(() => {
     const load = async () => {
@@ -39,8 +47,32 @@ const Options: React.FC = () => {
   const handleSaveApiKey = async () => {
     try {
       await saveApiKey(apiKey.trim());
+      setTestStatus('idle'); // Reset test status when key changes
     } catch (e) {
       console.error('Error saving API key:', e);
+    }
+  };
+
+  const handleTestApiKey = async () => {
+    if (!apiKey) return;
+    
+    setIsTesting(true);
+    setTestStatus('idle');
+    
+    try {
+      await BackendClient.testApiKey(apiKey.trim());
+      setTestStatus('success');
+      setToast({ message: 'API connection successful!', type: 'success' });
+    } catch (error) {
+      console.error('API Key test failed:', error);
+      setTestStatus('error');
+      const appError = error as AppError;
+      setToast({ 
+        message: appError.message || 'Connection failed. Please check your API key.', 
+        type: 'error' 
+      });
+    } finally {
+      setIsTesting(false);
     }
   };
 
@@ -75,6 +107,9 @@ const Options: React.FC = () => {
             apiKey={apiKey}
             setApiKey={setApiKey}
             onBlur={handleSaveApiKey}
+            onTest={handleTestApiKey}
+            isTesting={isTesting}
+            testStatus={testStatus}
           />
 
           <IntelligenceSection 
@@ -97,6 +132,14 @@ const Options: React.FC = () => {
         
         <Footer />
       </div>
+
+      {toast && (
+        <Toast 
+          message={toast.message} 
+          type={toast.type} 
+          onClose={() => setToast(null)} 
+        />
+      )}
     </div>
   );
 };
