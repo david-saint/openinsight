@@ -4,7 +4,7 @@ import { AnalysisPopover } from './components/AnalysisPopover.js';
 import { handleSelection } from './selection.js';
 import { calculateTriggerPosition } from './positioning.js';
 import type { Position } from './positioning.js';
-import { getSettings, DEFAULT_SETTINGS } from '../lib/settings.js';
+import { getSettings, DEFAULT_SETTINGS, SETTINGS_KEY } from '../lib/settings.js';
 import type { Settings } from '../lib/settings.js';
 
 export const ContentApp: React.FC = () => {
@@ -19,6 +19,18 @@ export const ContentApp: React.FC = () => {
     // Load settings once
     getSettings().then(setSettings);
 
+    // Listen for setting changes
+    const handleStorageChange = (
+      changes: { [key: string]: chrome.storage.StorageChange },
+      areaName: string
+    ) => {
+      if (areaName === 'local' && changes[SETTINGS_KEY]) {
+        setSettings((prev) => ({ ...prev, ...changes[SETTINGS_KEY].newValue }));
+      }
+    };
+
+    chrome.storage.onChanged.addListener(handleStorageChange);
+
     const onMouseUp = () => {
       // Clear existing timeout to debounce
       window.clearTimeout(timeoutRef.current);
@@ -27,7 +39,7 @@ export const ContentApp: React.FC = () => {
       timeoutRef.current = window.setTimeout(() => {
         const selectionData = handleSelection();
         if (selectionData && !isPopoverOpen) {
-          const pos = calculateTriggerPosition(selectionData.rect);
+          const pos = calculateTriggerPosition(selectionData.endPosition);
           setTriggerPosition(pos);
           setSelectionText(selectionData.text);
           setIsVisible(true);
@@ -41,6 +53,7 @@ export const ContentApp: React.FC = () => {
     return () => {
       document.removeEventListener('mouseup', onMouseUp);
       window.clearTimeout(timeoutRef.current);
+      chrome.storage.onChanged.removeListener(handleStorageChange);
     };
   }, [isPopoverOpen]);
 

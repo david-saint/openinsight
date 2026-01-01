@@ -1,13 +1,14 @@
-import { onMessage } from '../lib/messaging';
+import { onMessage } from "../lib/messaging";
 
-console.log('OpenInsight background script initialized.');
+console.log("OpenInsight background script initialized.");
 
 onMessage((message, _sender, sendResponse) => {
   const { type, payload } = message;
+  console.log("Background received message:", type);
 
   switch (type) {
-    case 'EXPLAIN':
-      console.log('Handling EXPLAIN request for:', payload.text);
+    case "EXPLAIN":
+      console.log("Handling EXPLAIN request for:", payload.text);
       // Stub response for now
       sendResponse({
         success: true,
@@ -15,8 +16,8 @@ onMessage((message, _sender, sendResponse) => {
       });
       break;
 
-    case 'FACT_CHECK':
-      console.log('Handling FACT_CHECK request for:', payload.text);
+    case "FACT_CHECK":
+      console.log("Handling FACT_CHECK request for:", payload.text);
       // Stub response for now
       sendResponse({
         success: true,
@@ -24,9 +25,15 @@ onMessage((message, _sender, sendResponse) => {
       });
       break;
 
+    case "OPEN_OPTIONS":
+      console.log("Handling OPEN_OPTIONS request");
+      chrome.runtime.openOptionsPage();
+      sendResponse({ success: true });
+      break;
+
     default:
-      console.warn('Unknown message type:', type);
-      sendResponse({ success: false, error: 'Unknown message type' });
+      console.warn("Unknown message type:", type);
+      sendResponse({ success: false, error: "Unknown message type" });
   }
 
   return true; // Keep message channel open for async response

@@ -1,13 +1,14 @@
 /**
  * @vitest-environment happy-dom
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { waitFor } from '@testing-library/dom';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { waitFor } from "@testing-library/dom";
 
 // Mock settings to avoid chrome is not defined
-vi.mock('../../src/lib/settings', () => ({
-  getSettings: vi.fn().mockResolvedValue({ accentColor: 'teal' }),
-  DEFAULT_SETTINGS: { accentColor: 'teal' }
+vi.mock("../../src/lib/settings", () => ({
+  getSettings: vi.fn().mockResolvedValue({ accentColor: "teal" }),
+  DEFAULT_SETTINGS: { accentColor: "teal" },
+  SETTINGS_KEY: 'user_settings',
 }));
 
 // Mock the mount module
@@ -22,7 +23,7 @@ describe('Content Script', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();
-    
+
     // Clean up DOM
     document.body.innerHTML = '';
     
@@ -31,7 +32,7 @@ describe('Content Script', () => {
   });
 
   afterEach(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML = "";
   });
 
   it('should initialize and mount the app', async () => {

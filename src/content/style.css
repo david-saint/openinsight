@@ -10,6 +10,13 @@
   --accent-900: 19 78 74;
 }
 
+[data-accent="teal"] {
+  --accent-100: 204 251 241;
+  --accent-500: 20 184 166;
+  --accent-600: 13 148 136;
+  --accent-900: 19 78 74;
+}
+
 [data-accent="indigo"] {
   --accent-100: 224 231 255;
   --accent-500: 99 102 241;

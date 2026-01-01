@@ -7,6 +7,7 @@ export default defineManifest({
   description: "AI-powered text explanation and fact-checking.",
   icons: {
     16: "logos/icons/icon-16.png",
+    32: "logos/icons/icon-32.png",
     48: "logos/icons/icon-48.png",
     128: "logos/icons/icon-128.png",
   },

@@ -30,7 +30,7 @@ Implement the selection-based trigger mechanism, isolated from the host page's C
 - [x] Task: TDD - Shadow DOM Container Setup in content script with React mounting [90179a1]
 - [x] Task: TDD - Text Selection Listener with `mouseup` event handling
 - [x] Task: TDD - Trigger Button Positioning Logic relative to selection bounds
-- [x] Task: TDD - Floating Trigger Component with Lucide Sparkles icon
+- [x] Task: TDD - Floating Trigger Component with Logo component
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Floating Trigger' (Protocol in workflow.md) [verified]
 
 ## Phase 4: Refactoring - Dynamic Theming with CSS Variables [checkpoint: 05a0c00]
@@ -66,15 +66,15 @@ Refactor the Analysis Modal into a lightweight Popover and optimize the content 
 - [x] Task: Conductor - User Manual Verification 'Phase 5.5: Popover' (Protocol in workflow.md) [c2f8379]
 - [ ] Task: Conductor - User Manual Verification 'Phase 5.5: Popover' (Protocol in workflow.md)
 
-## Phase 6: Polishing & Minimalism Alignment
+## Phase 6: Polishing & Minimalism Alignment [checkpoint: 14aaf34]
 
 Refine the UI to strictly follow the "Epistemic Minimalism" philosophy and ensure consistency.
 
-- [ ] Task: Style Review against `proof-of-concept.md` for Teal accents, typography, and spacing
-- [ ] Task: Implement Dark Mode Sync across Shadow DOM container and Options page
-- [ ] Task: E2E Test - Trigger button appears on text selection
-- [ ] Task: E2E Test - Modal opens on trigger click with Explain tab active
-- [ ] Task: E2E Test - Tab switching between Explain and Fact Check views
-- [ ] Task: E2E Test - Quick Settings toggle and theme change application
-- [ ] Task: E2E Test - "Open Full Settings" navigates to options page
-- [ ] Task: Conductor - User Manual Verification 'Phase 6: Polishing' (Protocol in workflow.md)
+- [x] Task: Style Review against `proof-of-concept.md` for Teal accents, typography, and spacing [3ab4d76]
+- [x] Task: Implement Dark Mode Sync across Shadow DOM container and Options page [946e5f6]
+- [x] Task: E2E Test - Trigger button appears on text selection [77cd599]
+- [x] Task: E2E Test - Modal opens on trigger click with Explain tab active [db35b17]
+- [x] Task: E2E Test - Tab switching between Explain and Fact Check views [db35b17]
+- [x] Task: E2E Test - Quick Settings toggle and theme change application [f11f7be]
+- [x] Task: E2E Test - "Open Full Settings" navigates to options page [f1fa2d9]
+- [x] Task: Conductor - User Manual Verification 'Phase 6: Polishing' (Protocol in workflow.md) [14aaf34]

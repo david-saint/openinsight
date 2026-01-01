@@ -4,19 +4,19 @@ export interface Position {
 }
 
 /**
- * Calculates the absolute position for the trigger button based on the selection bounds.
- * @param selectionRect The bounding client rect of the selection.
+ * Calculates the absolute position for the trigger button based on the selection end point.
+ * @param endPosition The x,y coordinates where the selection ends.
  * @param scrollX Current horizontal scroll offset.
  * @param scrollY Current vertical scroll offset.
  */
 export function calculateTriggerPosition(
-  selectionRect: DOMRect,
+  endPosition: { x: number; y: number },
   scrollX: number = window.scrollX,
   scrollY: number = window.scrollY
 ): Position {
-  // Position near the bottom-right corner of the selection
-  const top = selectionRect.bottom + scrollY;
-  const left = selectionRect.right + scrollX;
+  // Position directly under the selection end point
+  const top = endPosition.y + scrollY + 4; // 4px gap below the selection
+  const left = endPosition.x + scrollX;
 
   return {
     top,

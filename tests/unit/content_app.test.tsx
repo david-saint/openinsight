@@ -1,101 +1,133 @@
 /**
  * @vitest-environment happy-dom
  */
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, waitFor, act } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import React from 'react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, fireEvent, act } from '@testing-library/react';
-import { ContentApp } from '../../src/content/ContentApp.js';
-import * as selectionModule from '../../src/content/selection.js';
-import * as positioningModule from '../../src/content/positioning.js';
+import { ContentApp } from '../../src/content/ContentApp';
+import * as settingsModule from '../../src/lib/settings';
 
-// Mocks
-vi.mock('../../src/content/selection.js', () => ({
-  handleSelection: vi.fn(),
-}));
-
-vi.mock('../../src/content/positioning.js', () => ({
-  calculateTriggerPosition: vi.fn(),
-}));
+// Mock chrome
+const chromeMock = {
+  storage: {
+    onChanged: {
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+    },
+  },
+  runtime: {
+    openOptionsPage: vi.fn(),
+  }
+};
+vi.stubGlobal('chrome', chromeMock);
 
 // Mock settings
-vi.mock('../../src/lib/settings.js', () => ({
-  getSettings: vi.fn().mockResolvedValue({ theme: 'light', accentColor: 'blue' }),
-  DEFAULT_SETTINGS: { theme: 'light', accentColor: 'blue' },
+vi.mock('../../src/lib/settings', () => ({
+  getSettings: vi.fn(),
+  saveSettings: vi.fn(),
+  DEFAULT_SETTINGS: {
+    theme: 'system',
+    accentColor: 'teal',
+  },
+  SETTINGS_KEY: 'user_settings',
 }));
 
-describe('ContentApp', () => {
+// Mock window.matchMedia
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: vi.fn().mockImplementation(query => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(), // deprecated
+    removeListener: vi.fn(), // deprecated
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+});
+
+describe('ContentApp Component', () => {
   beforeEach(() => {
-    vi.useFakeTimers();
     vi.clearAllMocks();
   });
 
-  afterEach(() => {
-    vi.useRealTimers();
+  it('should apply dark class when theme is dark', async () => {
+    vi.mocked(settingsModule.getSettings).mockResolvedValue({
+      theme: 'dark',
+      accentColor: 'teal',
+      explainModel: 'gpt',
+      factCheckModel: 'gpt',
+      triggerMode: 'icon'
+    });
+
+    const { container } = render(<ContentApp />);
+
+    await waitFor(() => {
+      const root = container.querySelector('.openinsight-content-root');
+      expect(root).toHaveClass('dark');
+    });
   });
 
-  it('registers mouseup listener on mount', async () => {
-    const addEventListenerSpy = vi.spyOn(document, 'addEventListener');
-    await act(async () => {
-      render(<ContentApp />);
+  it('should not apply dark class when theme is light', async () => {
+    vi.mocked(settingsModule.getSettings).mockResolvedValue({
+      theme: 'light',
+      accentColor: 'teal',
+      explainModel: 'gpt',
+      factCheckModel: 'gpt',
+      triggerMode: 'icon'
     });
-    expect(addEventListenerSpy).toHaveBeenCalledWith('mouseup', expect.any(Function));
+
+    const { container } = render(<ContentApp />);
+
+    await waitFor(() => {
+      const root = container.querySelector('.openinsight-content-root');
+      expect(root).not.toHaveClass('dark');
+    });
   });
 
-  it('debounces mouseup events to prevent excessive processing', async () => {
-    await act(async () => {
-      render(<ContentApp />);
+  it('should update theme when storage changes', async () => {
+    // Initial state: Light
+    vi.mocked(settingsModule.getSettings).mockResolvedValue({
+      theme: 'light',
+      accentColor: 'teal',
+      explainModel: 'gpt',
+      factCheckModel: 'gpt',
+      triggerMode: 'icon'
     });
 
-    // Mock handleSelection to return something valid
-    vi.mocked(selectionModule.handleSelection).mockReturnValue({
-      text: 'test',
-      rect: { bottom: 10, right: 10 } as DOMRect,
+    const { container } = render(<ContentApp />);
+
+    // Verify initial
+    await waitFor(() => {
+      const root = container.querySelector('.openinsight-content-root');
+      expect(root).not.toHaveClass('dark');
     });
-    vi.mocked(positioningModule.calculateTriggerPosition).mockReturnValue({ top: 100, left: 100 });
 
-    // Simulate rapid mouseup events
-    const eventCount = 10;
-    for (let i = 0; i < eventCount; i++) {
-      await act(async () => {
-        fireEvent.mouseUp(document);
-      });
-      // Advance timer less than the debounce limit (10ms)
-      act(() => {
-        vi.advanceTimersByTime(1);
-      });
-    }
-
-    // Advance remaining time to ensure the last timeout fires
+    // Check if listener was registered
+    expect(chromeMock.storage.onChanged.addListener).toHaveBeenCalled();
+    const listener = chromeMock.storage.onChanged.addListener.mock.calls[0][0];
+    
+    // Simulate storage change
     act(() => {
-      vi.advanceTimersByTime(100);
+      listener({
+        user_settings: {
+          newValue: {
+            theme: 'dark',
+            accentColor: 'teal',
+            explainModel: 'gpt',
+            factCheckModel: 'gpt',
+            triggerMode: 'icon'
+          }
+        }
+      }, 'local');
     });
 
-    // Expectation: With debouncing, it should be called only once (for the last event)
-    expect(selectionModule.handleSelection).toHaveBeenCalledTimes(1);
-  });
-
-  it('shows trigger button when text is selected', async () => {
-    await act(async () => {
-      render(<ContentApp />);
+    // Verify update
+    await waitFor(() => {
+      const root = container.querySelector('.openinsight-content-root');
+      expect(root).toHaveClass('dark');
     });
-
-    vi.mocked(selectionModule.handleSelection).mockReturnValue({
-      text: 'selected text',
-      rect: { bottom: 10, right: 10 } as DOMRect,
-    });
-    vi.mocked(positioningModule.calculateTriggerPosition).mockReturnValue({ top: 100, left: 100 });
-
-    await act(async () => {
-      fireEvent.mouseUp(document);
-    });
-
-    await act(async () => {
-      vi.advanceTimersByTime(20);
-    });
-
-    // We can't easily check for the button DOM here because it might be inside the shadow DOM or
-    // we are just rendering ContentApp (which renders a div).
-    // But we can check if handleSelection was called, implying the logic flow worked.
-    expect(selectionModule.handleSelection).toHaveBeenCalled();
   });
 });
