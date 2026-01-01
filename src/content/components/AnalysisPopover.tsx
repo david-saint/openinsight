@@ -89,14 +89,14 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
     <>
       {/* Transparent backdrop for click-outside closing */}
       <div 
-        className="fixed inset-0 z-[9998] bg-transparent"
+        className="fixed inset-0 z-[9998] bg-[transparent]"
         onClick={onClose}
       />
       
       <div 
         role="dialog"
         aria-modal="true"
-        className="absolute z-[9999] w-[320px] bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-100 dark:border-slate-700 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-300"
+        className="absolute z-[9999] w-[320px] bg-[#ffffff] dark:bg-[#1e293b] rounded-xl shadow-2xl border border-[#f1f5f9] dark:border-[#334155] overflow-hidden flex flex-col animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-300"
         style={{
           top: position ? position.top : '50%',
           left: position ? position.left : '50%',
@@ -106,19 +106,19 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
         data-accent={accentColor}
       >
         {/* Header with Tabs */}
-        <div className="bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-700 px-[4px] pt-[4px] flex justify-between items-center h-10">
+        <div className="bg-[#f8fafc] dark:bg-[#0f172a] border-b border-[#f1f5f9] dark:border-[#334155] px-[4px] pt-[4px] flex justify-between items-center h-[40px]">
           {showSettings ? (
-            <div className="flex items-center w-full px-[8px]">
+            <div className="flex items-center w-[100%] px-[8px]">
               <button
                 onClick={() => setShowSettings(false)}
-                className="p-[6px] rounded-md flex items-center gap-[4px] text-[12px] font-semibold text-slate-500 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800"
+                className="p-[6px] rounded-md flex items-center gap-[4px] text-[12px] font-semibold text-[#64748b] dark:text-[#cbd5e1] hover:bg-[#e2e8f0] dark:hover:bg-[#1e293b]"
               >
                 ← Back
               </button>
-              <span className="mx-auto text-[12px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+              <span className="mx-auto text-[12px] font-bold uppercase tracking-wider text-[#94a3b8] dark:text-[#64748b]">
                 Settings
               </span>
-              <div className="w-8" />
+              <div className="w-[32px]" />
             </div>
           ) : (
             <>
@@ -127,8 +127,8 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
                   onClick={() => handleTabChange('explain')}
                   className={`px-[16px] py-[10px] text-[12px] font-semibold rounded-t-lg transition-colors flex items-center gap-[6px] ${
                     activeTab === 'explain'
-                      ? 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 shadow-sm border-t border-x border-slate-100 dark:border-slate-700 translate-y-[1px]'
-                      : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                      ? 'bg-[#ffffff] dark:bg-[#1e293b] text-[#1e293b] dark:text-[#f1f5f9] shadow-sm border-t border-x border-[#f1f5f9] dark:border-[#334155] translate-y-[1px]'
+                      : 'text-[#64748b] hover:text-[#334155] dark:hover:text-[#cbd5e1]'
                   }`}
                 >
                   <BookOpen size={12} />
@@ -138,8 +138,8 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
                   onClick={() => handleTabChange('fact-check')}
                   className={`px-[16px] py-[10px] text-[12px] font-semibold rounded-t-lg transition-colors flex items-center gap-[6px] ${
                     activeTab === 'fact-check'
-                      ? 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 shadow-sm border-t border-x border-slate-100 dark:border-slate-700 translate-y-[1px]'
-                      : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                      ? 'bg-[#ffffff] dark:bg-[#1e293b] text-[#1e293b] dark:text-[#f1f5f9] shadow-sm border-t border-x border-[#f1f5f9] dark:border-[#334155] translate-y-[1px]'
+                      : 'text-[#64748b] hover:text-[#334155] dark:hover:text-[#cbd5e1]'
                   }`}
                 >
                   <Search size={12} />
@@ -149,14 +149,14 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
               <div className="flex items-center gap-[4px] pr-[8px]">
                 <button
                   onClick={() => setShowSettings(true)}
-                  className="p-[6px] rounded-md transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700"
+                  className="p-[6px] rounded-md transition-colors text-[#94a3b8] hover:text-[#475569] dark:hover:text-[#e2e8f0] hover:bg-[#f1f5f9] dark:hover:bg-[#334155]"
                   title="Settings"
                 >
                   <Settings size={14} />
                 </button>
                 <button
                   onClick={onClose}
-                  className="p-[6px] rounded-md transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700"
+                  className="p-[6px] rounded-md transition-colors text-[#94a3b8] hover:text-[#475569] dark:hover:text-[#e2e8f0] hover:bg-[#f1f5f9] dark:hover:bg-[#334155]"
                   title="Close"
                 >
                   <X size={14} />
@@ -167,7 +167,7 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
         </div>
 
         {/* Content */}
-        <div className="p-[20px] text-slate-600 dark:text-slate-300">
+        <div className="p-[20px] text-[#475569] dark:text-[#cbd5e1]">
           {/* Settings View */}
           {showSettings && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-300 space-y-[24px]">
@@ -178,8 +178,8 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
                     <button
                       key={color}
                       onClick={() => onAccentChange?.(color)}
-                      className={`w-5 h-5 rounded-full border-2 transition-transform hover:scale-110 ${
-                        accentColor === color ? 'border-accent-500 scale-110' : 'border-transparent'
+                      className={`w-[20px] h-[20px] rounded-full border-2 transition-transform hover:scale-110 ${
+                        accentColor === color ? 'border-accent-500 scale-110' : 'border-[transparent]'
                       }`}
                       style={{
                         backgroundColor:
@@ -194,10 +194,10 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-slate-100 dark:border-slate-700">
+              <div className="pt-[16px] border-t border-[#f1f5f9] dark:border-[#334155]">
                 <button 
                   onClick={openFullSettings}
-                  className="w-full py-[10px] px-[16px] rounded-lg border border-slate-200 dark:border-slate-600 text-[14px] font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all flex items-center justify-center gap-[8px]"
+                  className="w-[100%] py-[10px] px-[16px] rounded-lg border border-[#e2e8f0] dark:border-[#475569] text-[14px] font-semibold text-[#334155] dark:text-[#cbd5e1] hover:bg-[#f8fafc] dark:hover:bg-[#475569] transition-all flex items-center justify-center gap-[8px]"
                 >
                   <Settings size={14} />
                   Open Full Settings
@@ -210,37 +210,39 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
           {!showSettings && (
             <div className="animate-in fade-in slide-in-from-bottom-1 duration-300">
               {/* Header Section with Icon */}
-              <div className="flex items-start gap-[12px] mb-[16px]">
-                <div className="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-700 flex items-center justify-center flex-shrink-0">
-                  <Sparkles size={14} className="text-slate-400" />
+              {activeTab === 'explain' && (
+                <div className="flex items-start gap-[12px] mb-[16px]">
+                  <div className="w-[32px] h-[32px] rounded-full bg-[#f8fafc] dark:bg-[#334155] flex items-center justify-center flex-shrink-0">
+                    <Sparkles size={14} className="text-[#94a3b8]" />
+                  </div>
+                  <div>
+                    <h3 className="text-[14px] font-semibold text-[#0f172a] dark:text-[#f1f5f9] mb-[2px]">
+                      {activeTab === 'explain' ? 'Contextual Analysis' : 'Fact Check Result'}
+                    </h3>
+                    <p className="text-[12px] text-[#64748b] dark:text-[#94a3b8]">
+                      {activeTab === 'explain' 
+                        ? 'Generating simplified explanation based on architectural history context.'
+                        : 'Verifying statement accuracy against trusted sources.'}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-[14px] font-semibold text-slate-900 dark:text-slate-100 mb-[2px]">
-                    {activeTab === 'explain' ? 'Contextual Analysis' : 'Fact Check Result'}
-                  </h3>
-                  <p className="text-[12px] text-slate-500 dark:text-slate-400">
-                    {activeTab === 'explain' 
-                      ? 'Generating simplified explanation based on architectural history context.'
-                      : 'Verifying statement accuracy against trusted sources.'}
-                  </p>
-                </div>
-              </div>
+              )}
 
               {/* Loading State */}
               {data[activeTab].loading && (
                 <div data-testid="loading-skeleton" className="flex flex-col items-center justify-center gap-[12px] py-[32px] opacity-50">
-                  <div className="w-5 h-5 border-2 border-slate-200 dark:border-slate-600 border-t-accent-500 rounded-full animate-spin" />
+                  <div className="w-[20px] h-[20px] border-2 border-[#e2e8f0] dark:border-[#475569] border-t-accent-500 rounded-full animate-spin" />
                   <span className="text-[14px] font-medium animate-pulse">Analyzing...</span>
                 </div>
               )}
               
               {/* Error State */}
               {data[activeTab].error && (
-                <div className="p-[16px] bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/30 rounded-lg flex items-start gap-[12px]">
-                  <AlertCircle className="text-rose-500 shrink-0" size={18} />
-                  <div className="space-y-1">
-                    <p className="text-[14px] font-medium text-rose-800 dark:text-rose-200">Failed to analyze</p>
-                    <p className="text-[12px] text-rose-600 dark:text-rose-400">{data[activeTab].error}</p>
+                <div className="p-[16px] bg-[#fff1f2] dark:bg-[#4c051933] border border-[#ffe4e6] dark:border-[#8813374d] rounded-lg flex items-start gap-[12px]">
+                  <AlertCircle className="text-[#f43f5e] shrink-0" size={18} />
+                  <div className="space-y-[4px]">
+                    <p className="text-[14px] font-medium text-[#9f1239] dark:text-[#fecdd3]">Failed to analyze</p>
+                    <p className="text-[12px] text-[#e11d48] dark:text-[#fb7185]">{data[activeTab].error}</p>
                   </div>
                 </div>
               )}
@@ -254,23 +256,25 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
                         <CheckCircle2 size={12} />
                         Verified
                       </span>
-                      <span className="text-[12px] text-slate-400">High Confidence</span>
+                      <span className="text-[12px] text-[#94a3b8]">High Confidence</span>
                     </div>
                   )}
 
-                  <p className="text-[14px] leading-relaxed border-l-2 border-accent-500 pl-[12px] text-slate-700 dark:text-slate-300">
+                  {activeTab === 'explain' ? (<p className="text-[14px] leading-relaxed border-l-2 border-accent-500 pl-[12px] text-[#334155] dark:text-[#cbd5e1]">
                     {data[activeTab].content || getPlaceholderContent(activeTab)}
-                  </p>
+                  </p>) : (<p className="text-[14px] leading-relaxed text-[#334155] dark:text-[#cbd5e1]">
+                    {data[activeTab].content || getPlaceholderContent(activeTab)}
+                  </p>)}
 
                   {/* Footer */}
-                  <div className="mt-[16px] pt-[16px] border-t border-slate-50 dark:border-slate-700 flex justify-between items-center">
-                    <span className="text-[10px] text-slate-400 uppercase tracking-wider font-medium">
+                  {activeTab === 'fact-check' && (<div className="mt-[16px] pt-[16px] border-t border-[#f8fafc] dark:border-[#334155] flex justify-between items-center">
+                    <span className="text-[10px] text-[#94a3b8] uppercase tracking-wider font-medium">
                       Source: Wikipedia API
                     </span>
                     <button className="text-[12px] font-medium flex items-center gap-[4px] text-accent-600 hover:text-accent-700 dark:text-accent-500 dark:hover:text-accent-400">
                       Read more <ChevronRight size={12} />
                     </button>
-                  </div>
+                  </div>)}
                 </>
               )}
             </div>
