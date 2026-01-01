@@ -1,13 +1,14 @@
-import { onMessage } from '../lib/messaging';
+import { onMessage } from "../lib/messaging";
 
-console.log('OpenInsight background script initialized.');
+console.log("OpenInsight background script initialized.");
 
 onMessage((message, _sender, sendResponse) => {
   const { type, payload } = message;
+  console.log("Background received message:", type);
 
   switch (type) {
-    case 'EXPLAIN':
-      console.log('Handling EXPLAIN request for:', payload.text);
+    case "EXPLAIN":
+      console.log("Handling EXPLAIN request for:", payload.text);
       // Stub response for now
       sendResponse({
         success: true,
