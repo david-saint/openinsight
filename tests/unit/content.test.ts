@@ -8,7 +8,22 @@ import { waitFor } from "@testing-library/dom";
 vi.mock("../../src/lib/settings", () => ({
   getSettings: vi.fn().mockResolvedValue({ accentColor: "teal" }),
   DEFAULT_SETTINGS: { accentColor: "teal" },
+  SETTINGS_KEY: 'user_settings',
 }));
+
+// Mock chrome
+const chromeMock = {
+  storage: {
+    onChanged: {
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+    },
+  },
+  runtime: {
+    openOptionsPage: vi.fn(),
+  }
+};
+vi.stubGlobal('chrome', chromeMock);
 
 describe("Content Script", () => {
   beforeEach(() => {
