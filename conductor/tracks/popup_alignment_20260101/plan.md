@@ -9,10 +9,10 @@ Redesign the extension popup to follow the epistemic minimalism design philosoph
 - [x] Task: Conductor - User Manual Verification 'Foundation & Data Loading' (Protocol in workflow.md)
 
 ## Phase 2: UI Implementation
-- [ ] Task: Implement the refined Popup UI with theme-aware containers and the "Open Settings" button.
-- [ ] Task: Apply user-selected Accent Color to the button using the `data-accent` attribute pattern.
-- [ ] Task: Update unit tests to verify theme application and button functionality.
-- [ ] Task: Conductor - User Manual Verification 'UI Implementation' (Protocol in workflow.md)
+- [x] Task: Implement the refined Popup UI with theme-aware containers and the "Open Settings" button. 3e743fc
+- [x] Task: Apply user-selected Accent Color to the button using the `data-accent` attribute pattern. 3e743fc
+- [x] Task: Update unit tests to verify theme application and button functionality. 25d2e6a
+- [x] Task: Conductor - User Manual Verification 'UI Implementation' (Protocol in workflow.md)
 
 ## Phase 3: Final Integration & Polishing
 - [ ] Task: Ensure `src/popup/popup.html` and `src/index.css` are correctly configured for the new layout.
