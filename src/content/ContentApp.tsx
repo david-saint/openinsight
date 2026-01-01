@@ -23,7 +23,7 @@ export const ContentApp: React.FC = () => {
       setTimeout(() => {
         const selectionData = handleSelection();
         if (selectionData && !isPopoverOpen) {
-          const pos = calculateTriggerPosition(selectionData.rect);
+          const pos = calculateTriggerPosition(selectionData.endPosition);
           setTriggerPosition(pos);
           setSelectionText(selectionData.text);
           setIsVisible(true);
