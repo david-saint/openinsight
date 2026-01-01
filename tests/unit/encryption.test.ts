@@ -30,4 +30,11 @@ describe('Encryption Utility', () => {
     const encrypted2 = await encrypt(text, password);
     expect(encrypted1).not.toBe(encrypted2);
   });
+
+  it('should encrypt and decrypt an empty string', async () => {
+    const emptyText = '';
+    const encrypted = await encrypt(emptyText, password);
+    const decrypted = await decrypt(encrypted, password);
+    expect(decrypted).toBe(emptyText);
+  });
 });
