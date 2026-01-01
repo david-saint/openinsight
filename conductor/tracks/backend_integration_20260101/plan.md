@@ -19,7 +19,7 @@
 
 ## Phase 3: Background Service Worker Implementation
 
-- [ ] Task: Implement a secure `fetch` utility in `background.ts` that retrieves the encrypted API key for OpenRouter requests.
+- [x] Task: Implement a secure `fetch` utility in `background.ts` that retrieves the encrypted API key for OpenRouter requests. [34e1c77]
 - [ ] Task: Implement the core logic for the "Explain" prompt, supporting configurable temperature, max_tokens, and system_prompt.
 - [ ] Task: Implement the core logic for the "Fact-check" prompt, supporting configurable parameters.
 - [ ] Task: Implement the "Test API Key" logic by sending a minimal request to OpenRouter.
