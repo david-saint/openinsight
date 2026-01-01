@@ -18,6 +18,8 @@ vi.mock('../../src/lib/settings.js', () => ({
     explainModel: 'google/gemini-2.0-flash-exp:free',
     factCheckModel: 'google/gemini-2.0-flash-exp:free',
     triggerMode: 'icon',
+    explainSettings: { temperature: 0.7, max_tokens: 512, system_prompt: 'explain' },
+    factCheckSettings: { temperature: 0.3, max_tokens: 512, system_prompt: 'factcheck' },
   },
 }));
 

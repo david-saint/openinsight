@@ -86,6 +86,23 @@ describe('Background Handlers', () => {
         expect(error.message).toContain('Unauthorized');
       }
     });
+
+    it('should return typed AppError for network failures', async () => {
+      vi.mocked(settings.getSettings).mockResolvedValue({
+        explainModel: 'm',
+        explainSettings: { temperature: 0, max_tokens: 0, system_prompt: 's' }
+      } as any);
+      
+      vi.mocked(api.fetchWithAuth).mockRejectedValue(new TypeError('Failed to fetch'));
+
+      try {
+        await handleExplain('test');
+        expect.fail('Should have thrown error');
+      } catch (error: any) {
+        expect(error.type).toBe('network');
+        expect(error.message).toContain('Failed to fetch');
+      }
+    });
   });
 
   describe('handleFactCheck', () => {

@@ -4,6 +4,3 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-## [x] Track: OpenRouter Backend Integration
-*Link: [./conductor/tracks/backend_integration_20260101/](./conductor/tracks/backend_integration_20260101/)*
-
