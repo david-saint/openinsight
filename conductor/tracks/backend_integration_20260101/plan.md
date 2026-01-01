@@ -55,10 +55,10 @@
 - [x] Task: Write unit tests for the Toast component and API key verification flow. [abed6a2]
 - [x] Task: Conductor - User Manual Verification 'API Key Verification & Toast Notification' (Protocol in workflow.md) [53196fc]
 
-## Phase 7: Final Integration & Verification
+## Phase 7: Final Integration & Verification [checkpoint: 1109e62]
 
-- [~] Task: Perform end-to-end verification of LLM prompting (Explain/Fact-check) via console or temporary UI triggers.
+- [x] Task: Perform end-to-end verification of LLM prompting (Explain/Fact-check) via console or temporary UI triggers. [1109e62]
 - [x] Task: Verify all error types are correctly differentiated and returned. [9111d78]
 - [x] Task: Verify encrypted API key storage and retrieval works correctly. [499f2fa]
 - [x] Task: Ensure all unit tests pass and code coverage meets requirements (>80%). [ffb91cd]
-- [ ] Task: Conductor - User Manual Verification 'Final Integration & Verification' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Final Integration & Verification' (Protocol in workflow.md) [1109e62]
