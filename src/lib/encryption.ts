@@ -1,4 +1,9 @@
 /**
+ * Encryption utility using Web Crypto API (AES-GCM).
+ * Implemented for the OpenRouter Backend Integration track.
+ */
+
+/**
  * Derives an encryption key from a password and salt using PBKDF2.
  */
 async function deriveKey(password: string, salt: Uint8Array): Promise<CryptoKey> {
