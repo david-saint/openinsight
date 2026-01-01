@@ -47,12 +47,13 @@
 
 ## Phase 6: API Key Verification & Toast Notification
 
-- [ ] Task: Implement a simple Toast notification component for the Options page.
-- [ ] Task: Update the `APIKeySection` component to include a "Test Connection" button.
-- [ ] Task: Integrate `BackendClient.testApiKey` into the Options page.
-- [ ] Task: Implement visual feedback (checkmark/X) for API key test results.
-- [ ] Task: Display error messages in the Toast component upon connection failure.
-- [ ] Task: Write unit tests for the Toast component and API key verification flow.
+- [x] Task: Implement a simple Toast notification component for the Options page. [abed6a2]
+- [x] Task: Update the `APIKeySection` component to include a "Test Connection" button. [abed6a2]
+- [x] Task: Integrate `BackendClient.testApiKey` into the Options page. [abed6a2]
+- [x] Task: Implement visual feedback (checkmark/X) for API key test results. [abed6a2]
+- [x] Task: Display error messages in the Toast component upon connection failure. [abed6a2]
+- [x] Task: Write unit tests for the Toast component and API key verification flow. [abed6a2]
+- [ ] Task: Conductor - User Manual Verification 'API Key Verification & Toast Notification' (Protocol in workflow.md)
 - [ ] Task: Conductor - User Manual Verification 'API Key Verification & Toast Notification' (Protocol in workflow.md)
 
 ## Phase 7: Final Integration & Verification
