@@ -13,7 +13,7 @@ The UI uses stark whites, deep ink blacks, and a single "verification" accent co
 How to use the prototype:
 
 1.  Highlight any text in the article snippet provided.
-2.  The extension icon (a stylized spark) will appear near your selection.
+2.  The OpenInsight logo icon will appear near your selection.
 3.  Click the icon to open the "Insight" popup.
 4.  Toggle between "Explain" (default) and "Fact Check" to see the different redesign states.
 

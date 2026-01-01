@@ -30,7 +30,7 @@ Implement the selection-based trigger mechanism, isolated from the host page's C
 - [x] Task: TDD - Shadow DOM Container Setup in content script with React mounting [90179a1]
 - [x] Task: TDD - Text Selection Listener with `mouseup` event handling
 - [x] Task: TDD - Trigger Button Positioning Logic relative to selection bounds
-- [x] Task: TDD - Floating Trigger Component with Lucide Sparkles icon
+- [x] Task: TDD - Floating Trigger Component with Logo component
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Floating Trigger' (Protocol in workflow.md) [verified]
 
 ## Phase 4: Refactoring - Dynamic Theming with CSS Variables [checkpoint: 05a0c00]
