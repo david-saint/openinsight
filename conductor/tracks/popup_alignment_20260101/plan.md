@@ -8,7 +8,7 @@ Redesign the extension popup to follow the epistemic minimalism design philosoph
 - [x] Task: Implement settings and accent color retrieval logic in `src/popup/Popup.tsx`. 3e743fc
 - [x] Task: Conductor - User Manual Verification 'Foundation & Data Loading' (Protocol in workflow.md)
 
-## Phase 2: UI Implementation
+## Phase 2: UI Implementation [checkpoint: 09e8111]
 - [x] Task: Implement the refined Popup UI with theme-aware containers and the "Open Settings" button. 3e743fc
 - [x] Task: Apply user-selected Accent Color to the button using the `data-accent` attribute pattern. 3e743fc
 - [x] Task: Update unit tests to verify theme application and button functionality. 25d2e6a
