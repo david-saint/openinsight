@@ -2,7 +2,7 @@
  * @vitest-environment happy-dom
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, cleanup, waitFor } from '@testing-library/react';
+import { render, screen, cleanup, waitFor, fireEvent } from '@testing-library/react';
 import React from 'react';
 import Popup from '../../src/popup/Popup.js';
 import * as settings from '../../src/lib/settings.js';
@@ -19,10 +19,18 @@ vi.mock('../../src/lib/settings.js', () => ({
   },
 }));
 
-// Mock PopupHeader to simplify testing (and avoid deep rendering issues if any)
+// Mock PopupHeader
 vi.mock('../../src/popup/components/PopupHeader.js', () => ({
   PopupHeader: () => <div data-testid="popup-header">PopupHeader Mock</div>,
 }));
+
+// Mock chrome
+const chromeMock = {
+  runtime: {
+    openOptionsPage: vi.fn(),
+  },
+};
+vi.stubGlobal('chrome', chromeMock);
 
 describe('Popup Component', () => {
   beforeEach(() => {
@@ -35,32 +43,43 @@ describe('Popup Component', () => {
   });
 
   it('shows loading state initially', async () => {
-    // Make getSettings pending forever to check loading state
     vi.mocked(settings.getSettings).mockReturnValue(new Promise(() => {}));
-    
     render(<Popup />);
-    
-    // Expect a loading indicator (text or skeleton)
-    // We'll assume a text like "Loading..." or similar based on Options.tsx pattern
     expect(screen.getByText(/loading/i)).toBeDefined();
   });
 
-  it('fetches settings on mount', async () => {
-    render(<Popup />);
-    
-    await waitFor(() => {
-        expect(settings.getSettings).toHaveBeenCalledTimes(1);
-    });
-  });
+  it('renders the UI correctly with settings', async () => {
+    const customSettings = {
+      ...settings.DEFAULT_SETTINGS,
+      accentColor: 'rose' as const,
+    };
+    vi.mocked(settings.getSettings).mockResolvedValue(customSettings);
 
-  it('renders the PopupHeader after loading', async () => {
     render(<Popup />);
     
-    // Wait for loading to finish
     await waitFor(() => {
       expect(screen.queryByText(/loading/i)).toBeNull();
     });
 
-    expect(screen.getByTestId('popup-header')).toBeDefined();
+    // Verify accent color attribute
+    const wrapper = screen.getByTestId('popup-header').parentElement;
+    expect(wrapper?.getAttribute('data-accent')).toBe('rose');
+
+    // Verify Open Settings button
+    const button = screen.getByRole('button', { name: /open settings/i });
+    expect(button).toBeDefined();
+  });
+
+  it('opens options page when settings button is clicked', async () => {
+    render(<Popup />);
+    
+    await waitFor(() => {
+      expect(screen.queryByText(/loading/i)).toBeNull();
+    });
+
+    const button = screen.getByRole('button', { name: /open settings/i });
+    fireEvent.click(button);
+
+    expect(chromeMock.runtime.openOptionsPage).toHaveBeenCalledTimes(1);
   });
 });
