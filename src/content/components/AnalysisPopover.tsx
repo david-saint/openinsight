@@ -106,26 +106,26 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
         data-accent={accentColor}
       >
         {/* Header with Tabs */}
-        <div className="bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-700 px-1 pt-1 flex justify-between items-center h-10">
+        <div className="bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-700 px-[4px] pt-[4px] flex justify-between items-center h-10">
           {showSettings ? (
-            <div className="flex items-center w-full px-2">
+            <div className="flex items-center w-full px-[8px]">
               <button
                 onClick={() => setShowSettings(false)}
-                className="p-1.5 rounded-md flex items-center gap-1 text-xs font-semibold text-slate-500 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800"
+                className="p-[6px] rounded-md flex items-center gap-[4px] text-[12px] font-semibold text-slate-500 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800"
               >
                 ← Back
               </button>
-              <span className="mx-auto text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+              <span className="mx-auto text-[12px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                 Settings
               </span>
               <div className="w-8" />
             </div>
           ) : (
             <>
-              <div className="flex gap-1 ml-1">
+              <div className="flex gap-[4px] ml-[4px]">
                 <button
                   onClick={() => handleTabChange('explain')}
-                  className={`px-4 py-2.5 text-xs font-semibold rounded-t-lg transition-colors flex items-center gap-1.5 ${
+                  className={`px-[16px] py-[10px] text-[12px] font-semibold rounded-t-lg transition-colors flex items-center gap-[6px] ${
                     activeTab === 'explain'
                       ? 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 shadow-sm border-t border-x border-slate-100 dark:border-slate-700 translate-y-[1px]'
                       : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
@@ -136,7 +136,7 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
                 </button>
                 <button
                   onClick={() => handleTabChange('fact-check')}
-                  className={`px-4 py-2.5 text-xs font-semibold rounded-t-lg transition-colors flex items-center gap-1.5 ${
+                  className={`px-[16px] py-[10px] text-[12px] font-semibold rounded-t-lg transition-colors flex items-center gap-[6px] ${
                     activeTab === 'fact-check'
                       ? 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 shadow-sm border-t border-x border-slate-100 dark:border-slate-700 translate-y-[1px]'
                       : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
@@ -146,17 +146,17 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
                   Fact Check
                 </button>
               </div>
-              <div className="flex items-center gap-1 pr-2">
+              <div className="flex items-center gap-[4px] pr-[8px]">
                 <button
                   onClick={() => setShowSettings(true)}
-                  className="p-1.5 rounded-md transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700"
+                  className="p-[6px] rounded-md transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700"
                   title="Settings"
                 >
                   <Settings size={14} />
                 </button>
                 <button
                   onClick={onClose}
-                  className="p-1.5 rounded-md transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700"
+                  className="p-[6px] rounded-md transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700"
                   title="Close"
                 >
                   <X size={14} />
@@ -167,13 +167,13 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
         </div>
 
         {/* Content */}
-        <div className="p-5 text-slate-600 dark:text-slate-300">
+        <div className="p-[20px] text-slate-600 dark:text-slate-300">
           {/* Settings View */}
           {showSettings && (
-            <div className="animate-in fade-in slide-in-from-right-4 duration-300 space-y-6">
+            <div className="animate-in fade-in slide-in-from-right-4 duration-300 space-y-[24px]">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Accent Color</span>
-                <div className="flex gap-2">
+                <span className="text-[14px] font-medium">Accent Color</span>
+                <div className="flex gap-[8px]">
                   {ACCENTS.map((color) => (
                     <button
                       key={color}
@@ -197,7 +197,7 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
               <div className="pt-4 border-t border-slate-100 dark:border-slate-700">
                 <button 
                   onClick={openFullSettings}
-                  className="w-full py-2.5 px-4 rounded-lg border border-slate-200 dark:border-slate-600 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all flex items-center justify-center gap-2"
+                  className="w-full py-[10px] px-[16px] rounded-lg border border-slate-200 dark:border-slate-600 text-[14px] font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all flex items-center justify-center gap-[8px]"
                 >
                   <Settings size={14} />
                   Open Full Settings
@@ -210,15 +210,15 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
           {!showSettings && (
             <div className="animate-in fade-in slide-in-from-bottom-1 duration-300">
               {/* Header Section with Icon */}
-              <div className="flex items-start gap-3 mb-4">
+              <div className="flex items-start gap-[12px] mb-[16px]">
                 <div className="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-700 flex items-center justify-center flex-shrink-0">
                   <Sparkles size={14} className="text-slate-400" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-0.5">
+                  <h3 className="text-[14px] font-semibold text-slate-900 dark:text-slate-100 mb-[2px]">
                     {activeTab === 'explain' ? 'Contextual Analysis' : 'Fact Check Result'}
                   </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                  <p className="text-[12px] text-slate-500 dark:text-slate-400">
                     {activeTab === 'explain' 
                       ? 'Generating simplified explanation based on architectural history context.'
                       : 'Verifying statement accuracy against trusted sources.'}
@@ -228,19 +228,19 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
 
               {/* Loading State */}
               {data[activeTab].loading && (
-                <div data-testid="loading-skeleton" className="flex flex-col items-center justify-center gap-3 py-8 opacity-50">
+                <div data-testid="loading-skeleton" className="flex flex-col items-center justify-center gap-[12px] py-[32px] opacity-50">
                   <div className="w-5 h-5 border-2 border-slate-200 dark:border-slate-600 border-t-accent-500 rounded-full animate-spin" />
-                  <span className="text-sm font-medium animate-pulse">Analyzing...</span>
+                  <span className="text-[14px] font-medium animate-pulse">Analyzing...</span>
                 </div>
               )}
               
               {/* Error State */}
               {data[activeTab].error && (
-                <div className="p-4 bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/30 rounded-lg flex items-start gap-3">
+                <div className="p-[16px] bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/30 rounded-lg flex items-start gap-[12px]">
                   <AlertCircle className="text-rose-500 shrink-0" size={18} />
                   <div className="space-y-1">
-                    <p className="text-sm font-medium text-rose-800 dark:text-rose-200">Failed to analyze</p>
-                    <p className="text-xs text-rose-600 dark:text-rose-400">{data[activeTab].error}</p>
+                    <p className="text-[14px] font-medium text-rose-800 dark:text-rose-200">Failed to analyze</p>
+                    <p className="text-[12px] text-rose-600 dark:text-rose-400">{data[activeTab].error}</p>
                   </div>
                 </div>
               )}
@@ -249,25 +249,25 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
               {!data[activeTab].loading && !data[activeTab].error && (
                 <>
                   {activeTab === 'fact-check' && (
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border bg-accent-100/50 text-accent-600 border-accent-100 dark:bg-accent-900/20 dark:text-accent-500 dark:border-accent-900/30">
+                    <div className="flex items-center gap-[8px] mb-[12px]">
+                      <span className="inline-flex items-center gap-[6px] px-[10px] py-[4px] rounded-full text-[12px] font-bold border bg-accent-100/50 text-accent-600 border-accent-100 dark:bg-accent-900/20 dark:text-accent-500 dark:border-accent-900/30">
                         <CheckCircle2 size={12} />
                         Verified
                       </span>
-                      <span className="text-xs text-slate-400">High Confidence</span>
+                      <span className="text-[12px] text-slate-400">High Confidence</span>
                     </div>
                   )}
 
-                  <p className="text-sm leading-relaxed border-l-2 border-accent-500 pl-3 text-slate-700 dark:text-slate-300">
+                  <p className="text-[14px] leading-relaxed border-l-2 border-accent-500 pl-[12px] text-slate-700 dark:text-slate-300">
                     {data[activeTab].content || getPlaceholderContent(activeTab)}
                   </p>
 
                   {/* Footer */}
-                  <div className="mt-4 pt-4 border-t border-slate-50 dark:border-slate-700 flex justify-between items-center">
+                  <div className="mt-[16px] pt-[16px] border-t border-slate-50 dark:border-slate-700 flex justify-between items-center">
                     <span className="text-[10px] text-slate-400 uppercase tracking-wider font-medium">
                       Source: Wikipedia API
                     </span>
-                    <button className="text-xs font-medium flex items-center gap-1 text-accent-600 hover:text-accent-700 dark:text-accent-500 dark:hover:text-accent-400">
+                    <button className="text-[12px] font-medium flex items-center gap-[4px] text-accent-600 hover:text-accent-700 dark:text-accent-500 dark:hover:text-accent-400">
                       Read more <ChevronRight size={12} />
                     </button>
                   </div>
