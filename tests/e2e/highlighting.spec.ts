@@ -148,12 +148,210 @@ test.describe('Highlighting UI', () => {
 
         
 
-        // Check for fact check specific content (Verified badge)
+            // Check for fact check specific content (Verified badge)
 
-        await expect(popover.locator('text=Verified')).toBeVisible();
+        
 
-      });
+            await expect(popover.locator('text=Verified')).toBeVisible();
 
-    });
+        
+
+          });
+
+        
+
+        
+
+        
+
+          test('quick settings toggle and accent color change', async () => {
+
+        
+
+            const page = await context.newPage();
+
+        
+
+            await page.goto('https://example.com');
+
+        
+
+        
+
+        
+
+            await page.waitForTimeout(2000);
+
+        
+
+        
+
+        
+
+            // Select text and open modal
+
+        
+
+            await page.evaluate(() => {
+
+        
+
+              const h1 = document.querySelector('h1');
+
+        
+
+              if (h1) {
+
+        
+
+                const range = document.createRange();
+
+        
+
+                range.selectNodeContents(h1);
+
+        
+
+                const selection = window.getSelection();
+
+        
+
+                selection?.removeAllRanges();
+
+        
+
+                selection?.addRange(range);
+
+        
+
+                document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+
+        
+
+              }
+
+        
+
+            });
+
+        
+
+        
+
+        
+
+            const root = page.locator('#openinsight-root');
+
+        
+
+            await root.locator('button[aria-label="Analyze with OpenInsight"]').click();
+
+        
+
+        
+
+        
+
+            const popover = root.locator('div[role="dialog"]');
+
+        
+
+            
+
+        
+
+                // Open Quick Settings
+
+        
+
+            
+
+        
+
+                await popover.locator('button[title="Settings"]').click();
+
+        
+
+            
+
+        
+
+                
+
+        
+
+            
+
+        
+
+                await expect(popover.locator('span:has-text("Settings")')).toBeVisible();
+
+        
+
+            
+
+        
+
+                await expect(popover.locator('text=Accent Color')).toBeVisible();
+
+        
+
+        
+
+        
+
+            // Click Indigo accent (the second color button usually)
+
+        
+
+            // In AnalysisPopover: teal, indigo, rose, amber
+
+        
+
+            const indigoButton = popover.locator('button[aria-label="indigo"]');
+
+        
+
+            await indigoButton.click();
+
+        
+
+        
+
+        
+
+            // Verify it changed in the DOM (the popover has data-accent attribute)
+
+        
+
+            await expect(popover).toHaveAttribute('data-accent', 'indigo');
+
+        
+
+            
+
+        
+
+            // Go back
+
+        
+
+            await popover.locator('button:has-text("Back")').click();
+
+        
+
+            await expect(popover.locator('button[role="tab"]:has-text("Explain")')).toBeVisible();
+
+        
+
+          });
+
+        
+
+        });
+
+        
+
+        
 
     
