@@ -1,4 +1,10 @@
 import { onMessage } from "../lib/messaging";
+import { 
+  handleExplain, 
+  handleFactCheck, 
+  handleFetchModels, 
+  handleTestApiKey 
+} from "./handlers";
 
 console.log("OpenInsight background script initialized.");
 
@@ -6,23 +12,32 @@ onMessage((message, _sender, sendResponse) => {
   const { type, payload } = message;
   console.log("Background received message:", type);
 
+  // Use a helper for async responses
+  const handleAsync = async (fn: () => Promise<any>) => {
+    try {
+      const result = await fn();
+      sendResponse({ success: true, result });
+    } catch (error) {
+      console.error(`Error handling ${type}:`, error);
+      sendResponse({ success: false, error });
+    }
+  };
+
   switch (type) {
-    case "EXPLAIN":
-      console.log("Handling EXPLAIN request for:", payload.text);
-      // Stub response for now
-      sendResponse({
-        success: true,
-        result: `Stub: Explanation for "${payload.text}"`,
-      });
+    case "BACKEND_EXPLAIN":
+      handleAsync(() => handleExplain(payload.text));
       break;
 
-    case "FACT_CHECK":
-      console.log("Handling FACT_CHECK request for:", payload.text);
-      // Stub response for now
-      sendResponse({
-        success: true,
-        result: `Stub: Fact check for "${payload.text}"`,
-      });
+    case "BACKEND_FACT_CHECK":
+      handleAsync(() => handleFactCheck(payload.text));
+      break;
+
+    case "BACKEND_TEST_KEY":
+      handleAsync(() => handleTestApiKey(payload.apiKey));
+      break;
+
+    case "BACKEND_FETCH_MODELS":
+      handleAsync(() => handleFetchModels());
       break;
 
     case "OPEN_OPTIONS":
