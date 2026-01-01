@@ -14,7 +14,7 @@
 - [x] Task: Define TypeScript interfaces for LLM prompt settings (temperature, max_tokens, system_prompt). [2daa96f]
 - [x] Task: Implement `ModelManager` to handle fetching and caching (24h) the model list in `chrome.storage.local`. [f69e44d]
 - [x] Task: Update `DEFAULT_SETTINGS` in `src/lib/settings.ts` with default LLM parameters for Explain and Fact-check. [1458a01]
-- [ ] Task: Write unit tests for `ModelManager` and settings utilities.
+- [x] Task: Write unit tests for `ModelManager` and settings utilities. [ffb91cd]
 - [ ] Task: Conductor - User Manual Verification 'Data Structures & Model Caching' (Protocol in workflow.md)
 
 ## Phase 3: Background Service Worker Implementation
