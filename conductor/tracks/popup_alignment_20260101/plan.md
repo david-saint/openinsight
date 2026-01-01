@@ -15,6 +15,6 @@ Redesign the extension popup to follow the epistemic minimalism design philosoph
 - [x] Task: Conductor - User Manual Verification 'UI Implementation' (Protocol in workflow.md)
 
 ## Phase 3: Final Integration & Polishing
-- [ ] Task: Ensure `src/popup/popup.html` and `src/index.css` are correctly configured for the new layout.
-- [ ] Task: Run full suite of unit tests and perform manual verification of theme switching.
-- [ ] Task: Conductor - User Manual Verification 'Final Integration & Polishing' (Protocol in workflow.md)
+- [x] Task: Ensure `src/popup/popup.html` and `src/index.css` are correctly configured for the new layout. N/A
+- [x] Task: Run full suite of unit tests and perform manual verification of theme switching. 62d1139
+- [~] Task: Conductor - User Manual Verification 'Final Integration & Polishing' (Protocol in workflow.md)
