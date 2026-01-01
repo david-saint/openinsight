@@ -45,7 +45,7 @@
 - [x] Task: Write unit tests for the new Options page components. [15d14d8]
 - [x] Task: Conductor - User Manual Verification 'Options Page UI for LLM Settings' (Protocol in workflow.md) [6a5b0ac]
 
-## Phase 6: API Key Verification & Toast Notification
+## Phase 6: API Key Verification & Toast Notification [checkpoint: 53196fc]
 
 - [x] Task: Implement a simple Toast notification component for the Options page. [abed6a2]
 - [x] Task: Update the `APIKeySection` component to include a "Test Connection" button. [abed6a2]
@@ -53,8 +53,7 @@
 - [x] Task: Implement visual feedback (checkmark/X) for API key test results. [abed6a2]
 - [x] Task: Display error messages in the Toast component upon connection failure. [abed6a2]
 - [x] Task: Write unit tests for the Toast component and API key verification flow. [abed6a2]
-- [ ] Task: Conductor - User Manual Verification 'API Key Verification & Toast Notification' (Protocol in workflow.md)
-- [ ] Task: Conductor - User Manual Verification 'API Key Verification & Toast Notification' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'API Key Verification & Toast Notification' (Protocol in workflow.md) [53196fc]
 
 ## Phase 7: Final Integration & Verification
 
