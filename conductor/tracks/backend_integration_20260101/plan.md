@@ -37,14 +37,13 @@
 - [x] Task: Write unit tests for `BackendClient` messaging and routing. [84b447b]
 - [x] Task: Conductor - User Manual Verification 'Client Abstraction & Messaging' (Protocol in workflow.md) [36e71f5]
 
-## Phase 5: Options Page UI for LLM Settings
+## Phase 5: Options Page UI for LLM Settings [checkpoint: 6a5b0ac]
 
 - [x] Task: Create UI components for configuring Explain parameters (temperature, max_tokens, system_prompt). [15d14d8]
 - [x] Task: Create UI components for configuring Fact-check parameters (temperature, max_tokens, system_prompt). [15d14d8]
 - [x] Task: Integrate the new settings components into the Options page following the design philosophy. [15d14d8]
 - [x] Task: Write unit tests for the new Options page components. [15d14d8]
-- [ ] Task: Conductor - User Manual Verification 'Options Page UI for LLM Settings' (Protocol in workflow.md)
-- [ ] Task: Conductor - User Manual Verification 'Options Page UI for LLM Settings' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Options Page UI for LLM Settings' (Protocol in workflow.md) [6a5b0ac]
 
 ## Phase 6: API Key Verification & Toast Notification
 
