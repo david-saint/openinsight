@@ -16,7 +16,7 @@ export const DEFAULT_SETTINGS: Settings = {
   triggerMode: 'icon',
 };
 
-const SETTINGS_KEY = 'user_settings';
+export const SETTINGS_KEY = 'user_settings';
 const API_KEY_KEY = 'api_key';
 // Obfuscation key only. Not for real security against the user.
 const OBFUSCATION_KEY = 'openinsight_local_obfuscation';

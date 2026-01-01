@@ -10,7 +10,7 @@ This track focuses on implementing the core user interface for the OpenInsight C
 
 - **Trigger:** Appears automatically when a user highlights text on a webpage.
 - **Position:** dynamically positioned near the end of the text selection.
-- **Appearance:** Stylized "spark" icon (Lucide `Sparkles`).
+- **Appearance:** OpenInsight logo (`src/assets/logo.svg`).
 - **Action:** Clicking the button opens the Analysis Modal.
 - **Behavior:** Disappears if the selection is cleared or the modal is opened.
 
@@ -45,7 +45,7 @@ This track focuses on implementing the core user interface for the OpenInsight C
 - **Typography:** Sans-serif for UI elements; Serif for content/reading contexts (if applicable).
 - **Dark Mode:** Fully supported, toggleable (persisted preference).
 - **Color Themes:** Support for "Teal", "Indigo", "Rose", "Amber" accents.
-- **Assets:** Use `assets/logos/logo-transparent.png` for extension branding. Use Lucide-react for icons.
+- **Assets:** Use `src/assets/logo.svg` for extension branding. Use Lucide-react for other icons.
 
 ## 3. Technical Constraints & Architecture
 

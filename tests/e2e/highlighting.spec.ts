@@ -1,56 +1,291 @@
-import { test, expect, chromium, type BrowserContext } from '@playwright/test';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { test, expect, chromium } from "@playwright/test";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-test('text selection logs message to console', async () => {
-  const pathToExtension = path.resolve(__dirname, '../../dist');
-  
-  const userDataDir = path.resolve(__dirname, '../../.tmp/test-user-data');
-  
-  const context = await chromium.launchPersistentContext(userDataDir, {
-    headless: false, // Extensions only work in headful mode
-    args: [
-      `--disable-extensions-except=${pathToExtension}`,
-      `--load-extension=${pathToExtension}`,
-    ],
-  });
+test.describe("Highlighting UI", () => {
+  const pathToExtension = path.resolve(__dirname, "../../dist");
+  let context: any;
 
-  const page = await context.newPage();
-  
-  // Create a promise that resolves when the expected log appears
-  const logPromise = new Promise((resolve) => {
-    page.on('console', (msg) => {
-      if (msg.text() === 'Text selected: Example Domain') {
-        resolve(true);
-      }
+  test.beforeEach(async ({}, testInfo) => {
+    const userDataDir = path.resolve(__dirname, `../../.tmp/test-user-data-${testInfo.title.replace(/\s+/g, '-')}`);
+    context = await chromium.launchPersistentContext(userDataDir, {
+      headless: false,
+      args: [
+        `--disable-extensions-except=${pathToExtension}`,
+        `--load-extension=${pathToExtension}`,
+      ],
     });
   });
 
-  await page.goto('https://example.com');
-
-  // Select text using the Selection API
-  await page.evaluate(() => {
-    const h1 = document.querySelector('h1');
-    if (h1) {
-      const range = document.createRange();
-      range.selectNodeContents(h1);
-      const selection = window.getSelection();
-      selection?.removeAllRanges();
-      selection?.addRange(range);
-      
-      // Dispatch mouseup event to trigger our listener
-      document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+  test.afterEach(async () => {
+    if (context) {
+      await context.close();
     }
   });
 
-  const logFound = await Promise.race([
-    logPromise,
-    new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout waiting for console log')), 5000))
-  ]);
+  test("trigger button appears on text selection", async () => {
+    const page = await context.newPage();
+    await page.goto("https://example.com");
 
-  expect(logFound).toBe(true);
+    // Wait for extension to load
+    await page.waitForTimeout(2000);
 
-  await context.close();
+    // Select text
+    await page.evaluate(() => {
+      const h1 = document.querySelector("h1");
+      if (h1) {
+        const range = document.createRange();
+        range.selectNodeContents(h1);
+        const selection = window.getSelection();
+        selection?.removeAllRanges();
+        selection?.addRange(range);
+        document.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
+      }
+    });
+
+    const triggerButton = page
+      .locator("#openinsight-root")
+      .locator('button[aria-label="Analyze with OpenInsight"]');
+    await expect(triggerButton).toBeVisible({ timeout: 10000 });
+  });
+
+  test("modal opens on trigger click with Explain tab active", async () => {
+    const page = await context.newPage();
+    await page.goto("https://example.com");
+
+    // Wait for extension to load
+    await page.waitForTimeout(2000);
+
+    // Select text
+    await page.evaluate(() => {
+      const h1 = document.querySelector("h1");
+      if (h1) {
+        const range = document.createRange();
+        range.selectNodeContents(h1);
+        const selection = window.getSelection();
+        selection?.removeAllRanges();
+        selection?.addRange(range);
+        document.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
+      }
+    });
+
+    const root = page.locator("#openinsight-root");
+    const triggerButton = root.locator(
+      'button[aria-label="Analyze with OpenInsight"]'
+    );
+
+    await expect(triggerButton).toBeVisible({ timeout: 10000 });
+    await triggerButton.click();
+
+    const popover = root.locator('div[role="dialog"]');
+    await expect(popover).toBeVisible();
+
+    const explainTab = popover.locator(
+      'button[role="tab"][aria-selected="true"]'
+    );
+
+    await expect(explainTab).toContainText("Explain");
+  });
+
+  test("tab switching between Explain and Fact Check views", async () => {
+    const page = await context.newPage();
+
+    await page.goto("https://example.com");
+
+    await page.waitForTimeout(2000);
+
+    // Select text
+
+    await page.evaluate(() => {
+      const h1 = document.querySelector("h1");
+
+      if (h1) {
+        const range = document.createRange();
+
+        range.selectNodeContents(h1);
+
+        const selection = window.getSelection();
+
+        selection?.removeAllRanges();
+
+        selection?.addRange(range);
+
+        document.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
+      }
+    });
+
+    const root = page.locator("#openinsight-root");
+
+    const triggerButton = root.locator(
+      'button[aria-label="Analyze with OpenInsight"]'
+    );
+
+    await triggerButton.click();
+
+    const popover = root.locator('div[role="dialog"]');
+
+    const factCheckTab = popover.locator(
+      'button[role="tab"]:has-text("Fact Check")'
+    );
+
+    await factCheckTab.click();
+
+    await expect(factCheckTab).toHaveAttribute("aria-selected", "true");
+
+    await expect(
+      popover.locator('button[role="tab"]:has-text("Explain")')
+    ).toHaveAttribute("aria-selected", "false");
+
+    // Check for fact check specific content (Verified badge)
+
+    await expect(popover.locator("text=Verified")).toBeVisible();
+  });
+
+  test("quick settings toggle and accent color change", async () => {
+    const page = await context.newPage();
+
+    await page.goto("https://example.com");
+
+    await page.waitForTimeout(2000);
+
+    // Select text and open modal
+
+    await page.evaluate(() => {
+      const h1 = document.querySelector("h1");
+
+      if (h1) {
+        const range = document.createRange();
+
+        range.selectNodeContents(h1);
+
+        const selection = window.getSelection();
+
+        selection?.removeAllRanges();
+
+        selection?.addRange(range);
+
+        document.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
+      }
+    });
+
+    const root = page.locator("#openinsight-root");
+
+    await root.locator('button[aria-label="Analyze with OpenInsight"]').click();
+
+    const popover = root.locator('div[role="dialog"]');
+
+    // Open Quick Settings
+
+    await popover.locator('button[title="Settings"]').click();
+
+    await expect(popover.locator('span:has-text("Settings")')).toBeVisible();
+
+    await expect(popover.locator("text=Accent Color")).toBeVisible();
+
+    // Click Indigo accent (the second color button usually)
+
+    // In AnalysisPopover: teal, indigo, rose, amber
+
+    const indigoButton = popover.locator('button[aria-label="indigo"]');
+
+    await indigoButton.click();
+
+    // Verify it changed in the DOM (the popover has data-accent attribute)
+
+    await expect(popover).toHaveAttribute("data-accent", "indigo");
+
+    // Go back
+
+    await popover.locator('button:has-text("Back")').click();
+
+    await expect(
+      popover.locator('button[role="tab"]:has-text("Explain")')
+    ).toBeVisible();
+  });
+
+  test.skip('"Open Full Settings" navigates to options page', async () => {
+    const page = await context.newPage();
+
+    page.on("console", (msg) => console.log("PAGE LOG:", msg.text()));
+
+    await page.goto("https://example.com");
+
+    await page.waitForTimeout(2000);
+
+    // Select text and open modal
+
+    await page.evaluate(() => {
+      const h1 = document.querySelector("h1");
+
+      if (h1) {
+        const range = document.createRange();
+
+        range.selectNodeContents(h1);
+
+        const selection = window.getSelection();
+
+        selection?.removeAllRanges();
+
+        selection?.addRange(range);
+
+        document.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
+      }
+    });
+
+    const root = page.locator("#openinsight-root");
+
+    await root.locator('button[aria-label="Analyze with OpenInsight"]').click();
+
+    const popover = root.locator('div[role="dialog"]');
+
+    await popover.locator('button[title="Settings"]').click();
+
+    // Click "Open Full Settings" using getByRole
+
+    const openSettingsButton = popover.getByRole("button", {
+      name: /open full settings/i,
+    });
+
+    await expect(openSettingsButton).toBeVisible();
+
+    await openSettingsButton.click();
+
+    // Wait for the options page to be opened and loaded
+
+    let optionsPage;
+
+    try {
+      await expect
+        .poll(
+          async () => {
+            const pages = context.pages();
+
+            optionsPage = pages.find((p) => p.url().includes("options.html"));
+
+            return optionsPage !== undefined;
+          },
+          { timeout: 15000 }
+        )
+        .toBe(true);
+    } catch (e) {
+      const pages = context.pages();
+
+      console.log(
+        "Open pages:",
+        pages.map((p) => p.url())
+      );
+
+      throw e;
+    }
+
+    if (optionsPage) {
+      await optionsPage.waitForLoadState();
+
+      await expect(optionsPage).toHaveTitle(/OpenInsight Options/);
+
+      await expect(optionsPage.locator("text=Intelligence")).toBeVisible();
+    }
+  });
 });

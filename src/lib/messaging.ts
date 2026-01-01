@@ -1,7 +1,7 @@
-export type MessageType = 'EXPLAIN' | 'FACT_CHECK';
+export type MessageType = "EXPLAIN" | "FACT_CHECK" | "OPEN_OPTIONS";
 
 export interface MessagePayload {
-  text: string;
+  text?: string;
 }
 
 export interface Message<T extends MessageType> {
