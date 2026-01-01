@@ -72,7 +72,7 @@ Refine the UI to strictly follow the "Epistemic Minimalism" philosophy and ensur
 
 - [x] Task: Style Review against `proof-of-concept.md` for Teal accents, typography, and spacing [3ab4d76]
 - [x] Task: Implement Dark Mode Sync across Shadow DOM container and Options page [946e5f6]
-- [ ] Task: E2E Test - Trigger button appears on text selection
+- [x] Task: E2E Test - Trigger button appears on text selection [77cd599]
 - [ ] Task: E2E Test - Modal opens on trigger click with Explain tab active
 - [ ] Task: E2E Test - Tab switching between Explain and Fact Check views
 - [ ] Task: E2E Test - Quick Settings toggle and theme change application
