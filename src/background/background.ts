@@ -16,8 +16,8 @@ onMessage((message, _sender, sendResponse) => {
       });
       break;
 
-    case 'FACT_CHECK':
-      console.log('Handling FACT_CHECK request for:', payload.text);
+    case "FACT_CHECK":
+      console.log("Handling FACT_CHECK request for:", payload.text);
       // Stub response for now
       sendResponse({
         success: true,
@@ -25,9 +25,15 @@ onMessage((message, _sender, sendResponse) => {
       });
       break;
 
+    case "OPEN_OPTIONS":
+      console.log("Handling OPEN_OPTIONS request");
+      chrome.runtime.openOptionsPage();
+      sendResponse({ success: true });
+      break;
+
     default:
-      console.warn('Unknown message type:', type);
-      sendResponse({ success: false, error: 'Unknown message type' });
+      console.warn("Unknown message type:", type);
+      sendResponse({ success: false, error: "Unknown message type" });
   }
 
   return true; // Keep message channel open for async response

@@ -120,7 +120,7 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
   };
 
   const openFullSettings = () => {
-    chrome.runtime.openOptionsPage();
+    sendMessage('OPEN_OPTIONS', {});
   };
 
   if (!isOpen) return null;
