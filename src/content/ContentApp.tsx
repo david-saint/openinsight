@@ -13,14 +13,18 @@ export const ContentApp: React.FC = () => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [selectionText, setSelectionText] = useState('');
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
+  const timeoutRef = React.useRef<number | undefined>(undefined);
 
   useEffect(() => {
     // Load settings once
     getSettings().then(setSettings);
 
     const onMouseUp = () => {
+      // Clear existing timeout to debounce
+      window.clearTimeout(timeoutRef.current);
+
       // Small timeout to allow selection to finalize
-      setTimeout(() => {
+      timeoutRef.current = window.setTimeout(() => {
         const selectionData = handleSelection();
         if (selectionData && !isPopoverOpen) {
           const pos = calculateTriggerPosition(selectionData.rect);
@@ -36,6 +40,7 @@ export const ContentApp: React.FC = () => {
     document.addEventListener('mouseup', onMouseUp);
     return () => {
       document.removeEventListener('mouseup', onMouseUp);
+      window.clearTimeout(timeoutRef.current);
     };
   }, [isPopoverOpen]);
 
