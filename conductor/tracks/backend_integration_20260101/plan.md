@@ -57,8 +57,8 @@
 
 ## Phase 7: Final Integration & Verification
 
-- [ ] Task: Perform end-to-end verification of LLM prompting (Explain/Fact-check) via console or temporary UI triggers.
-- [ ] Task: Verify all error types are correctly differentiated and returned.
-- [ ] Task: Verify encrypted API key storage and retrieval works correctly.
-- [ ] Task: Ensure all unit tests pass and code coverage meets requirements (>80%).
+- [~] Task: Perform end-to-end verification of LLM prompting (Explain/Fact-check) via console or temporary UI triggers.
+- [x] Task: Verify all error types are correctly differentiated and returned. [9111d78]
+- [x] Task: Verify encrypted API key storage and retrieval works correctly. [499f2fa]
+- [x] Task: Ensure all unit tests pass and code coverage meets requirements (>80%). [ffb91cd]
 - [ ] Task: Conductor - User Manual Verification 'Final Integration & Verification' (Protocol in workflow.md)
