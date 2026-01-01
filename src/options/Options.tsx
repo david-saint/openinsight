@@ -15,7 +15,6 @@ const Options: React.FC = () => {
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [apiKey, setApiKey] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
 
   useEffect(() => {
     const load = async () => {
@@ -38,13 +37,10 @@ const Options: React.FC = () => {
   };
 
   const handleSaveApiKey = async () => {
-    setStatus('saving');
     try {
       await saveApiKey(apiKey.trim());
-      setStatus('saved');
-      setTimeout(() => setStatus('idle'), 2000);
     } catch (e) {
-      setStatus('error');
+      console.error('Error saving API key:', e);
     }
   };
 
@@ -78,8 +74,7 @@ const Options: React.FC = () => {
           <APIKeySection 
             apiKey={apiKey}
             setApiKey={setApiKey}
-            onSave={handleSaveApiKey}
-            status={status}
+            onBlur={handleSaveApiKey}
           />
 
           <IntelligenceSection 

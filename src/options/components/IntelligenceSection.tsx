@@ -26,7 +26,7 @@ export const IntelligenceSection: React.FC<IntelligenceSectionProps> = ({
           <div className="relative">
             <select
               id="explain-model"
-              className="w-full appearance-none px-3 py-2.5 bg-transparent border rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-accent-500 focus:border-accent-500 border-slate-200 text-slate-900 dark:border-slate-600 dark:text-white transition-colors"
+              className="w-full appearance-none px-3 py-2.5 bg-transparent border rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-accent-500 focus:border-accent-500 border-slate-200 text-slate-900 dark:border-slate-600 dark:text-white transition-colors"
               value={settings.explainModel}
               onChange={(e) => onSave({ ...settings, explainModel: e.target.value })}
             >
@@ -44,7 +44,7 @@ export const IntelligenceSection: React.FC<IntelligenceSectionProps> = ({
           <div className="relative">
             <select
               id="fact-check-model"
-              className="w-full appearance-none px-3 py-2.5 bg-transparent border rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-accent-500 focus:border-accent-500 border-slate-200 text-slate-900 dark:border-slate-600 dark:text-white transition-colors"
+              className="w-full appearance-none px-3 py-2.5 bg-transparent border rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-accent-500 focus:border-accent-500 border-slate-200 text-slate-900 dark:border-slate-600 dark:text-white transition-colors"
               value={settings.factCheckModel}
               onChange={(e) => onSave({ ...settings, factCheckModel: e.target.value })}
             >

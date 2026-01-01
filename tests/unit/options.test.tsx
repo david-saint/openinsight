@@ -3,11 +3,11 @@
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, cleanup, fireEvent } from '@testing-library/react';
-import Options from '../../src/options/Options';
-import * as settings from '../../src/lib/settings';
+import Options from '../../src/options/Options.js';
+import * as settings from '../../src/lib/settings.js';
 
 // Mock settings module
-vi.mock('../../src/lib/settings', () => ({
+vi.mock('../../src/lib/settings.js', () => ({
   getSettings: vi.fn(),
   saveSettings: vi.fn(),
   getApiKey: vi.fn(),
@@ -52,17 +52,15 @@ describe('Options Component', () => {
     expect(await screen.findByText('Epistemic Clarity Engine')).toBeDefined();
   });
 
-  it('allows saving the API key', async () => {
+  it('allows saving the API key on blur', async () => {
     render(<Options />);
     
     const input = await screen.findByPlaceholderText('sk-or-v1-...');
-    const saveButton = screen.getByRole('button', { name: /save/i });
     
     fireEvent.change(input, { target: { value: 'new-api-key' } });
-    fireEvent.click(saveButton);
+    fireEvent.blur(input);
     
     expect(settings.saveApiKey).toHaveBeenCalledWith('new-api-key');
-    expect(await screen.findByText(/saved/i)).toBeDefined();
   });
 
   it('allows changing model preferences', async () => {
