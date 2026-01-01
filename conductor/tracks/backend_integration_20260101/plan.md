@@ -25,7 +25,7 @@
 - [x] Task: Implement the "Test API Key" logic by sending a minimal request to OpenRouter. [2b8cd4f]
 - [x] Task: Implement the "Fetch Models" logic to retrieve available models from OpenRouter. [2b8cd4f]
 - [x] Task: Implement error differentiation logic to return typed error responses (network, auth, rate-limit, LLM, unknown). [9111d78]
-- [~] Task: Write unit tests for background script handlers and error handling.
+- [x] Task: Write unit tests for background script handlers and error handling. [e37dbaf]
 - [ ] Task: Conductor - User Manual Verification 'Background Service Worker Implementation' (Protocol in workflow.md)
 
 ## Phase 4: Client Abstraction & Messaging
@@ -33,7 +33,7 @@
 - [ ] Task: Define the message schema for `BACKEND_EXPLAIN`, `BACKEND_FACT_CHECK`, `BACKEND_FETCH_MODELS`, and `BACKEND_TEST_KEY`.
 - [ ] Task: Implement the `BackendClient` class in `src/lib/backend-client.ts` to abstract `chrome.runtime.sendMessage` for the UI.
 - [ ] Task: Design the `BackendClient` class to accommodate future streaming capabilities.
-- [~] Task: Register message listeners in the background script to route incoming client requests to the appropriate handlers.
+- [x] Task: Register message listeners in the background script to route incoming client requests to the appropriate handlers. [e37dbaf]
 - [ ] Task: Write unit tests for `BackendClient` messaging and routing.
 - [ ] Task: Conductor - User Manual Verification 'Client Abstraction & Messaging' (Protocol in workflow.md)
 
