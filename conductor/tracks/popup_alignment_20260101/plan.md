@@ -2,7 +2,7 @@
 
 Redesign the extension popup to follow the epistemic minimalism design philosophy, ensuring theme and accent color synchronization.
 
-## Phase 1: Foundation & Data Loading
+## Phase 1: Foundation & Data Loading [checkpoint: 6f8e88e]
 - [x] Task: Create `src/popup/components/PopupHeader.tsx` based on the design in `src/options/components/Header.tsx`. 5e2add0
 - [x] Task: Create unit tests for `Popup.tsx` loading state and settings retrieval in `tests/unit/popup_ui.test.tsx`. 3e743fc
 - [x] Task: Implement settings and accent color retrieval logic in `src/popup/Popup.tsx`. 3e743fc
