@@ -24,7 +24,7 @@
 - [x] Task: Implement the core logic for the "Fact-check" prompt, supporting configurable parameters. [8eb488e]
 - [x] Task: Implement the "Test API Key" logic by sending a minimal request to OpenRouter. [2b8cd4f]
 - [x] Task: Implement the "Fetch Models" logic to retrieve available models from OpenRouter. [2b8cd4f]
-- [ ] Task: Implement error differentiation logic to return typed error responses (network, auth, rate-limit, LLM, unknown).
+- [x] Task: Implement error differentiation logic to return typed error responses (network, auth, rate-limit, LLM, unknown). [9111d78]
 - [ ] Task: Write unit tests for background script handlers and error handling.
 - [ ] Task: Conductor - User Manual Verification 'Background Service Worker Implementation' (Protocol in workflow.md)
 
