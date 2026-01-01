@@ -13,7 +13,7 @@
 - [x] Task: Define TypeScript interfaces for typed error responses (NetworkError, AuthError, RateLimitError, LLMError, UnknownError). [2daa96f]
 - [x] Task: Define TypeScript interfaces for LLM prompt settings (temperature, max_tokens, system_prompt). [2daa96f]
 - [x] Task: Implement `ModelManager` to handle fetching and caching (24h) the model list in `chrome.storage.local`. [f69e44d]
-- [ ] Task: Update `DEFAULT_SETTINGS` in `src/lib/settings.ts` with default LLM parameters for Explain and Fact-check.
+- [x] Task: Update `DEFAULT_SETTINGS` in `src/lib/settings.ts` with default LLM parameters for Explain and Fact-check. [1458a01]
 - [ ] Task: Write unit tests for `ModelManager` and settings utilities.
 - [ ] Task: Conductor - User Manual Verification 'Data Structures & Model Caching' (Protocol in workflow.md)
 
