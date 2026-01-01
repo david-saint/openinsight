@@ -66,7 +66,7 @@ Refactor the Analysis Modal into a lightweight Popover and optimize the content 
 - [x] Task: Conductor - User Manual Verification 'Phase 5.5: Popover' (Protocol in workflow.md) [c2f8379]
 - [ ] Task: Conductor - User Manual Verification 'Phase 5.5: Popover' (Protocol in workflow.md)
 
-## Phase 6: Polishing & Minimalism Alignment
+## Phase 6: Polishing & Minimalism Alignment [checkpoint: 14aaf34]
 
 Refine the UI to strictly follow the "Epistemic Minimalism" philosophy and ensure consistency.
 
@@ -77,4 +77,4 @@ Refine the UI to strictly follow the "Epistemic Minimalism" philosophy and ensur
 - [x] Task: E2E Test - Tab switching between Explain and Fact Check views [db35b17]
 - [x] Task: E2E Test - Quick Settings toggle and theme change application [f11f7be]
 - [x] Task: E2E Test - "Open Full Settings" navigates to options page [f1fa2d9]
-- [ ] Task: Conductor - User Manual Verification 'Phase 6: Polishing' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 6: Polishing' (Protocol in workflow.md) [14aaf34]
