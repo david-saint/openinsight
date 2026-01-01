@@ -3,8 +3,8 @@ import { getApiKey } from '../lib/settings';
 /**
  * Enhanced fetch that automatically attaches the OpenRouter API key.
  */
-export async function fetchWithAuth(url: string, init?: RequestInit): Promise<Response> {
-  const apiKey = await getApiKey();
+export async function fetchWithAuth(url: string, init?: RequestInit, overrideApiKey?: string): Promise<Response> {
+  const apiKey = overrideApiKey || await getApiKey();
 
   if (!apiKey) {
     throw new Error('API key not found. Please set it in the extension options.');

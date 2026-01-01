@@ -1,6 +1,7 @@
 import { fetchWithAuth } from './api';
 import { getSettings } from '../lib/settings';
-import { OpenRouterChatResponse } from '../lib/types';
+import { OpenRouterChatResponse, OpenRouterModel } from '../lib/types';
+import { ModelManager } from '../lib/model-manager';
 
 /**
  * Handles the "Explain" request by calling OpenRouter.
@@ -58,4 +59,29 @@ export async function handleFactCheck(text: string): Promise<string> {
 
   const data = await response.json() as OpenRouterChatResponse;
   return data.choices[0].message.content;
+}
+
+/**
+ * Verifies the API key by sending a minimal request to OpenRouter.
+ * Note: If apiKey is provided, it should be used for this specific request.
+ */
+export async function handleTestApiKey(apiKey?: string): Promise<boolean> {
+  // If a specific key is provided for testing, we use it.
+  
+  const response = await fetchWithAuth('https://openrouter.ai/api/v1/auth/key', {
+    method: 'GET',
+  }, apiKey);
+
+  if (!response.ok) {
+    throw new Error(`API Key verification failed: ${response.statusText}`);
+  }
+
+  return true;
+}
+
+/**
+ * Fetches available models from OpenRouter via ModelManager.
+ */
+export async function handleFetchModels(): Promise<OpenRouterModel[]> {
+  return ModelManager.getModels();
 }
