@@ -59,4 +59,16 @@ describe('Settings Module', () => {
       expect(key).toBe('secret-key');
     });
   });
+
+  describe('LLM Settings', () => {
+    it('should have default LLM settings', () => {
+      expect(DEFAULT_SETTINGS).toHaveProperty('explainSettings');
+      expect(DEFAULT_SETTINGS).toHaveProperty('factCheckSettings');
+      
+      // @ts-ignore
+      expect(DEFAULT_SETTINGS.explainSettings).toHaveProperty('temperature');
+      // @ts-ignore
+      expect(DEFAULT_SETTINGS.factCheckSettings).toHaveProperty('system_prompt');
+    });
+  });
 });
