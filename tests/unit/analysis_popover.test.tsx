@@ -2,7 +2,7 @@
  * @vitest-environment happy-dom
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { AnalysisPopover } from '../../src/content/components/AnalysisPopover.js';
 import { sendMessage } from '../../src/lib/messaging.js';
@@ -33,26 +33,30 @@ describe('Analysis Popover Component', () => {
     expect(popover).toBeInTheDocument();
   });
 
-  it('should not render when isOpen is false', () => {
-    const { queryByRole } = render(
-      <AnalysisPopover 
-        isOpen={false} 
-        onClose={() => {}} 
-        selectionText="test text"
-      />
-    );
+  it('should not render when isOpen is false', async () => {
+    await act(async () => {
+      render(
+        <AnalysisPopover 
+          isOpen={false} 
+          onClose={() => {}} 
+          selectionText="test text"
+        />
+      );
+    });
 
-    expect(queryByRole('dialog')).not.toBeInTheDocument();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
-  it('should display the selected text in the header description', () => {
-    render(
-      <AnalysisPopover 
-        isOpen={true} 
-        onClose={() => {}} 
-        selectionText="selected text sample"
-      />
-    );
+  it('should display the selected text in the header description', async () => {
+    await act(async () => {
+      render(
+        <AnalysisPopover 
+          isOpen={true} 
+          onClose={() => {}} 
+          selectionText="selected text sample"
+        />
+      );
+    });
 
     // In the current UI, selectionText isn't directly shown as text but influences the tab data
     // However, the test was checking for it. I'll update it to check that it is passed or 
@@ -146,13 +150,15 @@ describe('Analysis Popover Component', () => {
   it('should display fetched content', async () => {
     vi.mocked(sendMessage).mockResolvedValue({ success: true, result: 'This is the explanation.' });
     
-    render(
-      <AnalysisPopover 
-        isOpen={true} 
-        onClose={() => {}} 
-        selectionText="test text"
-      />
-    );
+    await act(async () => {
+      render(
+        <AnalysisPopover 
+          isOpen={true} 
+          onClose={() => {}} 
+          selectionText="test text"
+        />
+      );
+    });
 
     await screen.findByText('This is the explanation.');
     expect(screen.queryByTestId('loading-skeleton')).not.toBeInTheDocument();
