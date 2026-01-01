@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { Cpu, ChevronDown, Settings2 } from 'lucide-react';
+import { Cpu, ChevronDown, Settings2, MoreHorizontal } from 'lucide-react';
 import type { Settings } from '../../lib/settings.js';
-import type { LLMSettings } from '../../lib/types.js';
+import type { LLMSettings, OpenRouterModel } from '../../lib/types.js';
 
 interface IntelligenceSectionProps {
   settings: Settings;
   onSave: (newSettings: Settings) => void;
   models: { id: string, name: string }[];
+  allModels?: OpenRouterModel[];
+  onBrowseModels?: (context: 'explain' | 'factCheck') => void;
 }
 
 const ModelSettings: React.FC<{
@@ -16,8 +18,16 @@ const ModelSettings: React.FC<{
   models: { id: string, name: string }[];
   onModelChange: (id: string) => void;
   onSettingsChange: (s: LLMSettings) => void;
-}> = ({ label, modelId, llmSettings, models, onModelChange, onSettingsChange }) => {
+  onBrowseMore?: (() => void) | undefined;
+  hasMoreModels?: boolean | undefined;
+}> = ({ label, modelId, llmSettings, models, onModelChange, onSettingsChange, onBrowseMore, hasMoreModels }) => {
   const [isOpen, setIsOpen] = useState(false);
+
+  // Check if current model is in the default list
+  const currentModelInList = models.some(m => m.id === modelId);
+  const displayModels = currentModelInList 
+    ? models 
+    : [...models, { id: modelId, name: modelId.split('/').pop()?.replace(':free', '') || modelId }];
 
   return (
     <div className="space-y-4">
@@ -30,7 +40,7 @@ const ModelSettings: React.FC<{
             value={modelId}
             onChange={(e) => onModelChange(e.target.value)}
           >
-            {models.map((m) => (
+            {displayModels.map((m) => (
               <option key={m.id} value={m.id} className="bg-white dark:bg-slate-800">{m.name}</option>
             ))}
           </select>
@@ -38,6 +48,16 @@ const ModelSettings: React.FC<{
             <ChevronDown size={14} />
           </div>
         </div>
+        {hasMoreModels && onBrowseMore && (
+          <button
+            type="button"
+            onClick={onBrowseMore}
+            className="w-full flex items-center justify-center gap-1.5 px-3 py-1.5 text-[10px] font-medium text-accent-600 dark:text-accent-400 hover:bg-accent-50 dark:hover:bg-accent-900/20 rounded-lg transition-colors"
+          >
+            <MoreHorizontal size={12} />
+            Browse all models
+          </button>
+        )}
       </div>
 
       <div className="border border-slate-100 dark:border-slate-700 rounded-xl overflow-hidden bg-slate-50/50 dark:bg-slate-900/30">
@@ -108,8 +128,12 @@ const ModelSettings: React.FC<{
 export const IntelligenceSection: React.FC<IntelligenceSectionProps> = ({
   settings,
   onSave,
-  models
+  models,
+  allModels,
+  onBrowseModels
 }) => {
+  const hasMoreModels = allModels && allModels.length > models.length;
+
   return (
     <div className="p-8 border-b border-slate-100 dark:border-slate-700 transition-colors">
       <div className="flex items-center gap-2 mb-6 opacity-50">
@@ -125,6 +149,8 @@ export const IntelligenceSection: React.FC<IntelligenceSectionProps> = ({
           models={models}
           onModelChange={(id) => onSave({ ...settings, explainModel: id })}
           onSettingsChange={(s) => onSave({ ...settings, explainSettings: s })}
+          onBrowseMore={onBrowseModels ? () => onBrowseModels('explain') : undefined}
+          hasMoreModels={hasMoreModels}
         />
         
         <ModelSettings 
@@ -134,6 +160,8 @@ export const IntelligenceSection: React.FC<IntelligenceSectionProps> = ({
           models={models}
           onModelChange={(id) => onSave({ ...settings, factCheckModel: id })}
           onSettingsChange={(s) => onSave({ ...settings, factCheckSettings: s })}
+          onBrowseMore={onBrowseModels ? () => onBrowseModels('factCheck') : undefined}
+          hasMoreModels={hasMoreModels}
         />
       </div>
     </div>
