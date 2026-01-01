@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { TriggerButton } from './components/TriggerButton';
-import { AnalysisPopover } from './components/AnalysisPopover';
-import { handleSelection } from './selection';
-import { calculateTriggerPosition, Position } from './positioning';
-import { getSettings, DEFAULT_SETTINGS } from '../lib/settings';
-import type { Settings } from '../lib/settings';
+import { TriggerButton } from './components/TriggerButton.js';
+import { AnalysisPopover } from './components/AnalysisPopover.js';
+import { handleSelection } from './selection.js';
+import { calculateTriggerPosition } from './positioning.js';
+import type { Position } from './positioning.js';
+import { getSettings, DEFAULT_SETTINGS } from '../lib/settings.js';
+import type { Settings } from '../lib/settings.js';
 
 export const ContentApp: React.FC = () => {
   const [triggerPosition, setTriggerPosition] = useState<Position | null>(null);
@@ -51,11 +52,13 @@ export const ContentApp: React.FC = () => {
     const newSettings = { ...settings, accentColor: color };
     setSettings(newSettings);
     // Persist change
-    import('../lib/settings').then(m => m.saveSettings(newSettings));
+    import('../lib/settings.js').then(m => m.saveSettings(newSettings));
   };
 
+  const isDark = settings.theme === 'dark' || (settings.theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
   return (
-    <div className="openinsight-content-root" data-accent={settings.accentColor}>
+    <div className={`openinsight-content-root ${isDark ? 'dark' : ''}`} data-accent={settings.accentColor}>
       {isVisible && triggerPosition && (
         <TriggerButton 
           position={triggerPosition} 

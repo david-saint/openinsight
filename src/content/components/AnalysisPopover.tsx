@@ -81,7 +81,7 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
       <div 
         role="dialog"
         aria-modal="true"
-        className="absolute z-[9999] w-80 bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200 origin-top-left"
+        className="absolute z-[9999] w-80 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200 origin-top-left transition-colors duration-300"
         style={{
           top: position ? position.top : '50%',
           left: position ? position.left : '50%',
@@ -92,12 +92,12 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
         data-accent={accentColor}
       >
         {/* Header */}
-        <div className="px-6 pt-4 border-b border-slate-100 bg-white">
+        <div className="px-6 pt-4 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 transition-colors">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-slate-800">Analysis</h2>
+            <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-100">Analysis</h2>
             <button 
               onClick={onClose}
-              className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors"
+              className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
               aria-label="Close"
             >
               <X size={18} />
@@ -106,69 +106,42 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
 
           {/* Tabs */}
           <div className="flex gap-6" role="tablist">
-            <button
-              role="tab"
-              aria-selected={activeTab === 'explain'}
-              onClick={() => handleTabChange('explain')}
-              className={`pb-3 text-xs font-medium transition-all relative ${
-                activeTab === 'explain' 
-                  ? 'text-accent-500' 
-                  : 'text-slate-400 hover:text-slate-600'
-              }`}
-            >
-              <div className="flex items-center gap-1.5">
-                <MessageSquare size={14} />
-                Explain
-              </div>
-              {activeTab === 'explain' && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent-500 rounded-full" />
-              )}
-            </button>
-            <button
-              role="tab"
-              aria-selected={activeTab === 'fact-check'}
-              onClick={() => handleTabChange('fact-check')}
-              className={`pb-3 text-xs font-medium transition-all relative ${
-                activeTab === 'fact-check' 
-                  ? 'text-accent-500' 
-                  : 'text-slate-400 hover:text-slate-600'
-              }`}
-            >
-              <div className="flex items-center gap-1.5">
-                <ShieldCheck size={14} />
-                Fact Check
-              </div>
-              {activeTab === 'fact-check' && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent-500 rounded-full" />
-              )}
-            </button>
-            <button
-              role="tab"
-              aria-selected={activeTab === 'settings'}
-              onClick={() => handleTabChange('settings')}
-              className={`pb-3 text-xs font-medium transition-all relative ${
-                activeTab === 'settings' 
-                  ? 'text-accent-500' 
-                  : 'text-slate-400 hover:text-slate-600'
-              }`}
-            >
-              <div className="flex items-center gap-1.5">
-                <Settings size={14} />
-                Settings
-              </div>
-              {activeTab === 'settings' && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent-500 rounded-full" />
-              )}
-            </button>
+            {(['explain', 'fact-check', 'settings'] as const).map((tab) => {
+              const Icon = tab === 'explain' ? MessageSquare : tab === 'fact-check' ? ShieldCheck : Settings;
+              const label = tab === 'explain' ? 'Explain' : tab === 'fact-check' ? 'Fact Check' : 'Settings';
+              const isActive = activeTab === tab;
+              
+              return (
+                <button
+                  key={tab}
+                  role="tab"
+                  aria-selected={isActive}
+                  onClick={() => handleTabChange(tab)}
+                  className={`pb-3 text-xs font-medium transition-all relative ${
+                    isActive 
+                      ? 'text-accent-500' 
+                      : 'text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-400'
+                  }`}
+                >
+                  <div className="flex items-center gap-1.5">
+                    <Icon size={14} />
+                    {label}
+                  </div>
+                  {isActive && (
+                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent-500 rounded-full" />
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-6 bg-white dark:bg-slate-900 transition-colors">
           {activeTab !== 'settings' && (
             <div className="mb-6">
-              <h3 className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Selected Text</h3>
-              <p className="text-sm text-slate-600 italic border-l-2 border-accent-500 pl-4 py-1 bg-slate-50">
+              <h3 className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">Selected Text</h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400 italic border-l-2 border-accent-500 pl-4 py-1 bg-slate-50 dark:bg-slate-800/50">
                 {selectionText}
               </p>
             </div>
@@ -179,18 +152,18 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
               <>
                 {data[activeTab].loading && (
                   <div data-testid="loading-skeleton" className="animate-pulse space-y-4">
-                    <div className="h-4 bg-slate-100 rounded w-3/4"></div>
-                    <div className="h-4 bg-slate-100 rounded"></div>
-                    <div className="h-4 bg-slate-100 rounded w-5/6"></div>
+                    <div className="h-4 bg-slate-100 dark:bg-slate-800 rounded w-3/4"></div>
+                    <div className="h-4 bg-slate-100 dark:bg-slate-800 rounded"></div>
+                    <div className="h-4 bg-slate-100 dark:bg-slate-800 rounded w-5/6"></div>
                   </div>
                 )}
                 
                 {data[activeTab].error && (
-                  <div className="p-4 bg-rose-50 border border-rose-100 rounded-xl flex items-start gap-3">
+                  <div className="p-4 bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/30 rounded-xl flex items-start gap-3">
                     <AlertCircle className="text-rose-500 shrink-0" size={18} />
                     <div className="space-y-1">
-                      <p className="text-sm font-medium text-rose-800">Failed to analyze</p>
-                      <p className="text-xs text-rose-600">{data[activeTab].error}</p>
+                      <p className="text-sm font-medium text-rose-800 dark:text-rose-200">Failed to analyze</p>
+                      <p className="text-xs text-rose-600 dark:text-rose-400">{data[activeTab].error}</p>
                     </div>
                   </div>
                 )}
@@ -199,14 +172,14 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
                   <div className="space-y-4">
                     {activeTab === 'fact-check' && (
                       <div className="flex items-center gap-2">
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase tracking-wide border border-emerald-100">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-wide border border-emerald-100 dark:border-emerald-900/30">
                           <ShieldCheck size={12} />
                           Verified
                         </span>
-                        <span className="text-[10px] text-slate-400">Source: OpenInsight Engine</span>
+                        <span className="text-[10px] text-slate-400 dark:text-slate-500">Source: OpenInsight Engine</span>
                       </div>
                     )}
-                    <div className="prose prose-sm max-w-none text-slate-700 leading-relaxed">
+                    <div className="prose prose-sm max-w-none text-slate-700 dark:text-slate-300 leading-relaxed">
                       {data[activeTab].content}
                     </div>
                   </div>
@@ -218,13 +191,13 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
               <div className="space-y-8 py-2">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-medium text-slate-600">Accent Color</span>
+                    <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Accent Color</span>
                     <div className="flex gap-2">
                       {ACCENTS.map((color) => (
                         <button
                           key={color}
                           onClick={() => onAccentChange?.(color)}
-                          className={`w-5 h-5 rounded-full ring-offset-2 transition-all ${
+                          className={`w-5 h-5 rounded-full ring-offset-2 transition-all dark:ring-offset-slate-900 ${
                             color === 'teal' ? 'bg-teal-500' :
                             color === 'indigo' ? 'bg-indigo-500' :
                             color === 'rose' ? 'bg-rose-500' :
@@ -237,10 +210,10 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-slate-100">
+                <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
                   <button 
                     onClick={openFullSettings}
-                    className="w-full py-2.5 px-4 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all flex items-center justify-center gap-2"
+                    className="w-full py-2.5 px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600 transition-all flex items-center justify-center gap-2"
                   >
                     <Settings size={14} />
                     Open Full Settings
@@ -252,10 +225,10 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end">
+        <div className="px-6 py-4 bg-slate-50 dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex justify-end transition-colors">
           <button 
             onClick={onClose}
-            className="px-4 py-2 text-xs font-medium text-slate-600 hover:text-slate-800 transition-colors"
+            className="px-4 py-2 text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors"
           >
             Close
           </button>
