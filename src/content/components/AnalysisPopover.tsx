@@ -149,7 +149,7 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
         ref={popoverRef}
         role="dialog"
         aria-modal="true"
-        className="absolute z-[9999] w-[320px] bg-[#ffffff] dark:bg-[#1e293b] rounded-xl shadow-2xl border border-[#f1f5f9] dark:border-[#334155] overflow-hidden flex flex-col animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-300"
+        className="absolute z-[9999] w-[320px] bg-[#ffffff] dark:bg-[#1e293b] rounded-xl shadow-2xl border border-[#f1f5f9] dark:border-[#334155] overflow-hidden flex flex-col animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-300 font-sans"
         style={{
           top: finalPosition ? finalPosition.top : '50%',
           left: finalPosition ? finalPosition.left : '50%',
@@ -309,7 +309,7 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
                 <>
                   {activeTab === 'fact-check' && (
                     <div className="flex items-center gap-[8px] mb-[12px]">
-                      <span className="inline-flex items-center gap-[6px] px-[10px] py-[4px] rounded-full text-[12px] font-bold border bg-accent-100/50 text-accent-600 border-accent-100 dark:bg-accent-900/20 dark:text-accent-500 dark:border-accent-900/30">
+                      <span className="inline-flex items-center gap-[6px] px-[10px] py-[4px] rounded-full text-[12px] font-bold border bg-accent-100/50 text-accent-700 border-accent-100 dark:bg-accent-900/20 dark:text-accent-500 dark:border-accent-900/30">
                         <CheckCircle2 size={12} />
                         Verified
                       </span>
