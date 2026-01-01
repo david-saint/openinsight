@@ -2,7 +2,7 @@
 
 ## Phase 1: Secure API Key Storage
 
-- [ ] Task: Implement robust AES-GCM encryption utility using `crypto.subtle` in `src/lib/encryption.ts`.
+- [x] Task: Implement robust AES-GCM encryption utility using `crypto.subtle` in `src/lib/encryption.ts`. [8eab281]
 - [ ] Task: Refactor `saveApiKey` and `getApiKey` in `src/lib/settings.ts` to use the new robust encryption.
 - [ ] Task: Write unit tests for the new encryption utilities.
 - [ ] Task: Conductor - User Manual Verification 'Secure API Key Storage' (Protocol in workflow.md)
