@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { X, BookOpen, Search, Settings, AlertCircle, CheckCircle2, Sparkles, ChevronRight } from 'lucide-react';
 import { sendMessage } from '../../lib/messaging.js';
 
@@ -21,6 +21,10 @@ interface TabData {
   error: string | null;
 }
 
+const POPOVER_WIDTH = 320;
+const POPOVER_ESTIMATED_HEIGHT = 300; // Estimated max height for positioning calculations
+const VIEWPORT_PADDING = 16; // Minimum distance from viewport edges
+
 export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({ 
   isOpen, 
   onClose, 
@@ -35,6 +39,52 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
     explain: { content: null, loading: false, error: null },
     'fact-check': { content: null, loading: false, error: null },
   });
+  const [adjustedPosition, setAdjustedPosition] = useState<{ top: number; left: number } | null>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
+
+  // Calculate viewport-aware position
+  useLayoutEffect(() => {
+    if (!isOpen || !position) {
+      setAdjustedPosition(null);
+      return;
+    }
+
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+
+    // Convert absolute position to viewport-relative
+    const relativeLeft = position.left - scrollX;
+    const relativeTop = position.top - scrollY;
+
+    let adjustedLeft = position.left;
+    let adjustedTop = position.top;
+
+    // Check if popover would overflow right edge
+    if (relativeLeft + POPOVER_WIDTH + VIEWPORT_PADDING > viewportWidth) {
+      // Move to the left of the trigger point
+      adjustedLeft = position.left - POPOVER_WIDTH;
+    }
+
+    // Check if popover would overflow left edge
+    if (adjustedLeft - scrollX < VIEWPORT_PADDING) {
+      adjustedLeft = scrollX + VIEWPORT_PADDING;
+    }
+
+    // Check if popover would overflow bottom edge
+    if (relativeTop + POPOVER_ESTIMATED_HEIGHT + VIEWPORT_PADDING > viewportHeight) {
+      // Move above the trigger point (subtract estimated height + some gap)
+      adjustedTop = position.top - POPOVER_ESTIMATED_HEIGHT - 8;
+    }
+
+    // Check if popover would overflow top edge
+    if (adjustedTop - scrollY < VIEWPORT_PADDING) {
+      adjustedTop = scrollY + VIEWPORT_PADDING;
+    }
+
+    setAdjustedPosition({ top: adjustedTop, left: adjustedLeft });
+  }, [isOpen, position]);
 
   useEffect(() => {
     if (isOpen && selectionText) {
@@ -85,6 +135,8 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
     return "The statement appears consistent with general consensus, though specific nuances may vary depending on historical interpretation.";
   };
 
+  const finalPosition = adjustedPosition || position;
+
   return (
     <>
       {/* Transparent backdrop for click-outside closing */}
@@ -94,13 +146,14 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
       />
       
       <div 
+        ref={popoverRef}
         role="dialog"
         aria-modal="true"
         className="absolute z-[9999] w-[320px] bg-[#ffffff] dark:bg-[#1e293b] rounded-xl shadow-2xl border border-[#f1f5f9] dark:border-[#334155] overflow-hidden flex flex-col animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-300"
         style={{
-          top: position ? position.top : '50%',
-          left: position ? position.left : '50%',
-          transform: position ? 'none' : 'translate(-50%, -50%)',
+          top: finalPosition ? finalPosition.top : '50%',
+          left: finalPosition ? finalPosition.left : '50%',
+          transform: finalPosition ? 'none' : 'translate(-50%, -50%)',
         }}
         onClick={(e) => e.stopPropagation()}
         data-accent={accentColor}
