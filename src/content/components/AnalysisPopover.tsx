@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { X, BookOpen, Search, Settings, AlertCircle, CheckCircle2, Sparkles, ChevronRight } from 'lucide-react';
-import { sendMessage } from '../../lib/messaging.js';
+import { sendMessage } from '../../lib/messaging';
 
 interface AnalysisPopoverProps {
   isOpen: boolean;
@@ -175,9 +175,11 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
             </div>
           ) : (
             <>
-              <div className="flex gap-[4px] ml-[4px]">
+              <div className="flex gap-[4px] ml-[4px]" role="tablist">
                 <button
                   onClick={() => handleTabChange('explain')}
+                  role="tab"
+                  aria-selected={activeTab === 'explain'}
                   className={`px-[16px] py-[10px] text-[12px] font-semibold rounded-t-lg transition-colors flex items-center gap-[6px] ${
                     activeTab === 'explain'
                       ? 'bg-[#ffffff] dark:bg-[#1e293b] text-[#1e293b] dark:text-[#f1f5f9] shadow-sm border-t border-x border-[#f1f5f9] dark:border-[#334155] translate-y-[1px]'
@@ -189,6 +191,8 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
                 </button>
                 <button
                   onClick={() => handleTabChange('fact-check')}
+                  role="tab"
+                  aria-selected={activeTab === 'fact-check'}
                   className={`px-[16px] py-[10px] text-[12px] font-semibold rounded-t-lg transition-colors flex items-center gap-[6px] ${
                     activeTab === 'fact-check'
                       ? 'bg-[#ffffff] dark:bg-[#1e293b] text-[#1e293b] dark:text-[#f1f5f9] shadow-sm border-t border-x border-[#f1f5f9] dark:border-[#334155] translate-y-[1px]'
