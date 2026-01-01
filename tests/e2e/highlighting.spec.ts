@@ -4,13 +4,12 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-test('text selection logs message to console', async () => {
+test('trigger button appears on text selection', async () => {
   const pathToExtension = path.resolve(__dirname, '../../dist');
-  
   const userDataDir = path.resolve(__dirname, '../../.tmp/test-user-data');
   
   const context = await chromium.launchPersistentContext(userDataDir, {
-    headless: false, // Extensions only work in headful mode
+    headless: false,
     args: [
       `--disable-extensions-except=${pathToExtension}`,
       `--load-extension=${pathToExtension}`,
@@ -18,16 +17,6 @@ test('text selection logs message to console', async () => {
   });
 
   const page = await context.newPage();
-  
-  // Create a promise that resolves when the expected log appears
-  const logPromise = new Promise((resolve) => {
-    page.on('console', (msg) => {
-      if (msg.text() === 'Text selected: Example Domain') {
-        resolve(true);
-      }
-    });
-  });
-
   await page.goto('https://example.com');
 
   // Select text using the Selection API
@@ -45,12 +34,13 @@ test('text selection logs message to console', async () => {
     }
   });
 
-  const logFound = await Promise.race([
-    logPromise,
-    new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout waiting for console log')), 5000))
-  ]);
-
-  expect(logFound).toBe(true);
+  // Check for the trigger button inside Shadow DOM
+  // Root element ID: openinsight-root
+  // Shadow root contains the UI
+  const triggerButton = page.locator('#openinsight-root').locator('button[aria-label="Analyze with OpenInsight"]');
+  
+  // Wait for it to be visible
+  await expect(triggerButton).toBeVisible({ timeout: 5000 });
 
   await context.close();
 });
