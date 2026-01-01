@@ -9,9 +9,9 @@
 
 ## Phase 2: Data Structures & Model Caching
 
-- [ ] Task: Define TypeScript interfaces for OpenRouter models and API responses in `src/lib/types.ts`.
-- [ ] Task: Define TypeScript interfaces for typed error responses (NetworkError, AuthError, RateLimitError, LLMError, UnknownError).
-- [ ] Task: Define TypeScript interfaces for LLM prompt settings (temperature, max_tokens, system_prompt).
+- [x] Task: Define TypeScript interfaces for OpenRouter models and API responses in `src/lib/types.ts`. [2daa96f]
+- [x] Task: Define TypeScript interfaces for typed error responses (NetworkError, AuthError, RateLimitError, LLMError, UnknownError). [2daa96f]
+- [x] Task: Define TypeScript interfaces for LLM prompt settings (temperature, max_tokens, system_prompt). [2daa96f]
 - [ ] Task: Implement `ModelManager` to handle fetching and caching (24h) the model list in `chrome.storage.local`.
 - [ ] Task: Update `DEFAULT_SETTINGS` in `src/lib/settings.ts` with default LLM parameters for Explain and Fact-check.
 - [ ] Task: Write unit tests for `ModelManager` and settings utilities.
