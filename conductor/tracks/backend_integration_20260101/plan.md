@@ -28,14 +28,14 @@
 - [x] Task: Write unit tests for background script handlers and error handling. [e37dbaf]
 - [x] Task: Conductor - User Manual Verification 'Background Service Worker Implementation' (Protocol in workflow.md) [104fe22]
 
-## Phase 4: Client Abstraction & Messaging
+## Phase 4: Client Abstraction & Messaging [checkpoint: 36e71f5]
 
 - [x] Task: Define the message schema for `BACKEND_EXPLAIN`, `BACKEND_FACT_CHECK`, `BACKEND_FETCH_MODELS`, and `BACKEND_TEST_KEY`. [84b447b]
 - [x] Task: Implement the `BackendClient` class in `src/lib/backend-client.ts` to abstract `chrome.runtime.sendMessage` for the UI. [84b447b]
 - [x] Task: Design the `BackendClient` class to accommodate future streaming capabilities. [84b447b]
 - [x] Task: Register message listeners in the background script to route incoming client requests to the appropriate handlers. [e37dbaf]
 - [x] Task: Write unit tests for `BackendClient` messaging and routing. [84b447b]
-- [ ] Task: Conductor - User Manual Verification 'Client Abstraction & Messaging' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Client Abstraction & Messaging' (Protocol in workflow.md) [36e71f5]
 
 ## Phase 5: Options Page UI for LLM Settings
 
