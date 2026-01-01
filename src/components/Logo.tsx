@@ -1,5 +1,4 @@
 import React from 'react';
-import logoUrl from '../assets/logo.svg';
 
 interface LogoProps {
   className?: string;
@@ -8,7 +7,7 @@ interface LogoProps {
 export const Logo: React.FC<LogoProps> = ({ className }) => {
   return (
     <img 
-      src={logoUrl} 
+      src="/logos/logo-transparent.png" 
       className={className} 
       alt="OpenInsight Logo" 
     />
