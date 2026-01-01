@@ -75,6 +75,6 @@ Refine the UI to strictly follow the "Epistemic Minimalism" philosophy and ensur
 - [x] Task: E2E Test - Trigger button appears on text selection [77cd599]
 - [x] Task: E2E Test - Modal opens on trigger click with Explain tab active [db35b17]
 - [x] Task: E2E Test - Tab switching between Explain and Fact Check views [db35b17]
-- [ ] Task: E2E Test - Quick Settings toggle and theme change application
-- [ ] Task: E2E Test - "Open Full Settings" navigates to options page
+- [x] Task: E2E Test - Quick Settings toggle and theme change application [f11f7be]
+- [x] Task: E2E Test - "Open Full Settings" navigates to options page [f1fa2d9]
 - [ ] Task: Conductor - User Manual Verification 'Phase 6: Polishing' (Protocol in workflow.md)
