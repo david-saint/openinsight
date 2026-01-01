@@ -7,7 +7,7 @@
 - [x] Task: Write unit tests for the new encryption utilities. [499f2fa]
 - [x] Task: Conductor - User Manual Verification 'Secure API Key Storage' (Protocol in workflow.md) [d4b79e6]
 
-## Phase 2: Data Structures & Model Caching
+## Phase 2: Data Structures & Model Caching [checkpoint: da1650b]
 
 - [x] Task: Define TypeScript interfaces for OpenRouter models and API responses in `src/lib/types.ts`. [2daa96f]
 - [x] Task: Define TypeScript interfaces for typed error responses (NetworkError, AuthError, RateLimitError, LLMError, UnknownError). [2daa96f]
@@ -15,7 +15,7 @@
 - [x] Task: Implement `ModelManager` to handle fetching and caching (24h) the model list in `chrome.storage.local`. [f69e44d]
 - [x] Task: Update `DEFAULT_SETTINGS` in `src/lib/settings.ts` with default LLM parameters for Explain and Fact-check. [1458a01]
 - [x] Task: Write unit tests for `ModelManager` and settings utilities. [ffb91cd]
-- [ ] Task: Conductor - User Manual Verification 'Data Structures & Model Caching' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Data Structures & Model Caching' (Protocol in workflow.md) [da1650b]
 
 ## Phase 3: Background Service Worker Implementation
 
