@@ -30,11 +30,11 @@
 
 ## Phase 4: Client Abstraction & Messaging
 
-- [ ] Task: Define the message schema for `BACKEND_EXPLAIN`, `BACKEND_FACT_CHECK`, `BACKEND_FETCH_MODELS`, and `BACKEND_TEST_KEY`.
-- [ ] Task: Implement the `BackendClient` class in `src/lib/backend-client.ts` to abstract `chrome.runtime.sendMessage` for the UI.
-- [ ] Task: Design the `BackendClient` class to accommodate future streaming capabilities.
+- [x] Task: Define the message schema for `BACKEND_EXPLAIN`, `BACKEND_FACT_CHECK`, `BACKEND_FETCH_MODELS`, and `BACKEND_TEST_KEY`. [84b447b]
+- [x] Task: Implement the `BackendClient` class in `src/lib/backend-client.ts` to abstract `chrome.runtime.sendMessage` for the UI. [84b447b]
+- [x] Task: Design the `BackendClient` class to accommodate future streaming capabilities. [84b447b]
 - [x] Task: Register message listeners in the background script to route incoming client requests to the appropriate handlers. [e37dbaf]
-- [ ] Task: Write unit tests for `BackendClient` messaging and routing.
+- [x] Task: Write unit tests for `BackendClient` messaging and routing. [84b447b]
 - [ ] Task: Conductor - User Manual Verification 'Client Abstraction & Messaging' (Protocol in workflow.md)
 
 ## Phase 5: Options Page UI for LLM Settings
