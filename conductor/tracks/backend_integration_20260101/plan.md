@@ -39,10 +39,11 @@
 
 ## Phase 5: Options Page UI for LLM Settings
 
-- [ ] Task: Create UI components for configuring Explain parameters (temperature, max_tokens, system_prompt).
-- [ ] Task: Create UI components for configuring Fact-check parameters (temperature, max_tokens, system_prompt).
-- [ ] Task: Integrate the new settings components into the Options page following the design philosophy.
-- [ ] Task: Write unit tests for the new Options page components.
+- [x] Task: Create UI components for configuring Explain parameters (temperature, max_tokens, system_prompt). [15d14d8]
+- [x] Task: Create UI components for configuring Fact-check parameters (temperature, max_tokens, system_prompt). [15d14d8]
+- [x] Task: Integrate the new settings components into the Options page following the design philosophy. [15d14d8]
+- [x] Task: Write unit tests for the new Options page components. [15d14d8]
+- [ ] Task: Conductor - User Manual Verification 'Options Page UI for LLM Settings' (Protocol in workflow.md)
 - [ ] Task: Conductor - User Manual Verification 'Options Page UI for LLM Settings' (Protocol in workflow.md)
 
 ## Phase 6: API Key Verification & Toast Notification
