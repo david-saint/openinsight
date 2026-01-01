@@ -22,8 +22,8 @@
 - [x] Task: Implement a secure `fetch` utility in `background.ts` that retrieves the encrypted API key for OpenRouter requests. [34e1c77]
 - [x] Task: Implement the core logic for the "Explain" prompt, supporting configurable temperature, max_tokens, and system_prompt. [8eb488e]
 - [x] Task: Implement the core logic for the "Fact-check" prompt, supporting configurable parameters. [8eb488e]
-- [ ] Task: Implement the "Test API Key" logic by sending a minimal request to OpenRouter.
-- [ ] Task: Implement the "Fetch Models" logic to retrieve available models from OpenRouter.
+- [x] Task: Implement the "Test API Key" logic by sending a minimal request to OpenRouter. [2b8cd4f]
+- [x] Task: Implement the "Fetch Models" logic to retrieve available models from OpenRouter. [2b8cd4f]
 - [ ] Task: Implement error differentiation logic to return typed error responses (network, auth, rate-limit, LLM, unknown).
 - [ ] Task: Write unit tests for background script handlers and error handling.
 - [ ] Task: Conductor - User Manual Verification 'Background Service Worker Implementation' (Protocol in workflow.md)
