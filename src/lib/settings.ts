@@ -18,7 +18,8 @@ export const DEFAULT_SETTINGS: Settings = {
 
 export const SETTINGS_KEY = 'user_settings';
 const API_KEY_KEY = 'api_key';
-// Obfuscation key only. Not for real security against the user.
+// Key for AES-GCM encryption. 
+// Note: In a client-side extension without user password, this acts as obfuscation against casual inspection.
 const OBFUSCATION_KEY = 'openinsight_local_obfuscation';
 
 export async function getSettings(): Promise<Settings> {
