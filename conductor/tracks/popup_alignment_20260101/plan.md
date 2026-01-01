@@ -6,7 +6,7 @@ Redesign the extension popup to follow the epistemic minimalism design philosoph
 - [x] Task: Create `src/popup/components/PopupHeader.tsx` based on the design in `src/options/components/Header.tsx`. 5e2add0
 - [x] Task: Create unit tests for `Popup.tsx` loading state and settings retrieval in `tests/unit/popup_ui.test.tsx`. 3e743fc
 - [x] Task: Implement settings and accent color retrieval logic in `src/popup/Popup.tsx`. 3e743fc
-- [~] Task: Conductor - User Manual Verification 'Foundation & Data Loading' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Foundation & Data Loading' (Protocol in workflow.md)
 
 ## Phase 2: UI Implementation
 - [ ] Task: Implement the refined Popup UI with theme-aware containers and the "Open Settings" button.
