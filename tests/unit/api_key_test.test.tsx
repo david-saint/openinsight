@@ -3,9 +3,9 @@
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, cleanup, fireEvent, waitFor } from '@testing-library/react';
-import Options from '../../src/options/Options';
-import * as settings from '../../src/lib/settings';
-import { BackendClient } from '../../src/lib/backend-client';
+import Options from '../../src/options/Options.js';
+import * as settings from '../../src/lib/settings.js';
+import { BackendClient } from '../../src/lib/backend-client.js';
 
 // Mock settings module
 vi.mock('../../src/lib/settings', () => ({
@@ -47,7 +47,7 @@ describe('API Key Verification Flow', () => {
     
     render(<Options />);
     
-    const testButton = await screen.findByRole('button', { name: /test connection/i });
+    const testButton = await screen.findByRole('button', { name: /^test$/i });
     fireEvent.click(testButton);
     
     expect(await screen.findByText(/testing.../i)).toBeDefined();
@@ -66,7 +66,7 @@ describe('API Key Verification Flow', () => {
     
     render(<Options />);
     
-    const testButton = await screen.findByRole('button', { name: /test connection/i });
+    const testButton = await screen.findByRole('button', { name: /^test$/i });
     fireEvent.click(testButton);
     
     await waitFor(() => {
@@ -81,7 +81,7 @@ describe('API Key Verification Flow', () => {
     render(<Options />);
     
     const input = await screen.findByPlaceholderText('sk-or-v1-...');
-    const testButton = screen.getByRole('button', { name: /test connection/i });
+    const testButton = screen.getByRole('button', { name: /^test$/i });
     
     fireEvent.click(testButton);
     await waitFor(() => expect(screen.getByText(/verified/i)).toBeDefined());
@@ -91,7 +91,7 @@ describe('API Key Verification Flow', () => {
     
     await waitFor(() => {
       expect(screen.queryByText(/verified/i)).toBeNull();
-      expect(screen.getByText(/test connection/i)).toBeDefined();
+      expect(screen.getByText(/^test$/i)).toBeDefined();
     });
   });
 });

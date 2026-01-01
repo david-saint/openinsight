@@ -71,12 +71,12 @@ describe('Options Component', () => {
     const explainSelect = await screen.findByLabelText(/explain model/i);
     const factCheckSelect = await screen.findByLabelText(/fact-check model/i);
     
-    fireEvent.change(explainSelect, { target: { value: 'anthropic/claude-3-haiku:free' } });
-    fireEvent.change(factCheckSelect, { target: { value: 'openai/gpt-4o-mini' } });
+    fireEvent.change(explainSelect, { target: { value: 'meta-llama/llama-3.3-70b-instruct:free' } });
+    fireEvent.change(factCheckSelect, { target: { value: 'mistralai/devstral-2512:free' } });
     
     expect(settings.saveSettings).toHaveBeenCalledWith(expect.objectContaining({
-      explainModel: 'anthropic/claude-3-haiku:free',
-      factCheckModel: 'openai/gpt-4o-mini',
+      explainModel: 'meta-llama/llama-3.3-70b-instruct:free',
+      factCheckModel: 'mistralai/devstral-2512:free',
     }));
   });
 

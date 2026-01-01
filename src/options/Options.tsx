@@ -3,7 +3,7 @@ import { getSettings, saveSettings, getApiKey, saveApiKey, DEFAULT_SETTINGS } fr
 import type { Settings } from '../lib/settings.js';
 import { THEME_COLORS, MODELS } from './constants.js';
 import { BackendClient } from '../lib/backend-client.js';
-import { AppError } from '../lib/types.js';
+import type { AppError, OpenRouterModel } from '../lib/types.js';
 
 // Components
 import { Header } from './components/Header.js';
@@ -13,6 +13,7 @@ import { AppearanceSection } from './components/AppearanceSection.js';
 import { BehaviorSection } from './components/BehaviorSection.js';
 import { Footer } from './components/Footer.js';
 import { Toast } from './components/Toast.js';
+import { ModelSelectorModal } from './components/ModelSelectorModal.js';
 
 const Options: React.FC = () => {
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
@@ -23,6 +24,11 @@ const Options: React.FC = () => {
   const [isTesting, setIsTesting] = useState(false);
   const [testStatus, setTestStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [toast, setToast] = useState<{ message: string, type: 'success' | 'error' } | null>(null);
+
+  // Model selector modal state
+  const [allModels, setAllModels] = useState<OpenRouterModel[]>([]);
+  const [isModelModalOpen, setIsModelModalOpen] = useState(false);
+  const [modelModalContext, setModelModalContext] = useState<'explain' | 'factCheck'>('explain');
 
   useEffect(() => {
     const load = async () => {
@@ -37,6 +43,20 @@ const Options: React.FC = () => {
       }
     };
     load();
+  }, []);
+
+  // Fetch all models on mount (non-blocking)
+  useEffect(() => {
+    const fetchModels = async () => {
+      try {
+        const models = await BackendClient.fetchModels();
+        setAllModels(models);
+      } catch (e) {
+        console.error('Error fetching models:', e);
+        // Non-critical, silently fail - default models will still work
+      }
+    };
+    fetchModels();
   }, []);
 
   const handleSave = async (newSettings: Settings) => {
@@ -76,6 +96,19 @@ const Options: React.FC = () => {
     }
   };
 
+  const handleBrowseModels = (context: 'explain' | 'factCheck') => {
+    setModelModalContext(context);
+    setIsModelModalOpen(true);
+  };
+
+  const handleModelSelect = (modelId: string) => {
+    if (modelModalContext === 'explain') {
+      handleSave({ ...settings, explainModel: modelId });
+    } else {
+      handleSave({ ...settings, factCheckModel: modelId });
+    }
+  };
+
   useEffect(() => {
     const isDark = settings.theme === 'dark' || (settings.theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
     if (isDark) {
@@ -92,6 +125,8 @@ const Options: React.FC = () => {
       </div>
     );
   }
+
+  const currentModelId = modelModalContext === 'explain' ? settings.explainModel : settings.factCheckModel;
 
   return (
     <div 
@@ -116,6 +151,8 @@ const Options: React.FC = () => {
             settings={settings}
             onSave={handleSave}
             models={MODELS}
+            allModels={allModels}
+            onBrowseModels={handleBrowseModels}
           />
 
           <AppearanceSection 
@@ -140,6 +177,14 @@ const Options: React.FC = () => {
           onClose={() => setToast(null)} 
         />
       )}
+
+      <ModelSelectorModal
+        isOpen={isModelModalOpen}
+        onClose={() => setIsModelModalOpen(false)}
+        onSelect={handleModelSelect}
+        models={allModels}
+        currentModelId={currentModelId}
+      />
     </div>
   );
 };

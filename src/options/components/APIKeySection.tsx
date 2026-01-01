@@ -58,7 +58,7 @@ export const APIKeySection: React.FC<APIKeySectionProps> = ({
               ) : testStatus === 'error' ? (
                 <X size={14} />
               ) : null}
-              {isTesting ? 'Testing...' : testStatus === 'success' ? 'Verified' : testStatus === 'error' ? 'Failed' : 'Test Connection'}
+              {isTesting ? 'Testing...' : testStatus === 'success' ? 'Verified' : testStatus === 'error' ? 'Failed' : 'Test'}
             </button>
           </div>
           <p className="mt-3 text-[10px] text-slate-400 leading-relaxed max-w-sm">
