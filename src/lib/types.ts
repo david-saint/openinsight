@@ -42,6 +42,28 @@ export interface LLMSettings {
   system_prompt: string;
 }
 
+export type FactCheckVerdict = 'True' | 'False' | 'Partially True' | 'Unverifiable';
+
+export interface ExplainResponse {
+  summary: string;
+  explanation: string;
+  context?: {
+    example?: string;
+    related_concepts?: string[];
+  };
+}
+
+export interface FactCheckResponse {
+  summary: string;
+  verdict: FactCheckVerdict;
+  details: string;
+  sources?: {
+    title: string;
+    url: string;
+    snippet?: string;
+  }[];
+}
+
 export type ErrorType = 'network' | 'auth' | 'rate_limit' | 'llm' | 'unknown';
 
 export interface AppError {
