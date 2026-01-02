@@ -10,7 +10,7 @@
 
 ## Phase 2: Smart Popover Logic
 
-- [ ] Task: Implement text selection listeners with character count validation (10-2000 chars).
+- [x] Task: Implement text selection listeners with character count validation (10-2000 chars). 604c076
 - [ ] Task: Add "Fact-check" visibility logic (>50 chars).
 - [ ] Task: Implement context extraction (paragraph, title, description) for Fact-check requests.
 - [ ] Task: Conductor - User Manual Verification 'Smart Popover Logic' (Protocol in workflow.md)
