@@ -12,6 +12,7 @@ export const ContentApp: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [selectionText, setSelectionText] = useState('');
+  const [selectionContext, setSelectionContext] = useState<{ paragraph: string; pageTitle: string; pageDescription: string } | undefined>(undefined);
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const timeoutRef = React.useRef<number | undefined>(undefined);
 
@@ -42,6 +43,7 @@ export const ContentApp: React.FC = () => {
           const pos = calculateTriggerPosition(selectionData.endPosition);
           setTriggerPosition(pos);
           setSelectionText(selectionData.text);
+          setSelectionContext(selectionData.context);
           setIsVisible(true);
         } else {
           setIsVisible(false);
@@ -88,6 +90,7 @@ export const ContentApp: React.FC = () => {
         isOpen={isPopoverOpen} 
         onClose={handleClosePopover}
         selectionText={selectionText}
+        selectionContext={selectionContext}
         accentColor={settings.accentColor}
         onAccentChange={handleAccentChange}
         position={triggerPosition || undefined}

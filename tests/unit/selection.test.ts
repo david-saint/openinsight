@@ -4,7 +4,33 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { handleSelection } from "../../src/content/selection";
 
-describe("Selection Listener", () => {
+describe("Selection Logic", () => {
+  const setupMockSelection = (text: string) => {
+    const mockRect = { top: 0, left: 0, width: 0, height: 0, bottom: 0, right: 0 };
+    const mockRange = {
+      getBoundingClientRect: () => mockRect,
+      endContainer: document.createTextNode(text),
+      endOffset: text.length,
+      commonAncestorContainer: { 
+        nodeType: 1, 
+        innerText: "Context Paragraph",
+        parentElement: null 
+      }
+    };
+    const mockEndRange = {
+      setStart: vi.fn(),
+      collapse: vi.fn(),
+      getBoundingClientRect: () => ({ left: 0, bottom: 0 }),
+    };
+    
+    document.createRange = vi.fn().mockReturnValue(mockEndRange);
+    window.getSelection = vi.fn().mockReturnValue({
+      toString: () => text,
+      rangeCount: 1,
+      getRangeAt: () => mockRange,
+    });
+  };
+
   it("should return null if no text is selected", () => {
     window.getSelection = vi.fn().mockReturnValue({
       toString: () => "",
@@ -14,42 +40,47 @@ describe("Selection Listener", () => {
     expect(result).toBeNull();
   });
 
-  it("should return selection data if text is selected", () => {
-    const mockTextNode = document.createTextNode("Hello World");
-    const mockRect = {
-      top: 10,
-      left: 10,
-      width: 100,
-      height: 20,
-      bottom: 30,
-      right: 110,
-    };
-    const mockRange = {
-      getBoundingClientRect: () => mockRect,
-      endContainer: mockTextNode,
-      endOffset: 11,
-    };
-    const mockEndRange = {
-      setStart: vi.fn(),
-      collapse: vi.fn(),
-      getBoundingClientRect: () => ({ left: 110, bottom: 30 }),
-    };
-    const originalCreateRange = document.createRange;
-    document.createRange = vi.fn().mockReturnValue(mockEndRange);
-
-    window.getSelection = vi.fn().mockReturnValue({
-      toString: () => "Hello World",
-      rangeCount: 1,
-      getRangeAt: () => mockRange,
-    });
-
+  it("should return null if selection is too short (< 10 chars)", () => {
+    setupMockSelection("Too short");
     const result = handleSelection();
-    expect(result).toEqual({
-      text: "Hello World",
-      rect: expect.any(Object),
-      endPosition: { x: 110, y: 30 },
-    });
+    expect(result).toBeNull();
+  });
 
-    document.createRange = originalCreateRange;
+  it("should return null if selection is too long (> 2000 chars)", () => {
+    setupMockSelection("a".repeat(2001));
+    const result = handleSelection();
+    expect(result).toBeNull();
+  });
+
+  it("should return null if selection has no full words", () => {
+    setupMockSelection("1234567890!!!");
+    const result = handleSelection();
+    expect(result).toBeNull();
+  });
+
+  it("should return selection data for valid selection", () => {
+    const validText = "This is a valid selection with enough words.";
+    setupMockSelection(validText);
+    const result = handleSelection();
+    expect(result).not.toBeNull();
+    expect(result?.text).toBe(validText);
+  });
+
+  it("should include context in selection data", () => {
+    document.title = "Page Title";
+    const meta = document.createElement('meta');
+    meta.name = "description";
+    meta.content = "Page Description";
+    document.head.appendChild(meta);
+
+    const validText = "Valid selection for context test.";
+    setupMockSelection(validText);
+    
+    const result = handleSelection();
+    expect(result?.context).toEqual({
+      paragraph: expect.any(String),
+      pageTitle: "Page Title",
+      pageDescription: "Page Description"
+    });
   });
 });

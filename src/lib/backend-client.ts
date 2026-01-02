@@ -1,9 +1,11 @@
-import { 
+import type { 
   BackendMessage, 
   BackendResponse, 
   OpenRouterModel, 
-  AppError 
-} from './types';
+  AppError,
+  ExplainResponse,
+  FactCheckResponse
+} from './types.js';
 
 /**
  * Client class to interact with the background service worker.
@@ -35,6 +37,36 @@ export class BackendClient {
 
   /**
    * Requests an explanation for the provided text.
+   * Returns a structured ExplainResponse object.
+   */
+  static async explainText(text: string): Promise<ExplainResponse> {
+    return BackendClient.send<ExplainResponse>({
+      type: 'BACKEND_EXPLAIN',
+      payload: { text }
+    });
+  }
+
+  /**
+   * Requests a fact-check for the provided text with context.
+   * Returns a structured FactCheckResponse object.
+   */
+  static async factCheckText(
+    text: string, 
+    context: { 
+      paragraph: string; 
+      pageTitle: string; 
+      pageDescription: string; 
+    }
+  ): Promise<FactCheckResponse> {
+    return BackendClient.send<FactCheckResponse>({
+      type: 'BACKEND_FACT_CHECK',
+      payload: { text, context }
+    });
+  }
+
+  /**
+   * Requests an explanation for the provided text.
+   * @deprecated Use explainText for structured responses.
    */
   static async explain(text: string): Promise<string> {
     return BackendClient.send<string>({
@@ -45,6 +77,7 @@ export class BackendClient {
 
   /**
    * Requests a fact-check for the provided text.
+   * @deprecated Use factCheckText for structured responses.
    */
   static async factCheck(text: string): Promise<string> {
     return BackendClient.send<string>({
