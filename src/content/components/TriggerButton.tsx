@@ -6,7 +6,7 @@ interface TriggerButtonProps {
   onTrigger: () => void;
 }
 
-export const TriggerButton: React.FC<TriggerButtonProps> = ({ position, onTrigger }) => {
+export const TriggerButton = React.memo(({ position, onTrigger }: TriggerButtonProps) => {
   return (
     <button
       onClick={onTrigger}
@@ -24,4 +24,6 @@ export const TriggerButton: React.FC<TriggerButtonProps> = ({ position, onTrigge
       />
     </button>
   );
-};
+});
+
+TriggerButton.displayName = 'TriggerButton';

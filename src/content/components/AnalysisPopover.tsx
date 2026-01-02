@@ -25,14 +25,14 @@ const POPOVER_WIDTH = 320;
 const POPOVER_ESTIMATED_HEIGHT = 300; // Estimated max height for positioning calculations
 const VIEWPORT_PADDING = 16; // Minimum distance from viewport edges
 
-export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({ 
+export const AnalysisPopover = React.memo(({
   isOpen, 
   onClose, 
   selectionText,
   accentColor = 'teal',
   onAccentChange,
   position
-}) => {
+}: AnalysisPopoverProps) => {
   const [activeTab, setActiveTab] = useState<TabId>('explain');
   const [showSettings, setShowSettings] = useState(false);
   const [data, setData] = useState<Record<TabId, TabData>>({
@@ -340,4 +340,6 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
       </div>
     </>
   );
-};
+});
+
+AnalysisPopover.displayName = 'AnalysisPopover';

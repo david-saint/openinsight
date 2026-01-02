@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { TriggerButton } from './components/TriggerButton.js';
 import { AnalysisPopover } from './components/AnalysisPopover.js';
 import { handleSelection } from './selection.js';
 import { calculateTriggerPosition } from './positioning.js';
 import type { Position } from './positioning.js';
-import { getSettings, DEFAULT_SETTINGS, SETTINGS_KEY } from '../lib/settings.js';
+import { getSettings, saveSettings, DEFAULT_SETTINGS, SETTINGS_KEY } from '../lib/settings.js';
 import type { Settings } from '../lib/settings.js';
 
 export const ContentApp: React.FC = () => {
@@ -57,21 +57,20 @@ export const ContentApp: React.FC = () => {
     };
   }, [isPopoverOpen]);
 
-  const handleTrigger = () => {
+  const handleTrigger = useCallback(() => {
     setIsVisible(false);
     setIsPopoverOpen(true);
-  };
+  }, []);
 
-  const handleClosePopover = () => {
+  const handleClosePopover = useCallback(() => {
     setIsPopoverOpen(false);
-  };
+  }, []);
 
-  const handleAccentChange = (color: string) => {
+  const handleAccentChange = useCallback((color: string) => {
     const newSettings = { ...settings, accentColor: color };
     setSettings(newSettings);
-    // Persist change
-    import('../lib/settings.js').then(m => m.saveSettings(newSettings));
-  };
+    saveSettings(newSettings);
+  }, [settings]);
 
   const isDark = settings.theme === 'dark' || (settings.theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
