@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Cpu, ChevronDown, Settings2, MoreHorizontal } from 'lucide-react';
+import { Cpu, ChevronDown, Settings2, MoreHorizontal, Sparkles } from 'lucide-react';
 import type { Settings } from '../../lib/settings.js';
 import type { LLMSettings, OpenRouterModel } from '../../lib/types.js';
+import type { StylePreference } from '../../lib/prompt-manager.js';
 
 interface IntelligenceSectionProps {
   settings: Settings;
@@ -107,17 +108,6 @@ const ModelSettings: React.FC<{
                 onChange={(e) => onSettingsChange({ ...llmSettings, max_tokens: parseInt(e.target.value) })}
               />
             </div>
-
-            <div className="space-y-2">
-              <label htmlFor={`${label}-prompt`} className="text-[10px] font-medium opacity-70 uppercase tracking-tight">System Prompt</label>
-              <textarea 
-                id={`${label}-prompt`}
-                className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-accent-500 resize-none h-20 transition-colors"
-                value={llmSettings.system_prompt}
-                onChange={(e) => onSettingsChange({ ...llmSettings, system_prompt: e.target.value })}
-                placeholder="Enter system prompt..."
-              />
-            </div>
           </div>
         )}
       </div>
@@ -136,9 +126,27 @@ export const IntelligenceSection: React.FC<IntelligenceSectionProps> = ({
 
   return (
     <div className="p-8 border-b border-slate-100 dark:border-slate-700 transition-colors">
-      <div className="flex items-center gap-2 mb-6 opacity-50">
-        <Cpu size={14} />
-        <h2 className="text-[10px] font-bold uppercase tracking-wider">Intelligence</h2>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-2 opacity-50">
+          <Cpu size={14} />
+          <h2 className="text-[10px] font-bold uppercase tracking-wider">Intelligence</h2>
+        </div>
+        
+        <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-900/50 px-3 py-1.5 rounded-full border border-slate-100 dark:border-slate-800">
+          <Sparkles size={12} className="text-accent-500" />
+          <span className="text-[10px] font-bold uppercase tracking-wider opacity-60">Style</span>
+          <div className="relative">
+            <select
+              className="appearance-none bg-transparent pr-5 text-[10px] font-bold focus:outline-none cursor-pointer text-accent-600 dark:text-accent-400"
+              value={settings.stylePreference}
+              onChange={(e) => onSave({ ...settings, stylePreference: e.target.value as StylePreference })}
+            >
+              <option value="Concise">Concise</option>
+              <option value="Detailed">Detailed</option>
+            </select>
+            <ChevronDown size={10} className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none opacity-50" />
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
