@@ -2,18 +2,19 @@ import { OpenRouterService } from './openrouter-service';
 import { getSettings } from '../lib/settings';
 import { OpenRouterModel, AppError } from '../lib/types';
 import { ModelManager } from '../lib/model-manager';
+import { PromptManager } from '../lib/prompt-manager';
 
 /**
  * Handles the "Explain" request by calling OpenRouterService.
  */
 export async function handleExplain(text: string): Promise<any> {
   const settings = await getSettings();
-  const { explainModel, explainSettings } = settings;
+  const { explainModel, explainSettings, stylePreference } = settings;
 
   return OpenRouterService.chatCompletion({
     model: explainModel,
     messages: [
-      { role: 'system', content: explainSettings.system_prompt },
+      { role: 'system', content: PromptManager.getExplainPrompt(stylePreference) },
       { role: 'user', content: text },
     ],
     temperature: explainSettings.temperature,
@@ -33,13 +34,12 @@ export async function handleFactCheck(payload: {
   } 
 }): Promise<any> {
   const settings = await getSettings();
-  const { factCheckModel, factCheckSettings } = settings;
+  const { factCheckModel, factCheckSettings, stylePreference } = settings;
 
-  // For now we still just pass the text, context will be used in Task 4
   return OpenRouterService.chatCompletion({
     model: factCheckModel,
     messages: [
-      { role: 'system', content: factCheckSettings.system_prompt },
+      { role: 'system', content: PromptManager.getFactCheckPrompt(stylePreference) },
       { role: 'user', content: payload.text },
     ],
     temperature: factCheckSettings.temperature,

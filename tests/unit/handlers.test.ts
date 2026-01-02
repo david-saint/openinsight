@@ -57,7 +57,7 @@ describe('Background Handlers', () => {
       expect(OpenRouterService.chatCompletion).toHaveBeenCalledWith({
         model: 'test-model',
         messages: [
-          { role: 'system', content: 'You are an explainer.' },
+          { role: 'system', content: expect.stringContaining('You are an expert explainer.') },
           { role: 'user', content: 'text to explain' }
         ],
         temperature: 0.5,
@@ -85,7 +85,7 @@ describe('Background Handlers', () => {
       expect(OpenRouterService.chatCompletion).toHaveBeenCalledWith({
         model: 'fact-model',
         messages: [
-          { role: 'system', content: 'You are a fact-checker.' },
+          { role: 'system', content: expect.stringContaining('You are an expert fact-checker.') },
           { role: 'user', content: 'text to check' }
         ],
         temperature: 0.2,

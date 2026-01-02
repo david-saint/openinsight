@@ -1,5 +1,6 @@
 import { getStorage, setStorage, getEncrypted, setEncrypted } from './storage';
 import { LLMSettings } from './types';
+import { StylePreference } from './prompt-manager';
 
 export interface Settings {
   theme: 'light' | 'dark' | 'system';
@@ -7,6 +8,7 @@ export interface Settings {
   explainModel: string;
   factCheckModel: string;
   triggerMode: 'icon' | 'immediate';
+  stylePreference: StylePreference;
   explainSettings: LLMSettings;
   factCheckSettings: LLMSettings;
 }
@@ -17,15 +19,16 @@ export const DEFAULT_SETTINGS: Settings = {
   explainModel: 'google/gemini-2.0-flash-exp:free',
   factCheckModel: 'google/gemini-2.0-flash-exp:free',
   triggerMode: 'icon',
+  stylePreference: 'Concise',
   explainSettings: {
-    temperature: 0.7,
-    max_tokens: 512,
-    system_prompt: 'You are an expert explainer. Provide a concise, clear, and objective explanation of the following text or concept. Focus on clarity and neutrality.'
+    temperature: 0.1, // Lower temperature for more consistent JSON
+    max_tokens: 1000,
+    system_prompt: '' // No longer used for direct user editing
   },
   factCheckSettings: {
-    temperature: 0.3,
-    max_tokens: 512,
-    system_prompt: 'You are an expert fact-checker. Verify the accuracy of the following text. Provide a verdict (True/False/Mixed) and a brief justification with sources if possible.'
+    temperature: 0.1,
+    max_tokens: 1000,
+    system_prompt: '' // No longer used for direct user editing
   }
 };
 
