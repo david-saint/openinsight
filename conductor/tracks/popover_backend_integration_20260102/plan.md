@@ -5,7 +5,7 @@
 - [x] Task: Define TypeScript interfaces for the new `ExplainResponse` and `FactCheckResponse` schemas in `src/lib/types.ts`. e5b948e
 - [x] Task: Extend the existing `BackendClient` class in `src/lib/backend-client.ts` with strictly typed `explainText` and `factCheckText` methods. cfc2bda
 - [x] Task: Refactor `background.ts` to extract an `OpenRouterService` class with `fetch` logic, JSON response parsing, and error handling. 51c5605
-- [ ] Task: Implement `system_prompt` management logic: dynamically construct prompts based on style preference (`Concise` | `Detailed`) and append internal JSON formatting instructions.
+- [x] Task: Implement `system_prompt` management logic: dynamically construct prompts based on style preference (`Concise` | `Detailed`) and append internal JSON formatting instructions. f56ebca
 - [ ] Task: Conductor - User Manual Verification 'Robust Backend Architecture' (Protocol in workflow.md)
 
 ## Phase 2: Smart Popover Logic
