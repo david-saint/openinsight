@@ -136,6 +136,7 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
   };
 
   const finalPosition = adjustedPosition || position;
+  const isFactCheckVisible = selectionText.length > 50;
 
   return (
     <>
@@ -189,19 +190,21 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
                   <BookOpen size={12} />
                   Explain
                 </button>
-                <button
-                  onClick={() => handleTabChange('fact-check')}
-                  role="tab"
-                  aria-selected={activeTab === 'fact-check'}
-                  className={`px-[16px] py-[10px] text-[12px] font-semibold rounded-t-lg transition-colors flex items-center gap-[6px] ${
-                    activeTab === 'fact-check'
-                      ? 'bg-[#ffffff] dark:bg-[#1e293b] text-[#1e293b] dark:text-[#f1f5f9] shadow-sm border-t border-x border-[#f1f5f9] dark:border-[#334155] translate-y-[1px]'
-                      : 'text-[#64748b] hover:text-[#334155] dark:hover:text-[#cbd5e1]'
-                  }`}
-                >
-                  <Search size={12} />
-                  Fact Check
-                </button>
+                {isFactCheckVisible && (
+                  <button
+                    onClick={() => handleTabChange('fact-check')}
+                    role="tab"
+                    aria-selected={activeTab === 'fact-check'}
+                    className={`px-[16px] py-[10px] text-[12px] font-semibold rounded-t-lg transition-colors flex items-center gap-[6px] ${
+                      activeTab === 'fact-check'
+                        ? 'bg-[#ffffff] dark:bg-[#1e293b] text-[#1e293b] dark:text-[#f1f5f9] shadow-sm border-t border-x border-[#f1f5f9] dark:border-[#334155] translate-y-[1px]'
+                        : 'text-[#64748b] hover:text-[#334155] dark:hover:text-[#cbd5e1]'
+                    }`}
+                  >
+                    <Search size={12} />
+                    Fact Check
+                  </button>
+                )}
               </div>
               <div className="flex items-center gap-[4px] pr-[8px]">
                 <button

@@ -13,6 +13,8 @@ vi.mock('../../src/lib/messaging.js', () => ({
 }));
 
 describe('Analysis Popover Component', () => {
+  const longText = 'This is a sufficiently long selection text to ensure Fact Check tab is visible in tests.';
+
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(sendMessage).mockResolvedValue({ success: true, result: 'mocked content' });
@@ -24,7 +26,7 @@ describe('Analysis Popover Component', () => {
         <AnalysisPopover 
           isOpen={true} 
           onClose={() => {}} 
-          selectionText="test text"
+          selectionText={longText}
         />
       );
     });
@@ -39,7 +41,7 @@ describe('Analysis Popover Component', () => {
         <AnalysisPopover 
           isOpen={false} 
           onClose={() => {}} 
-          selectionText="test text"
+          selectionText={longText}
         />
       );
     });
@@ -53,7 +55,7 @@ describe('Analysis Popover Component', () => {
         <AnalysisPopover 
           isOpen={true} 
           onClose={() => {}} 
-          selectionText="selected text sample"
+          selectionText={longText}
         />
       );
     });
@@ -72,7 +74,7 @@ describe('Analysis Popover Component', () => {
         <AnalysisPopover 
           isOpen={true} 
           onClose={() => {}} 
-          selectionText="test"
+          selectionText={longText}
         />
       );
     });
@@ -87,7 +89,7 @@ describe('Analysis Popover Component', () => {
         <AnalysisPopover 
           isOpen={true} 
           onClose={() => {}} 
-          selectionText="test"
+          selectionText={longText}
         />
       );
     });
@@ -108,7 +110,7 @@ describe('Analysis Popover Component', () => {
         <AnalysisPopover 
           isOpen={true} 
           onClose={() => {}} 
-          selectionText="test"
+          selectionText={longText}
         />
       );
     });
@@ -133,7 +135,7 @@ describe('Analysis Popover Component', () => {
         <AnalysisPopover 
           isOpen={true} 
           onClose={() => {}} 
-          selectionText="test"
+          selectionText={longText}
         />
       );
     });
@@ -155,7 +157,7 @@ describe('Analysis Popover Component', () => {
         <AnalysisPopover 
           isOpen={true} 
           onClose={() => {}} 
-          selectionText="test text"
+          selectionText={longText}
         />
       );
     });
@@ -174,7 +176,7 @@ describe('Analysis Popover Component', () => {
         <AnalysisPopover 
           isOpen={true} 
           onClose={() => {}} 
-          selectionText="test"
+          selectionText={longText}
         />
       );
     });
@@ -195,7 +197,7 @@ describe('Analysis Popover Component', () => {
         <AnalysisPopover 
           isOpen={true} 
           onClose={() => {}} 
-          selectionText="test"
+          selectionText={longText}
         />
       );
     });
@@ -205,5 +207,35 @@ describe('Analysis Popover Component', () => {
 
     expect(screen.getByText(/accent color/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /open full settings/i })).toBeInTheDocument();
+  });
+
+  it('should show Fact Check tab if selection text is > 50 characters', async () => {
+    const longText = 'This is a long selection text that exceeds fifty characters to test visibility.'.repeat(2);
+    await act(async () => {
+      render(
+        <AnalysisPopover 
+          isOpen={true} 
+          onClose={() => {}} 
+          selectionText={longText}
+        />
+      );
+    });
+
+    expect(screen.getByRole('tab', { name: /fact check/i })).toBeInTheDocument();
+  });
+
+  it('should hide Fact Check tab if selection text is <= 50 characters', async () => {
+    const shortText = 'Short selection text.';
+    await act(async () => {
+      render(
+        <AnalysisPopover 
+          isOpen={true} 
+          onClose={() => {}} 
+          selectionText={shortText}
+        />
+      );
+    });
+
+    expect(screen.queryByRole('tab', { name: /fact check/i })).not.toBeInTheDocument();
   });
 });
