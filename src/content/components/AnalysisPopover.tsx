@@ -15,7 +15,7 @@ interface AnalysisPopoverProps {
     paragraph: string;
     pageTitle: string;
     pageDescription: string;
-  };
+  } | undefined;
   accentColor?: string;
   onAccentChange?: (color: string) => void;
   position?: { top: number; left: number };
@@ -27,7 +27,7 @@ interface TabData {
   error: string | null;
 }
 
-export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({ 
+export const AnalysisPopover = React.memo(({
   isOpen, 
   onClose, 
   selectionText,
@@ -35,7 +35,7 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
   accentColor = 'teal',
   onAccentChange,
   position
-}) => {
+}: AnalysisPopoverProps) => {
   const [activeTab, setActiveTab] = useState<TabId>('explain');
   const [showSettings, setShowSettings] = useState(false);
   const [data, setData] = useState<Record<TabId, TabData>>({
@@ -142,4 +142,6 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
       </div>
     </>
   );
-};
+});
+
+AnalysisPopover.displayName = 'AnalysisPopover';
