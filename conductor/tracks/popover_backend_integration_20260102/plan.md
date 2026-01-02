@@ -15,7 +15,7 @@
 - [x] Task: Implement context extraction (paragraph, title, description) for Fact-check requests. cfdce81
 - [x] Task: Conductor - User Manual Verification 'Smart Popover Logic' (Protocol in workflow.md) 0c90e06
 
-## Phase 3: Integration & UI Polish
+## Phase 3: Integration & UI Polish [checkpoint: 26d05a1]
 
 - [x] Task: Update `AnalysisPopover` UI to support the new response structures (Explain and Fact-check views). d08548a
 - [x] Task: Connect `AnalysisPopover` to `BackendClient` for `Explain` and `Fact-check` actions. d08548a
@@ -23,4 +23,4 @@
 - [x] Task: Implement JSON response parsing and render `FactCheckResponse` (verdict, details, optional sources with links). d08548a
 - [x] Task: Implement error handling in the Popover (display structured error messages from `BackendClient`). d08548a
 - [x] Task: Update Options page: replace `system_prompt` editor with a `Style Preference` dropdown (`Concise` | `Detailed`). 1a61723
-- [~] Task: Conductor - User Manual Verification 'Integration & UI Polish' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Integration & UI Polish' (Protocol in workflow.md) 26d05a1
