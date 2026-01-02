@@ -6,6 +6,11 @@ interface AnalysisPopoverProps {
   isOpen: boolean;
   onClose: () => void;
   selectionText: string;
+  selectionContext?: {
+    paragraph: string;
+    pageTitle: string;
+    pageDescription: string;
+  };
   accentColor?: string;
   onAccentChange?: (color: string) => void;
   position?: { top: number; left: number };
@@ -29,6 +34,7 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
   isOpen, 
   onClose, 
   selectionText,
+  selectionContext,
   accentColor = 'teal',
   onAccentChange,
   position
@@ -102,7 +108,11 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
     setData(prev => ({ ...prev, [tab]: { ...prev[tab], loading: true, error: null } }));
     
     const type = tab === 'explain' ? 'EXPLAIN' : 'FACT_CHECK';
-    const response = await sendMessage(type, { text });
+    const payload = tab === 'fact-check' 
+      ? { text, context: selectionContext }
+      : { text };
+      
+    const response = await sendMessage(type, payload);
 
     if (response.success) {
       setData(prev => ({ ...prev, [tab]: { content: response.result || 'No content returned', loading: false, error: null } }));
