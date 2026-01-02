@@ -17,9 +17,7 @@
 
 ## Phase 3: Integration & UI Polish
 
-> **Implementation Note:** When updating `AnalysisPopover`, reuse existing components and use fixed CSS values (e.g., `text-[10px]` instead of `text-xs`, `bg-[#1a1a2e]` instead of `bg-somevariable`).
-
-- [ ] Task: Update `AnalysisPopover` UI to support the new response structures (Explain and Fact-check views).
+- [x] Task: Update `AnalysisPopover` UI to support the new response structures (Explain and Fact-check views). d08548a
 - [ ] Task: Connect `AnalysisPopover` to `BackendClient` for `Explain` and `Fact-check` actions.
 - [ ] Task: Implement JSON response parsing and render `ExplainResponse` (summary, explanation, optional context/example).
 - [ ] Task: Implement JSON response parsing and render `FactCheckResponse` (verdict, details, optional sources with links).
