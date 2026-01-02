@@ -14,7 +14,7 @@ export interface OpenRouterModelsResponse {
 }
 
 export interface OpenRouterMessage {
-  role: 'user' | 'assistant' | 'system';
+  role: "user" | "assistant" | "system";
   content: string;
 }
 
@@ -42,7 +42,11 @@ export interface LLMSettings {
   system_prompt: string;
 }
 
-export type FactCheckVerdict = 'True' | 'False' | 'Partially True' | 'Unverifiable';
+export type FactCheckVerdict =
+  | "True"
+  | "False"
+  | "Partially True"
+  | "Unverifiable";
 
 export interface ExplainResponse {
   summary: string;
@@ -64,7 +68,13 @@ export interface FactCheckResponse {
   }[];
 }
 
-export type ErrorType = 'network' | 'auth' | 'rate_limit' | 'llm' | 'unknown';
+export interface FactCheckContext {
+  paragraph: string;
+  pageTitle: string;
+  pageDescription: string;
+}
+
+export type ErrorType = "network" | "auth" | "rate_limit" | "llm" | "unknown";
 
 export interface AppError {
   type: ErrorType;
@@ -72,11 +82,11 @@ export interface AppError {
   code?: string;
 }
 
-export type BackendMessageType = 
-  | 'BACKEND_EXPLAIN' 
-  | 'BACKEND_FACT_CHECK' 
-  | 'BACKEND_FETCH_MODELS' 
-  | 'BACKEND_TEST_KEY';
+export type BackendMessageType =
+  | "BACKEND_EXPLAIN"
+  | "BACKEND_FACT_CHECK"
+  | "BACKEND_FETCH_MODELS"
+  | "BACKEND_TEST_KEY";
 
 export interface BackendMessage {
   type: BackendMessageType;

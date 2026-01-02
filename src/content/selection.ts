@@ -35,16 +35,19 @@ export function handleSelection(): SelectionData | null {
   // Get full paragraph containing selection
   let paragraph = "";
   const container = range.commonAncestorContainer;
-  const parentElement = container.nodeType === 1 // Node.ELEMENT_NODE 
-    ? (container as HTMLElement) 
-    : container.parentElement;
-  
+  const parentElement =
+    container.nodeType === 1 // Node.ELEMENT_NODE
+      ? (container as HTMLElement)
+      : container.parentElement;
+
   if (parentElement) {
     paragraph = parentElement.innerText || "";
   }
 
   const pageTitle = document.title;
-  const pageDescription = (document.querySelector('meta[name="description"]') as HTMLMetaElement)?.content || "";
+  const pageDescription =
+    (document.querySelector('meta[name="description"]') as HTMLMetaElement)
+      ?.content || "";
 
   // Get the exact position where the selection ends
   const endRange = document.createRange();
@@ -59,7 +62,7 @@ export function handleSelection(): SelectionData | null {
     context: {
       paragraph,
       pageTitle,
-      pageDescription
-    }
+      pageDescription,
+    },
   };
 }
