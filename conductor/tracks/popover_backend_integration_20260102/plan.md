@@ -23,4 +23,4 @@
 - [x] Task: Implement JSON response parsing and render `FactCheckResponse` (verdict, details, optional sources with links). d08548a
 - [x] Task: Implement error handling in the Popover (display structured error messages from `BackendClient`). d08548a
 - [x] Task: Update Options page: replace `system_prompt` editor with a `Style Preference` dropdown (`Concise` | `Detailed`). 1a61723
-- [ ] Task: Conductor - User Manual Verification 'Integration & UI Polish' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Integration & UI Polish' (Protocol in workflow.md)
