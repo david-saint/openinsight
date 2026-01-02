@@ -29,7 +29,7 @@ onMessage((message, _sender, sendResponse) => {
       break;
 
     case "BACKEND_FACT_CHECK":
-      handleAsync(() => handleFactCheck(payload.text));
+      handleAsync(() => handleFactCheck(payload));
       break;
 
     case "BACKEND_TEST_KEY":
