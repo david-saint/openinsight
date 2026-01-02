@@ -1,8 +1,8 @@
-import { OpenRouterService } from './openrouter-service';
-import { getSettings } from '../lib/settings';
-import { OpenRouterModel, AppError } from '../lib/types';
-import { ModelManager } from '../lib/model-manager';
-import { PromptManager } from '../lib/prompt-manager';
+import { OpenRouterService } from './openrouter-service.js';
+import { getSettings } from '../lib/settings.js';
+import type { OpenRouterModel, AppError } from '../lib/types.js';
+import { ModelManager } from '../lib/model-manager.js';
+import { PromptManager } from '../lib/prompt-manager.js';
 
 /**
  * Handles the "Explain" request by calling OpenRouterService.

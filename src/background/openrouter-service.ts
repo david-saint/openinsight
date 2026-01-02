@@ -1,10 +1,10 @@
-import { getApiKey } from "../lib/settings";
-import { 
+import { getApiKey } from "../lib/settings.js";
+import type { 
   OpenRouterChatResponse, 
   OpenRouterMessage, 
   AppError, 
   ErrorType 
-} from "../lib/types";
+} from "../lib/types.js";
 
 /**
  * Service to interact with the OpenRouter API.

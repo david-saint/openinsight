@@ -1,5 +1,5 @@
-import { getStorage, setStorage } from "./storage";
-import { OpenRouterModel, OpenRouterModelsResponse } from "./types";
+import { getStorage, setStorage } from "./storage.js";
+import type { OpenRouterModel, OpenRouterModelsResponse } from "./types.js";
 
 const CACHE_KEY = "model_cache";
 const CACHE_DURATION_MS = 24 * 60 * 60 * 1000; // 24 hours

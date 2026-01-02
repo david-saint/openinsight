@@ -1,6 +1,6 @@
-import { getStorage, setStorage, getEncrypted, setEncrypted } from './storage';
-import { LLMSettings } from './types';
-import { StylePreference } from './prompt-manager';
+import { getStorage, setStorage, getEncrypted, setEncrypted } from './storage.js';
+import type { LLMSettings } from './types.js';
+import type { StylePreference } from './prompt-manager.js';
 
 export interface Settings {
   theme: 'light' | 'dark' | 'system';

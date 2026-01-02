@@ -1,11 +1,11 @@
-import { 
+import type { 
   BackendMessage, 
   BackendResponse, 
   OpenRouterModel, 
   AppError,
   ExplainResponse,
   FactCheckResponse
-} from './types';
+} from './types.js';
 
 /**
  * Client class to interact with the background service worker.
