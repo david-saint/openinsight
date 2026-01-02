@@ -1,6 +1,10 @@
 import { OpenRouterService } from "./openrouter-service.js";
 import { getSettings } from "../lib/settings.js";
 import type { OpenRouterModel, AppError } from "../lib/types.js";
+import {
+  EXPLAIN_RESPONSE_SCHEMA,
+  FACT_CHECK_RESPONSE_SCHEMA,
+} from "../lib/types.js";
 import { ModelManager } from "../lib/model-manager.js";
 import { PromptManager } from "../lib/prompt-manager.js";
 
@@ -11,18 +15,46 @@ export async function handleExplain(text: string): Promise<any> {
   const settings = await getSettings();
   const { explainModel, explainSettings, stylePreference } = settings;
 
-  return OpenRouterService.chatCompletion({
-    model: explainModel,
-    messages: [
-      {
-        role: "system",
-        content: PromptManager.getExplainPrompt(stylePreference),
-      },
-      { role: "user", content: text },
-    ],
-    temperature: explainSettings.temperature,
-    max_tokens: explainSettings.max_tokens,
-  });
+  // Check if the model supports structured outputs
+  const supportsStructured = await ModelManager.supportsStructuredOutputs(
+    explainModel
+  );
+
+  const systemPrompt = PromptManager.getExplainPrompt(stylePreference);
+
+  try {
+    return await OpenRouterService.chatCompletion({
+      model: explainModel,
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt,
+        },
+        { role: "user", content: text },
+      ],
+      temperature: explainSettings.temperature,
+      max_tokens: explainSettings.max_tokens,
+      // Only use response_format for models that support it
+      ...(supportsStructured && { response_format: EXPLAIN_RESPONSE_SCHEMA }),
+    });
+  } catch (error) {
+    // If the error is likely due to the model not supporting system prompts or structured outputs
+    // (e.g. "Developer instruction is not enabled"), fallback to a more compatible request.
+    console.warn(
+      "Explain request failed, retrying with compatibility mode:",
+      error
+    );
+
+    return OpenRouterService.chatCompletion({
+      model: explainModel,
+      messages: [
+        // Merge system prompt into user message for maximum compatibility
+        { role: "user", content: `${systemPrompt}\n\n${text}` },
+      ],
+      temperature: explainSettings.temperature,
+      max_tokens: explainSettings.max_tokens,
+    });
+  }
 }
 
 /**
@@ -68,18 +100,46 @@ export async function handleFactCheck(payload: {
     }
   }
 
-  return OpenRouterService.chatCompletion({
-    model: factCheckModel,
-    messages: [
-      {
-        role: "system",
-        content: PromptManager.getFactCheckPrompt(stylePreference),
-      },
-      { role: "user", content: userMessage },
-    ],
-    temperature: factCheckSettings.temperature,
-    max_tokens: factCheckSettings.max_tokens,
-  });
+  // Check if the model supports structured outputs
+  const supportsStructured = await ModelManager.supportsStructuredOutputs(
+    factCheckModel
+  );
+
+  const systemPrompt = PromptManager.getFactCheckPrompt(stylePreference);
+
+  try {
+    return await OpenRouterService.chatCompletion({
+      model: factCheckModel,
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt,
+        },
+        { role: "user", content: userMessage },
+      ],
+      temperature: factCheckSettings.temperature,
+      max_tokens: factCheckSettings.max_tokens,
+      // Only use response_format for models that support it
+      ...(supportsStructured && {
+        response_format: FACT_CHECK_RESPONSE_SCHEMA,
+      }),
+    });
+  } catch (error) {
+    console.warn(
+      "Fact-check request failed, retrying with compatibility mode:",
+      error
+    );
+
+    return OpenRouterService.chatCompletion({
+      model: factCheckModel,
+      messages: [
+        // Merge system prompt into user message for maximum compatibility
+        { role: "user", content: `${systemPrompt}\n\n${userMessage}` },
+      ],
+      temperature: factCheckSettings.temperature,
+      max_tokens: factCheckSettings.max_tokens,
+    });
+  }
 }
 
 /**

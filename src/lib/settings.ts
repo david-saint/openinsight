@@ -44,8 +44,8 @@ export const STYLE_PRESETS: Record<
   StylePreference,
   Pick<LLMSettings, "temperature" | "max_tokens">
 > = {
-  Concise: { temperature: 0.1, max_tokens: 256 },
-  Detailed: { temperature: 0.3, max_tokens: 1024 },
+  Concise: { temperature: 0.1, max_tokens: 512 },
+  Detailed: { temperature: 0.3, max_tokens: 1536 },
 };
 
 export const SETTINGS_KEY = "user_settings";

@@ -2,6 +2,7 @@ import { getApiKey } from "../lib/settings.js";
 import type {
   OpenRouterChatResponse,
   OpenRouterMessage,
+  OpenRouterResponseFormat,
   AppError,
   ErrorType,
 } from "../lib/types.js";
@@ -91,22 +92,31 @@ export class OpenRouterService {
   /**
    * Requests a chat completion from OpenRouter.
    * Automatically parses the response content as JSON if possible.
+   * When response_format is provided, OpenRouter enforces JSON Schema validation.
    */
   static async chatCompletion(params: {
     model: string;
     messages: OpenRouterMessage[];
     temperature?: number;
     max_tokens?: number;
+    response_format?: OpenRouterResponseFormat;
   }): Promise<any> {
     try {
+      const requestBody: Record<string, unknown> = {
+        model: params.model,
+        messages: params.messages,
+        temperature: params.temperature,
+        max_tokens: params.max_tokens,
+      };
+
+      // Add response_format for structured outputs if provided
+      if (params.response_format) {
+        requestBody.response_format = params.response_format;
+      }
+
       const response = await this.fetchWithAuth("/chat/completions", {
         method: "POST",
-        body: JSON.stringify({
-          model: params.model,
-          messages: params.messages,
-          temperature: params.temperature,
-          max_tokens: params.max_tokens,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {
@@ -123,14 +133,21 @@ export class OpenRouterService {
         } as AppError;
       }
 
-      let content = message.content;
+      let content = message.content.trim();
 
       // Strip markdown code fences if present (LLMs often wrap JSON in ```json ... ```)
-      if (content.startsWith("```")) {
-        content = content
-          .replace(/^```(?:json)?\s*/i, "")
-          .replace(/\s*```\s*$/, "");
+      // Handle various formats: ```json, ``` json, ```JSON, or just ```
+      const codeBlockMatch = content.match(
+        /^```(?:json)?\s*\n?([\s\S]*?)\n?\s*```$/i
+      );
+      if (codeBlockMatch && codeBlockMatch[1]) {
+        content = codeBlockMatch[1].trim();
       }
+
+      // Normalize smart/curly quotes to straight quotes (some models use typographic quotes)
+      content = content
+        .replace(/[\u201C\u201D]/g, '"') // " " → "
+        .replace(/[\u2018\u2019]/g, "'"); // ' ' → '
 
       try {
         return JSON.parse(content);

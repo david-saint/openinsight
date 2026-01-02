@@ -59,6 +59,25 @@ export class ModelManager {
     return `$${perMillion.toFixed(2)}/1M`;
   }
 
+  /**
+   * Checks if a model supports structured outputs (JSON Schema mode).
+   * @param modelId - The model ID to check (e.g., "google/gemma-3-27b-it:free")
+   * @returns True if the model supports structured_outputs, false otherwise
+   */
+  static async supportsStructuredOutputs(modelId: string): Promise<boolean> {
+    try {
+      const models = await ModelManager.getModels();
+      const model = models.find((m) => m.id === modelId);
+      if (!model?.supported_parameters) {
+        return false;
+      }
+      return model.supported_parameters.includes("structured_outputs");
+    } catch {
+      // If we can't check, assume it doesn't support it to be safe
+      return false;
+    }
+  }
+
   private static async fetchAndCacheModels(): Promise<OpenRouterModel[]> {
     try {
       const response = await fetch("https://openrouter.ai/api/v1/models");
