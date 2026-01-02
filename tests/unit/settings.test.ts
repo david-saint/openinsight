@@ -64,6 +64,7 @@ describe('Settings Module', () => {
     it('should have default LLM settings', () => {
       expect(DEFAULT_SETTINGS).toHaveProperty('explainSettings');
       expect(DEFAULT_SETTINGS).toHaveProperty('factCheckSettings');
+      expect(DEFAULT_SETTINGS).toHaveProperty('stylePreference', 'Concise');
       
       // @ts-ignore
       expect(DEFAULT_SETTINGS.explainSettings).toHaveProperty('temperature');

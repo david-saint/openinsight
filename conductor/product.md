@@ -14,7 +14,8 @@ The core mission of OpenInsight is to bridge the gap between information consump
 *   **Promote Media Literacy:** Foster critical thinking habits by making fact-checking and deep explanation a seamless part of the browsing experience.
 
 ## Key Features
-*   **Contextual Pop-up Interface:** A minimalist, non-intrusive pop-up that appears upon highlighting text, offering immediate "Explain" and "Fact-check" actions.
+*   **Smart Pop-up Interface:** A minimalist interface that appears on text selection (10-2000 chars), with context-aware actions like Fact-check (available for >50 chars).
+*   **Structured Insights:** Provides clear, structured explanations and fact-check verdicts with clickable sources, ensuring clarity and truth in every response.
 *   **Epistemic Minimalism:** A design philosophy focused on clarity and truth, removing UI clutter to keep the user focused on the information.
 *   **Advanced Customization:** Users can tailor their experience by selecting their preferred language models via OpenRouter integration (API key management implemented).
 *   **Performance-First Architecture:** Built for speed and responsiveness to ensure that information retrieval never bottlenecks the reading experience.

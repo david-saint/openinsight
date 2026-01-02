@@ -13,6 +13,7 @@
 - **Manifest Version:** Chrome Extension Manifest V3
 - **Build Plugin:** `@crxjs/vite-plugin` — handles manifest generation, content script bundling, and hot-reload
 - **API Communication:** Native `fetch` API for interacting with OpenRouter
+- **Dynamic Prompt Engineering:** Centralized `PromptManager` for constructing idempotent JSON-enforcing system prompts based on user style preferences.
 
 ## Messaging & Communication
 

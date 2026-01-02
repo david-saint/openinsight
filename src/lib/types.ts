@@ -1,3 +1,22 @@
+/**
+ * Supported parameter names returned by OpenRouter API.
+ * @see https://openrouter.ai/docs/api-reference/list-available-models
+ */
+export type OpenRouterSupportedParameter =
+  | "tools"
+  | "tool_choice"
+  | "max_tokens"
+  | "temperature"
+  | "top_p"
+  | "reasoning"
+  | "include_reasoning"
+  | "structured_outputs"
+  | "response_format"
+  | "stop"
+  | "frequency_penalty"
+  | "presence_penalty"
+  | "seed";
+
 export interface OpenRouterModel {
   id: string;
   name: string;
@@ -7,6 +26,8 @@ export interface OpenRouterModel {
     prompt: string;
     completion: string;
   };
+  /** List of supported parameters for this model */
+  supported_parameters?: OpenRouterSupportedParameter[];
 }
 
 export interface OpenRouterModelsResponse {
@@ -14,7 +35,7 @@ export interface OpenRouterModelsResponse {
 }
 
 export interface OpenRouterMessage {
-  role: 'user' | 'assistant' | 'system';
+  role: "user" | "assistant" | "system";
   content: string;
 }
 
@@ -42,7 +63,39 @@ export interface LLMSettings {
   system_prompt: string;
 }
 
-export type ErrorType = 'network' | 'auth' | 'rate_limit' | 'llm' | 'unknown';
+export type FactCheckVerdict =
+  | "True"
+  | "False"
+  | "Partially True"
+  | "Unverifiable";
+
+export interface ExplainResponse {
+  summary: string;
+  explanation: string;
+  context?: {
+    example?: string;
+    related_concepts?: string[];
+  };
+}
+
+export interface FactCheckResponse {
+  summary: string;
+  verdict: FactCheckVerdict;
+  details: string;
+  sources?: {
+    title: string;
+    url: string;
+    snippet?: string;
+  }[];
+}
+
+export interface FactCheckContext {
+  paragraph: string;
+  pageTitle: string;
+  pageDescription: string;
+}
+
+export type ErrorType = "network" | "auth" | "rate_limit" | "llm" | "unknown";
 
 export interface AppError {
   type: ErrorType;
@@ -50,11 +103,11 @@ export interface AppError {
   code?: string;
 }
 
-export type BackendMessageType = 
-  | 'BACKEND_EXPLAIN' 
-  | 'BACKEND_FACT_CHECK' 
-  | 'BACKEND_FETCH_MODELS' 
-  | 'BACKEND_TEST_KEY';
+export type BackendMessageType =
+  | "BACKEND_EXPLAIN"
+  | "BACKEND_FACT_CHECK"
+  | "BACKEND_FETCH_MODELS"
+  | "BACKEND_TEST_KEY";
 
 export interface BackendMessage {
   type: BackendMessageType;
@@ -66,3 +119,118 @@ export interface BackendResponse<T> {
   result?: T;
   error?: AppError;
 }
+
+/**
+ * OpenRouter JSON Schema response format for structured outputs.
+ * @see https://openrouter.ai/docs/features/structured-outputs
+ */
+export interface OpenRouterJsonSchema {
+  name: string;
+  strict: boolean;
+  schema: {
+    type: "object";
+    properties: Record<string, unknown>;
+    required: string[];
+    additionalProperties: boolean;
+  };
+}
+
+export interface OpenRouterResponseFormat {
+  type: "json_schema";
+  json_schema: OpenRouterJsonSchema;
+}
+
+/**
+ * JSON Schema for ExplainResponse - enforces structured output from the LLM.
+ */
+export const EXPLAIN_RESPONSE_SCHEMA: OpenRouterResponseFormat = {
+  type: "json_schema",
+  json_schema: {
+    name: "explain_response",
+    strict: true,
+    schema: {
+      type: "object",
+      properties: {
+        summary: {
+          type: "string",
+          description: "A brief, one-sentence summary of the explanation",
+        },
+        explanation: {
+          type: "string",
+          description: "A detailed explanation of the text",
+        },
+        context: {
+          type: "object",
+          description: "Optional contextual information",
+          properties: {
+            example: {
+              type: "string",
+              description: "A concrete example illustrating the concept",
+            },
+            related_concepts: {
+              type: "array",
+              items: { type: "string" },
+              description: "Related concepts or terms",
+            },
+          },
+        },
+      },
+      required: ["summary", "explanation"],
+      additionalProperties: false,
+    },
+  },
+};
+
+/**
+ * JSON Schema for FactCheckResponse - enforces structured output from the LLM.
+ */
+export const FACT_CHECK_RESPONSE_SCHEMA: OpenRouterResponseFormat = {
+  type: "json_schema",
+  json_schema: {
+    name: "fact_check_response",
+    strict: true,
+    schema: {
+      type: "object",
+      properties: {
+        summary: {
+          type: "string",
+          description: "A brief summary of the claim being checked",
+        },
+        verdict: {
+          type: "string",
+          enum: ["True", "False", "Partially True", "Unverifiable"],
+          description: "The fact-check verdict",
+        },
+        details: {
+          type: "string",
+          description:
+            "Detailed explanation of the verdict with supporting evidence",
+        },
+        sources: {
+          type: "array",
+          description: "Sources supporting the fact-check",
+          items: {
+            type: "object",
+            properties: {
+              title: {
+                type: "string",
+                description: "Title of the source",
+              },
+              url: {
+                type: "string",
+                description: "URL of the source",
+              },
+              snippet: {
+                type: "string",
+                description: "Relevant quote or snippet from the source",
+              },
+            },
+            required: ["title", "url"],
+          },
+        },
+      },
+      required: ["summary", "verdict", "details"],
+      additionalProperties: false,
+    },
+  },
+};

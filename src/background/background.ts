@@ -1,10 +1,10 @@
-import { onMessage } from "../lib/messaging";
+import { onMessage } from "../lib/messaging.js";
 import { 
   handleExplain, 
   handleFactCheck, 
   handleFetchModels, 
   handleTestApiKey 
-} from "./handlers";
+} from "./handlers.js";
 
 console.log("OpenInsight background script initialized.");
 
@@ -17,9 +17,14 @@ onMessage((message, _sender, sendResponse) => {
     try {
       const result = await fn();
       sendResponse({ success: true, result });
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error handling ${type}:`, error);
-      sendResponse({ success: false, error });
+      // Ensure we always send a structured error object
+      const appError = error?.type ? error : {
+        type: 'unknown',
+        message: error?.message || String(error)
+      };
+      sendResponse({ success: false, error: appError });
     }
   };
 
@@ -29,8 +34,32 @@ onMessage((message, _sender, sendResponse) => {
       break;
 
     case "BACKEND_FACT_CHECK":
-      handleAsync(() => handleFactCheck(payload.text));
+      handleAsync(() => handleFactCheck(payload));
       break;
+
+    // --- Legacy Support (Phase 1 Transitional) ---
+    case "EXPLAIN":
+      handleAsync(async () => {
+        const response = await handleExplain(payload.text);
+        // Fallback to simple string for existing UI
+        return response.summary || response.explanation || JSON.stringify(response);
+      });
+      break;
+
+    case "FACT_CHECK":
+      handleAsync(async () => {
+        // Pass text and optional context from payload
+        const response = await handleFactCheck({ 
+          text: payload.text,
+          context: payload.context
+        });
+        // Fallback to simple string for existing UI
+        return response.verdict 
+          ? `${response.verdict}: ${response.summary}` 
+          : JSON.stringify(response);
+      });
+      break;
+    // ---------------------------------------------
 
     case "BACKEND_TEST_KEY":
       handleAsync(() => handleTestApiKey(payload.apiKey));

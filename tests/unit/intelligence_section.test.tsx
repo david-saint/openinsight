@@ -17,8 +17,9 @@ const mockSettings = {
   explainModel: 'google/gemini-2.0-flash-exp:free',
   factCheckModel: 'meta-llama/llama-3.3-70b-instruct:free',
   triggerMode: 'icon',
-  explainSettings: { temperature: 0.7, max_tokens: 512, system_prompt: 'explain' },
-  factCheckSettings: { temperature: 0.3, max_tokens: 512, system_prompt: 'factcheck' },
+  stylePreference: 'Concise',
+  explainSettings: { temperature: 0.7, max_tokens: 512, system_prompt: '' },
+  factCheckSettings: { temperature: 0.3, max_tokens: 512, system_prompt: '' },
 } as any;
 
 describe('IntelligenceSection', () => {
@@ -42,46 +43,40 @@ describe('IntelligenceSection', () => {
     expect(screen.getByText('Fact-Check Model')).toBeInTheDocument();
   });
 
-  it('should call onBrowseModels when "Browse all models" is clicked', () => {
+  it('should render Style Preference dropdown', () => {
     render(
       <IntelligenceSection 
         settings={mockSettings} 
-        onSave={onSave} 
-        models={mockModels}
-        allModels={[{ id: 'more', name: 'More' } as any, { id: 'even-more', name: 'Even More' } as any, { id: 'third', name: 'Third' } as any]}
-        onBrowseModels={onBrowseModels}
-      />
-    );
-
-    const browseButtons = screen.getAllByText('Browse all models');
-    fireEvent.click(browseButtons[0]!);
-    expect(onBrowseModels).toHaveBeenCalledWith('explain');
-
-    fireEvent.click(browseButtons[1]!);
-    expect(onBrowseModels).toHaveBeenCalledWith('factCheck');
-  });
-
-  it('should show the current model even if it is not in the default list', () => {
-    const settingsWithCustomModel = {
-      ...mockSettings,
-      explainModel: 'custom/special-model'
-    };
-
-    render(
-      <IntelligenceSection 
-        settings={settingsWithCustomModel} 
         onSave={onSave} 
         models={mockModels} 
       />
     );
 
-    // The select should have the custom model added to it
-    const explainSelect = screen.getByLabelText('Explain Model');
-    const options = Array.from(explainSelect.querySelectorAll('option'));
-    expect(options.some(opt => opt.value === 'custom/special-model')).toBe(true);
+    expect(screen.getByText('Style')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('Concise')).toBeInTheDocument();
   });
 
-  it('should toggle advanced settings when clicked', () => {
+  it('should call onSave when Style Preference changes', () => {
+    render(
+      <IntelligenceSection 
+        settings={mockSettings} 
+        onSave={onSave} 
+        models={mockModels} 
+      />
+    );
+
+    const select = screen.getByRole('combobox', { name: '' }); // The style select
+    // Find the one with Concise/Detailed
+    const styleSelect = screen.getAllByRole('combobox').find(c => (c as HTMLSelectElement).value === 'Concise');
+    
+    fireEvent.change(styleSelect!, { target: { value: 'Detailed' } });
+
+    expect(onSave).toHaveBeenCalledWith(expect.objectContaining({
+      stylePreference: 'Detailed'
+    }));
+  });
+
+  it('should toggle advanced settings and NOT show system prompt', () => {
     render(
       <IntelligenceSection 
         settings={mockSettings} 
@@ -95,29 +90,6 @@ describe('IntelligenceSection', () => {
 
     expect(screen.getByLabelText('Temperature')).toBeInTheDocument();
     expect(screen.getByLabelText('Max Tokens')).toBeInTheDocument();
-    expect(screen.getByLabelText('System Prompt')).toBeInTheDocument();
-  });
-
-  it('should call onSave when advanced settings change', () => {
-    render(
-      <IntelligenceSection 
-        settings={mockSettings} 
-        onSave={onSave} 
-        models={mockModels} 
-      />
-    );
-
-    // Open advanced
-    const advancedButtons = screen.getAllByText('Advanced');
-    fireEvent.click(advancedButtons[0]!);
-
-    const tempInput = screen.getByLabelText('Temperature');
-    fireEvent.change(tempInput, { target: { value: '1.2' } });
-
-    expect(onSave).toHaveBeenCalledWith(expect.objectContaining({
-      explainSettings: expect.objectContaining({
-        temperature: 1.2
-      })
-    }));
+    expect(screen.queryByLabelText('System Prompt')).not.toBeInTheDocument();
   });
 });

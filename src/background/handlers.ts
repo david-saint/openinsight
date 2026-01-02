@@ -1,128 +1,152 @@
-import { fetchWithAuth } from './api';
-import { getSettings } from '../lib/settings';
-import { OpenRouterChatResponse, OpenRouterModel, AppError, ErrorType } from '../lib/types';
-import { ModelManager } from '../lib/model-manager';
+import { OpenRouterService } from "./openrouter-service.js";
+import { getSettings } from "../lib/settings.js";
+import type { OpenRouterModel, AppError } from "../lib/types.js";
+import {
+  EXPLAIN_RESPONSE_SCHEMA,
+  FACT_CHECK_RESPONSE_SCHEMA,
+} from "../lib/types.js";
+import { ModelManager } from "../lib/model-manager.js";
+import { PromptManager } from "../lib/prompt-manager.js";
 
 /**
- * Maps HTTP responses and exceptions to typed AppErrors.
+ * Handles the "Explain" request by calling OpenRouterService.
  */
-async function mapError(responseOrError: any, context: string): Promise<AppError> {
-  // Use duck-typing for Response check because vitest's instanceof can fail for global Response
-  if (responseOrError && typeof responseOrError.status === 'number' && typeof responseOrError.text === 'function') {
-    const status = responseOrError.status;
-    const statusText = responseOrError.statusText;
-    let errorText = '';
-    try {
-      errorText = await responseOrError.text();
-    } catch (e) {
-      // Ignore text parse errors
-    }
+export async function handleExplain(text: string): Promise<any> {
+  const settings = await getSettings();
+  const { explainModel, explainSettings, stylePreference } = settings;
 
-    let type: ErrorType = 'unknown';
-    if (status === 401) type = 'auth';
-    else if (status === 429) type = 'rate_limit';
-    else if (status >= 400 && status < 500) type = 'llm';
-    else if (status >= 500) type = 'llm'; // Treat server errors as LLM errors for now
+  // Check if the model supports structured outputs
+  const supportsStructured = await ModelManager.supportsStructuredOutputs(
+    explainModel
+  );
 
-    return {
-      type,
-      message: `${context}: ${statusText || errorText || 'Unknown error'} (${status})`,
-      code: status.toString()
-    };
+  const systemPrompt = PromptManager.getExplainPrompt(stylePreference);
+
+  try {
+    return await OpenRouterService.chatCompletion({
+      model: explainModel,
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt,
+        },
+        { role: "user", content: text },
+      ],
+      temperature: explainSettings.temperature,
+      max_tokens: explainSettings.max_tokens,
+      // Only use response_format for models that support it
+      ...(supportsStructured && { response_format: EXPLAIN_RESPONSE_SCHEMA }),
+    });
+  } catch (error) {
+    // If the error is likely due to the model not supporting system prompts or structured outputs
+    // (e.g. "Developer instruction is not enabled"), fallback to a more compatible request.
+    console.warn(
+      "Explain request failed, retrying with compatibility mode:",
+      error
+    );
+
+    return OpenRouterService.chatCompletion({
+      model: explainModel,
+      messages: [
+        // Merge system prompt into user message for maximum compatibility
+        { role: "user", content: `${systemPrompt}\n\n${text}` },
+      ],
+      temperature: explainSettings.temperature,
+      max_tokens: explainSettings.max_tokens,
+    });
   }
+}
 
-  // Handle exceptions (like network errors)
-  const isNetworkError = responseOrError instanceof TypeError || responseOrError?.message?.includes('network');
-  return {
-    type: isNetworkError ? 'network' : 'unknown',
-    message: `${context}: ${responseOrError?.message || 'Unexpected error'}`,
+/**
+ * Handles the "Fact-check" request by calling OpenRouterService.
+ */
+export async function handleFactCheck(payload: {
+  text: string;
+  context?: {
+    paragraph: string;
+    pageTitle: string;
+    pageDescription: string;
   };
-}
+}): Promise<any> {
+  const settings = await getSettings();
+  const { factCheckModel, factCheckSettings, stylePreference } = settings;
 
-/**
- * Handles the "Explain" request by calling OpenRouter.
- */
-export async function handleExplain(text: string): Promise<string> {
-  try {
-    const settings = await getSettings();
-    const { explainModel, explainSettings } = settings;
+  // Build user message with context for disambiguation
+  let userMessage = `CLAIM TO VERIFY:\n${payload.text}`;
 
-    const response = await fetchWithAuth('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      body: JSON.stringify({
-        model: explainModel,
-        messages: [
-          { role: 'system', content: explainSettings.system_prompt },
-          { role: 'user', content: text },
-        ],
-        temperature: explainSettings.temperature,
-        max_tokens: explainSettings.max_tokens,
-      }),
-    });
+  if (payload.context) {
+    const contextParts: string[] = [];
 
-    if (!response.ok) {
-      throw await mapError(response, 'Failed to explain');
+    if (payload.context.pageTitle) {
+      contextParts.push(`- Page Title: ${payload.context.pageTitle}`);
+    }
+    if (payload.context.pageDescription) {
+      contextParts.push(
+        `- Page Description: ${payload.context.pageDescription.slice(0, 150)}`
+      );
+    }
+    if (payload.context.paragraph) {
+      const truncated =
+        payload.context.paragraph.length > 300
+          ? payload.context.paragraph.slice(0, 300) + "..."
+          : payload.context.paragraph;
+      contextParts.push(`- Surrounding Text: ${truncated}`);
     }
 
-    const data = await response.json() as OpenRouterChatResponse;
-    return data.choices[0].message.content;
-  } catch (error) {
-    if ((error as AppError).type) throw error;
-    throw await mapError(error, 'Failed to explain');
+    if (contextParts.length > 0) {
+      userMessage += `\n\nCONTEXT FROM SOURCE PAGE (for disambiguation only, NOT a verified source):\n${contextParts.join(
+        "\n"
+      )}`;
+    }
   }
-}
 
-/**
- * Handles the "Fact-check" request by calling OpenRouter.
- */
-export async function handleFactCheck(text: string): Promise<string> {
+  // Check if the model supports structured outputs
+  const supportsStructured = await ModelManager.supportsStructuredOutputs(
+    factCheckModel
+  );
+
+  const systemPrompt = PromptManager.getFactCheckPrompt(stylePreference);
+
   try {
-    const settings = await getSettings();
-    const { factCheckModel, factCheckSettings } = settings;
-
-    const response = await fetchWithAuth('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      body: JSON.stringify({
-        model: factCheckModel,
-        messages: [
-          { role: 'system', content: factCheckSettings.system_prompt },
-          { role: 'user', content: text },
-        ],
-        temperature: factCheckSettings.temperature,
-        max_tokens: factCheckSettings.max_tokens,
+    return await OpenRouterService.chatCompletion({
+      model: factCheckModel,
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt,
+        },
+        { role: "user", content: userMessage },
+      ],
+      temperature: factCheckSettings.temperature,
+      max_tokens: factCheckSettings.max_tokens,
+      // Only use response_format for models that support it
+      ...(supportsStructured && {
+        response_format: FACT_CHECK_RESPONSE_SCHEMA,
       }),
     });
-
-    if (!response.ok) {
-      throw await mapError(response, 'Failed to fact-check');
-    }
-
-    const data = await response.json() as OpenRouterChatResponse;
-    return data.choices[0].message.content;
   } catch (error) {
-    if ((error as AppError).type) throw error;
-    throw await mapError(error, 'Failed to fact-check');
+    console.warn(
+      "Fact-check request failed, retrying with compatibility mode:",
+      error
+    );
+
+    return OpenRouterService.chatCompletion({
+      model: factCheckModel,
+      messages: [
+        // Merge system prompt into user message for maximum compatibility
+        { role: "user", content: `${systemPrompt}\n\n${userMessage}` },
+      ],
+      temperature: factCheckSettings.temperature,
+      max_tokens: factCheckSettings.max_tokens,
+    });
   }
 }
 
 /**
  * Verifies the API key by sending a minimal request to OpenRouter.
  */
-export async function handleTestApiKey(apiKey?: string): Promise<boolean> {
-  try {
-    const response = await fetchWithAuth('https://openrouter.ai/api/v1/auth/key', {
-      method: 'GET',
-    }, apiKey);
-
-    if (!response.ok) {
-      throw await mapError(response, 'API Key verification failed');
-    }
-
-    return true;
-  } catch (error) {
-    if ((error as AppError).type) throw error;
-    throw await mapError(error, 'API Key verification failed');
-  }
+export async function handleTestApiKey(apiKey: string): Promise<boolean> {
+  return OpenRouterService.testKey(apiKey);
 }
 
 /**
@@ -132,6 +156,14 @@ export async function handleFetchModels(): Promise<OpenRouterModel[]> {
   try {
     return await ModelManager.getModels();
   } catch (error) {
-    throw await mapError(error, 'Failed to fetch models');
+    // We still need a way to map errors for ModelManager if it doesn't use OpenRouterService
+    // But for now, we'll just throw a simple error if it's not already an AppError
+    if ((error as AppError).type) throw error;
+    throw {
+      type: "unknown",
+      message: `Failed to fetch models: ${
+        (error as any)?.message || "Unexpected error"
+      }`,
+    } as AppError;
   }
 }

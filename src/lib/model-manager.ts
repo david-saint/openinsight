@@ -1,5 +1,5 @@
-import { getStorage, setStorage } from "./storage";
-import { OpenRouterModel, OpenRouterModelsResponse } from "./types";
+import { getStorage, setStorage } from "./storage.js";
+import type { OpenRouterModel, OpenRouterModelsResponse } from "./types.js";
 
 const CACHE_KEY = "model_cache";
 const CACHE_DURATION_MS = 24 * 60 * 60 * 1000; // 24 hours
@@ -57,6 +57,25 @@ export class ModelManager {
     const perMillion = price * 1_000_000;
     if (perMillion < 1) return `$${perMillion.toFixed(4)}/1M`;
     return `$${perMillion.toFixed(2)}/1M`;
+  }
+
+  /**
+   * Checks if a model supports structured outputs (JSON Schema mode).
+   * @param modelId - The model ID to check (e.g., "google/gemma-3-27b-it:free")
+   * @returns True if the model supports structured_outputs, false otherwise
+   */
+  static async supportsStructuredOutputs(modelId: string): Promise<boolean> {
+    try {
+      const models = await ModelManager.getModels();
+      const model = models.find((m) => m.id === modelId);
+      if (!model?.supported_parameters) {
+        return false;
+      }
+      return model.supported_parameters.includes("structured_outputs");
+    } catch {
+      // If we can't check, assume it doesn't support it to be safe
+      return false;
+    }
   }
 
   private static async fetchAndCacheModels(): Promise<OpenRouterModel[]> {
