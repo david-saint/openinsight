@@ -1,8 +1,0 @@
-{
-  "track_id": "popover_backend_integration_20260102",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-01-02T10:00:00Z",
-  "updated_at": "2026-01-02T10:00:00Z",
-  "description": "Integrating the backend with the popover with strict rules and idempotent JSON structure."
-}
