@@ -18,9 +18,9 @@
 ## Phase 3: Integration & UI Polish
 
 - [x] Task: Update `AnalysisPopover` UI to support the new response structures (Explain and Fact-check views). d08548a
-- [ ] Task: Connect `AnalysisPopover` to `BackendClient` for `Explain` and `Fact-check` actions.
-- [ ] Task: Implement JSON response parsing and render `ExplainResponse` (summary, explanation, optional context/example).
-- [ ] Task: Implement JSON response parsing and render `FactCheckResponse` (verdict, details, optional sources with links).
-- [ ] Task: Implement error handling in the Popover (display structured error messages from `BackendClient`).
-- [ ] Task: Update Options page: replace `system_prompt` editor with a `Style Preference` dropdown (`Concise` | `Detailed`).
+- [x] Task: Connect `AnalysisPopover` to `BackendClient` for `Explain` and `Fact-check` actions. d08548a
+- [x] Task: Implement JSON response parsing and render `ExplainResponse` (summary, explanation, optional context/example). d08548a
+- [x] Task: Implement JSON response parsing and render `FactCheckResponse` (verdict, details, optional sources with links). d08548a
+- [x] Task: Implement error handling in the Popover (display structured error messages from `BackendClient`). d08548a
+- [x] Task: Update Options page: replace `system_prompt` editor with a `Style Preference` dropdown (`Concise` | `Detailed`). 1a61723
 - [ ] Task: Conductor - User Manual Verification 'Integration & UI Polish' (Protocol in workflow.md)
