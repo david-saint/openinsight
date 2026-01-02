@@ -13,7 +13,7 @@
 - [x] Task: Implement text selection listeners with character count validation (10-2000 chars). 604c076
 - [x] Task: Add "Fact-check" visibility logic (>50 chars). 1e88e17
 - [x] Task: Implement context extraction (paragraph, title, description) for Fact-check requests. cfdce81
-- [ ] Task: Conductor - User Manual Verification 'Smart Popover Logic' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Smart Popover Logic' (Protocol in workflow.md)
 
 ## Phase 3: Integration & UI Polish
 

@@ -48,7 +48,11 @@ onMessage((message, _sender, sendResponse) => {
 
     case "FACT_CHECK":
       handleAsync(async () => {
-        const response = await handleFactCheck({ text: payload.text });
+        // Pass text and optional context from payload
+        const response = await handleFactCheck({ 
+          text: payload.text,
+          context: payload.context
+        });
         // Fallback to simple string for existing UI
         return response.verdict 
           ? `${response.verdict}: ${response.summary}` 
