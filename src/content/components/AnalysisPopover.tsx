@@ -281,20 +281,18 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
           {/* Main Content View */}
           {!showSettings && (
             <div className="animate-in fade-in slide-in-from-bottom-1 duration-300">
-              {/* Header Section with Icon */}
-              {activeTab === 'explain' && (
+              {/* Header Section with Icon - only show when loading or no content */}
+              {activeTab === 'explain' && !data.explain.content && (
                 <div className="flex items-start gap-[12px] mb-[16px]">
                   <div className="w-[32px] h-[32px] rounded-full bg-[#f8fafc] dark:bg-[#334155] flex items-center justify-center flex-shrink-0">
                     <Sparkles size={14} className="text-[#94a3b8]" />
                   </div>
                   <div>
                     <h3 className="text-[14px] font-semibold text-[#0f172a] dark:text-[#f1f5f9] mb-[2px]">
-                      {activeTab === 'explain' ? 'Contextual Analysis' : 'Fact Check Result'}
+                      Contextual Analysis
                     </h3>
                     <p className="text-[12px] text-[#64748b] dark:text-[#94a3b8]">
-                      {activeTab === 'explain' 
-                        ? 'Generating simplified explanation based on architectural history context.'
-                        : 'Verifying statement accuracy against trusted sources.'}
+                      Generating simplified explanation based on context.
                     </p>
                   </div>
                 </div>
@@ -364,6 +362,14 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
                               <CheckCircle2 size={12} />
                               {(data['fact-check'].content as FactCheckResponse).verdict}
                             </span>
+                            <span className="text-[10px] text-[#64748b] dark:text-[#94a3b8]">
+                              {(data['fact-check'].content as FactCheckResponse).verdict === 'True' || 
+                               (data['fact-check'].content as FactCheckResponse).verdict === 'False'
+                                ? 'High confidence'
+                                : (data['fact-check'].content as FactCheckResponse).verdict === 'Partially True'
+                                ? 'Medium confidence'
+                                : 'Low confidence'}
+                            </span>
                           </div>
                           <p className="text-[14px] leading-relaxed text-[#334155] dark:text-[#cbd5e1] font-medium">
                             {(data['fact-check'].content as FactCheckResponse).summary}
@@ -376,27 +382,33 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
                             <div className="mt-[16px] pt-[12px] border-t border-[#f8fafc] dark:border-[#334155]">
                               <span className="text-[10px] text-[#94a3b8] uppercase tracking-wider font-bold block mb-[8px]">Sources</span>
                               <div className="space-y-[8px]">
-                                {(data['fact-check'].content as FactCheckResponse).sources!.map((source, idx) => (
-                                  <a 
-                                    key={idx}
-                                    href={source.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="block group bg-[#f8fafc] dark:bg-[#0f172a] p-[8px] rounded-lg border border-transparent hover:border-accent-200 dark:hover:border-accent-900 transition-all"
-                                  >
-                                    <div className="flex items-center justify-between mb-[2px]">
-                                      <span className="text-[11px] font-semibold text-[#1e293b] dark:text-[#f1f5f9] group-hover:text-accent-600 transition-colors truncate pr-[10px]">
-                                        {source.title}
+                                {(data['fact-check'].content as FactCheckResponse).sources!.map((source, idx) => {
+                                  // Extract hostname from URL
+                                  let hostname = source.url;
+                                  try {
+                                    hostname = new URL(source.url).hostname.replace('www.', '');
+                                  } catch (e) {
+                                    // Keep original URL if parsing fails
+                                  }
+                                  
+                                  return (
+                                    <a 
+                                      key={idx}
+                                      href={source.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="flex items-center justify-between py-[6px] px-[8px] rounded-lg bg-[#f8fafc] dark:bg-[#0f172a] hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] transition-colors group"
+                                    >
+                                      <span className="text-[11px] text-[#475569] dark:text-[#94a3b8]">
+                                        <span className="font-medium text-[#334155] dark:text-[#e2e8f0]">{hostname}</span>
                                       </span>
-                                      <ExternalLink size={10} className="text-[#94a3b8] group-hover:text-accent-500 shrink-0" />
-                                    </div>
-                                    {source.snippet && (
-                                      <p className="text-[10px] text-[#64748b] line-clamp-2 leading-normal italic">
-                                        "{source.snippet}"
-                                      </p>
-                                    )}
-                                  </a>
-                                ))}
+                                      <span className="text-[10px] text-accent-600 dark:text-accent-400 font-medium flex items-center gap-[4px] group-hover:underline">
+                                        Read more
+                                        <ExternalLink size={10} />
+                                      </span>
+                                    </a>
+                                  );
+                                })}
                               </div>
                             </div>
                           )}

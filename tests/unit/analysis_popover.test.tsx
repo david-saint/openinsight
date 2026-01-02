@@ -206,7 +206,7 @@ describe('Analysis Popover Component', () => {
 
     await screen.findByText('True');
     expect(screen.getByText('Mock Claim Summary')).toBeInTheDocument();
-    expect(screen.getByText('Mock Source')).toBeInTheDocument();
+    expect(screen.getByText('example.com')).toBeInTheDocument();
   });
 
   it('should display Quick Settings view', async () => {

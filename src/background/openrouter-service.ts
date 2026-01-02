@@ -1,9 +1,9 @@
 import { getApiKey } from "../lib/settings.js";
-import type { 
-  OpenRouterChatResponse, 
-  OpenRouterMessage, 
-  AppError, 
-  ErrorType 
+import type {
+  OpenRouterChatResponse,
+  OpenRouterMessage,
+  AppError,
+  ErrorType,
 } from "../lib/types.js";
 
 /**
@@ -16,35 +16,46 @@ export class OpenRouterService {
   /**
    * Internal helper to map HTTP responses and exceptions to typed AppErrors.
    */
-  private static async mapError(responseOrError: any, context: string): Promise<AppError> {
+  private static async mapError(
+    responseOrError: any,
+    context: string
+  ): Promise<AppError> {
     // Duck-typing for Response check
-    if (responseOrError && typeof responseOrError.status === 'number' && typeof responseOrError.text === 'function') {
+    if (
+      responseOrError &&
+      typeof responseOrError.status === "number" &&
+      typeof responseOrError.text === "function"
+    ) {
       const status = responseOrError.status;
       const statusText = responseOrError.statusText;
-      let errorText = '';
+      let errorText = "";
       try {
         errorText = await responseOrError.text();
       } catch (e) {
         // Ignore text parse errors
       }
 
-      let type: ErrorType = 'unknown';
-      if (status === 401) type = 'auth';
-      else if (status === 429) type = 'rate_limit';
-      else if (status >= 400 && status < 500) type = 'llm';
-      else if (status >= 500) type = 'llm';
+      let type: ErrorType = "unknown";
+      if (status === 401) type = "auth";
+      else if (status === 429) type = "rate_limit";
+      else if (status >= 400 && status < 500) type = "llm";
+      else if (status >= 500) type = "llm";
 
       return {
         type,
-        message: `${context}: ${statusText || errorText || 'Unknown error'} (${status})`,
-        code: status.toString()
+        message: `${context}: ${
+          statusText || errorText || "Unknown error"
+        } (${status})`,
+        code: status.toString(),
       };
     }
 
-    const isNetworkError = responseOrError instanceof TypeError || responseOrError?.message?.includes('network');
+    const isNetworkError =
+      responseOrError instanceof TypeError ||
+      responseOrError?.message?.includes("network");
     return {
-      type: isNetworkError ? 'network' : 'unknown',
-      message: `${context}: ${responseOrError?.message || 'Unexpected error'}`,
+      type: isNetworkError ? "network" : "unknown",
+      message: `${context}: ${responseOrError?.message || "Unexpected error"}`,
     };
   }
 
@@ -60,8 +71,8 @@ export class OpenRouterService {
 
     if (!apiKey) {
       throw {
-        type: 'auth',
-        message: "API key not found. Please set it in the extension options."
+        type: "auth",
+        message: "API key not found. Please set it in the extension options.",
       } as AppError;
     }
 
@@ -88,8 +99,8 @@ export class OpenRouterService {
     max_tokens?: number;
   }): Promise<any> {
     try {
-      const response = await this.fetchWithAuth('/chat/completions', {
-        method: 'POST',
+      const response = await this.fetchWithAuth("/chat/completions", {
+        method: "POST",
         body: JSON.stringify({
           model: params.model,
           messages: params.messages,
@@ -99,21 +110,40 @@ export class OpenRouterService {
       });
 
       if (!response.ok) {
-        throw await this.mapError(response, 'OpenRouter API error');
+        throw await this.mapError(response, "OpenRouter API error");
       }
 
-      const data = await response.json() as OpenRouterChatResponse;
-      const content = data.choices[0].message.content;
+      const data = (await response.json()) as OpenRouterChatResponse;
+      const message = data.choices?.[0]?.message;
+
+      if (!message?.content) {
+        throw {
+          type: "llm",
+          message: "No content in LLM response",
+        } as AppError;
+      }
+
+      let content = message.content;
+
+      // Strip markdown code fences if present (LLMs often wrap JSON in ```json ... ```)
+      if (content.startsWith("```")) {
+        content = content
+          .replace(/^```(?:json)?\s*/i, "")
+          .replace(/\s*```\s*$/, "");
+      }
 
       try {
         return JSON.parse(content);
       } catch (e) {
         // If not JSON, return as summary for backward compatibility or simple responses
-        return { summary: content };
+        return {
+          summary: content,
+          error: "Failed to parse LLM response as JSON",
+        };
       }
     } catch (error) {
       if ((error as AppError).type) throw error;
-      throw await this.mapError(error, 'OpenRouter request failed');
+      throw await this.mapError(error, "OpenRouter request failed");
     }
   }
 
@@ -122,18 +152,22 @@ export class OpenRouterService {
    */
   static async testKey(apiKey: string): Promise<boolean> {
     try {
-      const response = await this.fetchWithAuth('/auth/key', {
-        method: 'GET',
-      }, apiKey);
+      const response = await this.fetchWithAuth(
+        "/auth/key",
+        {
+          method: "GET",
+        },
+        apiKey
+      );
 
       if (!response.ok) {
-        throw await this.mapError(response, 'API Key verification failed');
+        throw await this.mapError(response, "API Key verification failed");
       }
 
       return true;
     } catch (error) {
       if ((error as AppError).type) throw error;
-      throw await this.mapError(error, 'API Key verification failed');
+      throw await this.mapError(error, "API Key verification failed");
     }
   }
 }

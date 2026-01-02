@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Cpu, ChevronDown, Settings2, MoreHorizontal, Sparkles } from 'lucide-react';
-import type { Settings } from '../../lib/settings.js';
+import type { Settings, STYLE_PRESETS } from '../../lib/settings.js';
+import { STYLE_PRESETS as stylePresets } from '../../lib/settings.js';
 import type { LLMSettings, OpenRouterModel } from '../../lib/types.js';
 import type { StylePreference } from '../../lib/prompt-manager.js';
 
@@ -139,7 +140,16 @@ export const IntelligenceSection: React.FC<IntelligenceSectionProps> = ({
             <select
               className="appearance-none bg-transparent pr-5 text-[10px] font-bold focus:outline-none cursor-pointer text-accent-600 dark:text-accent-400"
               value={settings.stylePreference}
-              onChange={(e) => onSave({ ...settings, stylePreference: e.target.value as StylePreference })}
+              onChange={(e) => {
+                const newStyle = e.target.value as StylePreference;
+                const preset = stylePresets[newStyle];
+                onSave({ 
+                  ...settings, 
+                  stylePreference: newStyle,
+                  explainSettings: { ...settings.explainSettings, ...preset },
+                  factCheckSettings: { ...settings.factCheckSettings, ...preset },
+                });
+              }}
             >
               <option value="Concise">Concise</option>
               <option value="Detailed">Detailed</option>
