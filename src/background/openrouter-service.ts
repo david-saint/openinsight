@@ -2,6 +2,7 @@ import { getApiKey } from "../lib/settings.js";
 import type {
   OpenRouterChatResponse,
   OpenRouterMessage,
+  OpenRouterResponseFormat,
   AppError,
   ErrorType,
 } from "../lib/types.js";
@@ -91,22 +92,31 @@ export class OpenRouterService {
   /**
    * Requests a chat completion from OpenRouter.
    * Automatically parses the response content as JSON if possible.
+   * When response_format is provided, OpenRouter enforces JSON Schema validation.
    */
   static async chatCompletion(params: {
     model: string;
     messages: OpenRouterMessage[];
     temperature?: number;
     max_tokens?: number;
+    response_format?: OpenRouterResponseFormat;
   }): Promise<any> {
     try {
+      const requestBody: Record<string, unknown> = {
+        model: params.model,
+        messages: params.messages,
+        temperature: params.temperature,
+        max_tokens: params.max_tokens,
+      };
+
+      // Add response_format for structured outputs if provided
+      if (params.response_format) {
+        requestBody.response_format = params.response_format;
+      }
+
       const response = await this.fetchWithAuth("/chat/completions", {
         method: "POST",
-        body: JSON.stringify({
-          model: params.model,
-          messages: params.messages,
-          temperature: params.temperature,
-          max_tokens: params.max_tokens,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {

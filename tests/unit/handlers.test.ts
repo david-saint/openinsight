@@ -8,6 +8,10 @@ import {
 import { OpenRouterService } from "../../src/background/openrouter-service";
 import * as settings from "../../src/lib/settings";
 import { ModelManager } from "../../src/lib/model-manager";
+import {
+  EXPLAIN_RESPONSE_SCHEMA,
+  FACT_CHECK_RESPONSE_SCHEMA,
+} from "../../src/lib/types";
 
 vi.mock("../../src/background/openrouter-service", () => ({
   OpenRouterService: {
@@ -24,6 +28,7 @@ vi.mock("../../src/lib/settings", () => ({
 vi.mock("../../src/lib/model-manager", () => ({
   ModelManager: {
     getModels: vi.fn(),
+    supportsStructuredOutputs: vi.fn(),
   },
 }));
 
@@ -50,6 +55,7 @@ describe("Background Handlers", () => {
   describe("handleExplain", () => {
     it("should call OpenRouterService with correct parameters", async () => {
       vi.mocked(settings.getSettings).mockResolvedValue(mockSettings as any);
+      vi.mocked(ModelManager.supportsStructuredOutputs).mockResolvedValue(true);
       vi.mocked(OpenRouterService.chatCompletion).mockResolvedValue({
         summary: "Explanation result",
       });
@@ -67,22 +73,82 @@ describe("Background Handlers", () => {
         ],
         temperature: 0.5,
         max_tokens: 100,
+        response_format: EXPLAIN_RESPONSE_SCHEMA,
       });
       expect(result).toEqual({ summary: "Explanation result" });
     });
 
     it("should propagate errors from OpenRouterService", async () => {
       vi.mocked(settings.getSettings).mockResolvedValue(mockSettings as any);
+      vi.mocked(ModelManager.supportsStructuredOutputs).mockResolvedValue(true);
       const mockError = { type: "auth", message: "Unauthorized" };
       vi.mocked(OpenRouterService.chatCompletion).mockRejectedValue(mockError);
 
       await expect(handleExplain("test")).rejects.toEqual(mockError);
+    });
+
+    it("should retry with compatibility mode if first attempt fails", async () => {
+      vi.mocked(settings.getSettings).mockResolvedValue(mockSettings as any);
+      vi.mocked(ModelManager.supportsStructuredOutputs).mockResolvedValue(true);
+
+      const mockError = {
+        type: "llm",
+        message: "Developer instruction is not enabled",
+      };
+      const mockSuccess = { summary: "Success after retry" };
+
+      // First call fails, second succeeds
+      vi.mocked(OpenRouterService.chatCompletion)
+        .mockRejectedValueOnce(mockError)
+        .mockResolvedValueOnce(mockSuccess);
+
+      const result = await handleExplain("test");
+
+      expect(OpenRouterService.chatCompletion).toHaveBeenCalledTimes(2);
+
+      // Verify first call (Standard)
+      expect(OpenRouterService.chatCompletion).toHaveBeenNthCalledWith(1, {
+        model: "test-model",
+        messages: [
+          {
+            role: "system",
+            content: expect.stringContaining("You are an expert explainer."),
+          },
+          { role: "user", content: "test" },
+        ],
+        temperature: 0.5,
+        max_tokens: 100,
+        response_format: EXPLAIN_RESPONSE_SCHEMA,
+      });
+
+      // Verify second call (Compatibility Fallback)
+      expect(OpenRouterService.chatCompletion).toHaveBeenNthCalledWith(2, {
+        model: "test-model",
+        messages: [
+          {
+            role: "user",
+            content: expect.stringContaining("You are an expert explainer."),
+          },
+        ],
+        temperature: 0.5,
+        max_tokens: 100,
+        // response_format should be absent
+      });
+      // Also verify the merged content specifically contains user prompt
+      const secondCallArgs = vi.mocked(OpenRouterService.chatCompletion).mock
+        .calls[1][0];
+      const mergedContent = secondCallArgs.messages[0].content;
+      expect(mergedContent).toContain("You are an expert explainer.");
+      expect(mergedContent).toContain("test"); // Original user content
+
+      expect(result).toEqual(mockSuccess);
     });
   });
 
   describe("handleFactCheck", () => {
     it("should call OpenRouterService with correct parameters", async () => {
       vi.mocked(settings.getSettings).mockResolvedValue(mockSettings as any);
+      vi.mocked(ModelManager.supportsStructuredOutputs).mockResolvedValue(true);
       vi.mocked(OpenRouterService.chatCompletion).mockResolvedValue({
         summary: "Fact check result",
       });
@@ -100,6 +166,7 @@ describe("Background Handlers", () => {
         ],
         temperature: 0.2,
         max_tokens: 200,
+        response_format: FACT_CHECK_RESPONSE_SCHEMA,
       });
       expect(result).toEqual({ summary: "Fact check result" });
     });
