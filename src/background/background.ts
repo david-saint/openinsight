@@ -19,10 +19,12 @@ onMessage((message, _sender, sendResponse) => {
       sendResponse({ success: true, result });
     } catch (error: any) {
       console.error(`Error handling ${type}:`, error);
-      sendResponse({ 
-        success: false, 
-        error: error?.message || String(error) 
-      });
+      // Ensure we always send a structured error object
+      const appError = error?.type ? error : {
+        type: 'unknown',
+        message: error?.message || String(error)
+      };
+      sendResponse({ success: false, error: appError });
     }
   };
 
