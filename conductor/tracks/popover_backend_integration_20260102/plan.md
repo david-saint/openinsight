@@ -8,12 +8,12 @@
 - [x] Task: Implement `system_prompt` management logic: dynamically construct prompts based on style preference (`Concise` | `Detailed`) and append internal JSON formatting instructions. f56ebca
 - [x] Task: Conductor - User Manual Verification 'Robust Backend Architecture' (Protocol in workflow.md) 04b754c
 
-## Phase 2: Smart Popover Logic
+## Phase 2: Smart Popover Logic [checkpoint: 0c90e06]
 
 - [x] Task: Implement text selection listeners with character count validation (10-2000 chars). 604c076
 - [x] Task: Add "Fact-check" visibility logic (>50 chars). 1e88e17
 - [x] Task: Implement context extraction (paragraph, title, description) for Fact-check requests. cfdce81
-- [~] Task: Conductor - User Manual Verification 'Smart Popover Logic' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Smart Popover Logic' (Protocol in workflow.md) 0c90e06
 
 ## Phase 3: Integration & UI Polish
 
