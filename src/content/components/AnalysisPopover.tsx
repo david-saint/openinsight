@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
-import { X, BookOpen, Search, Settings, AlertCircle, CheckCircle2, Sparkles, ChevronRight } from 'lucide-react';
-import { sendMessage } from '../../lib/messaging';
+import { X, BookOpen, Search, Settings, AlertCircle, CheckCircle2, Sparkles, ChevronRight, ExternalLink } from 'lucide-react';
+import { sendMessage } from '../../lib/messaging.js';
+import { BackendClient } from '../../lib/backend-client.js';
+import type { ExplainResponse, FactCheckResponse } from '../../lib/types.js';
 
 interface AnalysisPopoverProps {
   isOpen: boolean;
@@ -21,7 +23,7 @@ type TabId = 'explain' | 'fact-check';
 const ACCENTS = ['teal', 'indigo', 'rose', 'amber'] as const;
 
 interface TabData {
-  content: string | null;
+  content: ExplainResponse | FactCheckResponse | null;
   loading: boolean;
   error: string | null;
 }
@@ -107,17 +109,17 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
   const fetchData = async (tab: TabId, text: string) => {
     setData(prev => ({ ...prev, [tab]: { ...prev[tab], loading: true, error: null } }));
     
-    const type = tab === 'explain' ? 'EXPLAIN' : 'FACT_CHECK';
-    const payload = tab === 'fact-check' 
-      ? { text, context: selectionContext }
-      : { text };
-      
-    const response = await sendMessage(type, payload);
-
-    if (response.success) {
-      setData(prev => ({ ...prev, [tab]: { content: response.result || 'No content returned', loading: false, error: null } }));
-    } else {
-      setData(prev => ({ ...prev, [tab]: { content: null, loading: false, error: response.error || 'Failed to fetch' } }));
+    try {
+      let result;
+      if (tab === 'explain') {
+        result = await BackendClient.explainText(text);
+      } else {
+        result = await BackendClient.factCheckText(text, selectionContext || { paragraph: '', pageTitle: '', pageDescription: '' });
+      }
+      setData(prev => ({ ...prev, [tab]: { content: result, loading: false, error: null } }));
+    } catch (error: any) {
+      const errorMsg = error?.message || 'Failed to fetch';
+      setData(prev => ({ ...prev, [tab]: { content: null, loading: false, error: errorMsg } }));
     }
   };
 
@@ -319,33 +321,94 @@ export const AnalysisPopover: React.FC<AnalysisPopoverProps> = ({
 
               {/* Content or Placeholder */}
               {!data[activeTab].loading && !data[activeTab].error && (
-                <>
-                  {activeTab === 'fact-check' && (
-                    <div className="flex items-center gap-[8px] mb-[12px]">
-                      <span className="inline-flex items-center gap-[6px] px-[10px] py-[4px] rounded-full text-[12px] font-bold border bg-accent-100/50 text-accent-700 border-accent-100 dark:bg-accent-900/20 dark:text-accent-500 dark:border-accent-900/30">
-                        <CheckCircle2 size={12} />
-                        Verified
-                      </span>
-                      <span className="text-[12px] text-[#94a3b8]">High Confidence</span>
-                    </div>
+                <div className="space-y-[16px]">
+                  {activeTab === 'explain' && (
+                    <>
+                      {data.explain.content ? (
+                        <div className="space-y-[12px] animate-in fade-in slide-in-from-bottom-2 duration-500">
+                          <p className="text-[14px] leading-relaxed border-l-2 border-accent-500 pl-[12px] text-[#334155] dark:text-[#cbd5e1] font-medium">
+                            {(data.explain.content as ExplainResponse).summary}
+                          </p>
+                          <p className="text-[13px] leading-relaxed text-[#475569] dark:text-[#94a3b8]">
+                            {(data.explain.content as ExplainResponse).explanation}
+                          </p>
+                          {(data.explain.content as ExplainResponse).context?.example && (
+                            <div className="bg-[#f8fafc] dark:bg-[#0f172a] p-[10px] rounded-lg border border-[#f1f5f9] dark:border-[#334155]">
+                              <span className="text-[10px] uppercase tracking-wider font-bold text-[#94a3b8] block mb-[4px]">Example</span>
+                              <p className="text-[12px] italic text-[#64748b] dark:text-[#cbd5e1]">
+                                {(data.explain.content as ExplainResponse).context?.example}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <p className="text-[14px] leading-relaxed border-l-2 border-accent-500 pl-[12px] text-[#334155] dark:text-[#cbd5e1]">
+                          {getPlaceholderContent('explain')}
+                        </p>
+                      )}
+                    </>
                   )}
 
-                  {activeTab === 'explain' ? (<p className="text-[14px] leading-relaxed border-l-2 border-accent-500 pl-[12px] text-[#334155] dark:text-[#cbd5e1]">
-                    {data[activeTab].content || getPlaceholderContent(activeTab)}
-                  </p>) : (<p className="text-[14px] leading-relaxed text-[#334155] dark:text-[#cbd5e1]">
-                    {data[activeTab].content || getPlaceholderContent(activeTab)}
-                  </p>)}
-
-                  {/* Footer */}
-                  {activeTab === 'fact-check' && (<div className="mt-[16px] pt-[16px] border-t border-[#f8fafc] dark:border-[#334155] flex justify-between items-center">
-                    <span className="text-[10px] text-[#94a3b8] uppercase tracking-wider font-medium">
-                      Source: Wikipedia API
-                    </span>
-                    <button className="text-[12px] font-medium flex items-center gap-[4px] text-accent-600 hover:text-accent-700 dark:text-accent-500 dark:hover:text-accent-400">
-                      Read more <ChevronRight size={12} />
-                    </button>
-                  </div>)}
-                </>
+                  {activeTab === 'fact-check' && (
+                    <>
+                      {data['fact-check'].content ? (
+                        <div className="space-y-[12px] animate-in fade-in slide-in-from-bottom-2 duration-500">
+                          <div className="flex items-center gap-[8px]">
+                            <span className={`inline-flex items-center gap-[6px] px-[10px] py-[4px] rounded-full text-[11px] font-bold border ${
+                              (data['fact-check'].content as FactCheckResponse).verdict === 'True' 
+                                ? 'bg-emerald-100/50 text-emerald-700 border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-500 dark:border-emerald-900/30'
+                                : (data['fact-check'].content as FactCheckResponse).verdict === 'False'
+                                ? 'bg-rose-100/50 text-rose-700 border-rose-100 dark:bg-rose-900/20 dark:text-rose-500 dark:border-rose-900/30'
+                                : 'bg-amber-100/50 text-amber-700 border-amber-100 dark:bg-amber-900/20 dark:text-amber-500 dark:border-amber-900/30'
+                            }`}>
+                              <CheckCircle2 size={12} />
+                              {(data['fact-check'].content as FactCheckResponse).verdict}
+                            </span>
+                          </div>
+                          <p className="text-[14px] leading-relaxed text-[#334155] dark:text-[#cbd5e1] font-medium">
+                            {(data['fact-check'].content as FactCheckResponse).summary}
+                          </p>
+                          <p className="text-[13px] leading-relaxed text-[#475569] dark:text-[#94a3b8]">
+                            {(data['fact-check'].content as FactCheckResponse).details}
+                          </p>
+                          
+                          {(data['fact-check'].content as FactCheckResponse).sources && (data['fact-check'].content as FactCheckResponse).sources!.length > 0 && (
+                            <div className="mt-[16px] pt-[12px] border-t border-[#f8fafc] dark:border-[#334155]">
+                              <span className="text-[10px] text-[#94a3b8] uppercase tracking-wider font-bold block mb-[8px]">Sources</span>
+                              <div className="space-y-[8px]">
+                                {(data['fact-check'].content as FactCheckResponse).sources!.map((source, idx) => (
+                                  <a 
+                                    key={idx}
+                                    href={source.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block group bg-[#f8fafc] dark:bg-[#0f172a] p-[8px] rounded-lg border border-transparent hover:border-accent-200 dark:hover:border-accent-900 transition-all"
+                                  >
+                                    <div className="flex items-center justify-between mb-[2px]">
+                                      <span className="text-[11px] font-semibold text-[#1e293b] dark:text-[#f1f5f9] group-hover:text-accent-600 transition-colors truncate pr-[10px]">
+                                        {source.title}
+                                      </span>
+                                      <ExternalLink size={10} className="text-[#94a3b8] group-hover:text-accent-500 shrink-0" />
+                                    </div>
+                                    {source.snippet && (
+                                      <p className="text-[10px] text-[#64748b] line-clamp-2 leading-normal italic">
+                                        "{source.snippet}"
+                                      </p>
+                                    )}
+                                  </a>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <p className="text-[14px] leading-relaxed text-[#334155] dark:text-[#cbd5e1]">
+                          {getPlaceholderContent('fact-check')}
+                        </p>
+                      )}
+                    </>
+                  )}
+                </div>
               )}
             </div>
           )}

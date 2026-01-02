@@ -5,9 +5,17 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { AnalysisPopover } from '../../src/content/components/AnalysisPopover.js';
-import { sendMessage } from '../../src/lib/messaging.js';
+import { BackendClient } from '../../src/lib/backend-client.js';
 
-// Mock messaging
+// Mock BackendClient
+vi.mock('../../src/lib/backend-client.js', () => ({
+  BackendClient: {
+    explainText: vi.fn(),
+    factCheckText: vi.fn(),
+  },
+}));
+
+// Mock messaging for OPEN_OPTIONS
 vi.mock('../../src/lib/messaging.js', () => ({
   sendMessage: vi.fn(),
 }));
@@ -15,9 +23,23 @@ vi.mock('../../src/lib/messaging.js', () => ({
 describe('Analysis Popover Component', () => {
   const longText = 'This is a sufficiently long selection text to ensure Fact Check tab is visible in tests.';
 
+  const mockExplainResponse: ExplainResponse = {
+    summary: 'Mock Summary',
+    explanation: 'Detailed mock explanation',
+    context: { example: 'Mock example' }
+  };
+
+  const mockFactCheckResponse: FactCheckResponse = {
+    summary: 'Mock Claim Summary',
+    verdict: 'True',
+    details: 'Mock verdict details',
+    sources: [{ title: 'Mock Source', url: 'https://example.com', snippet: 'Source snippet' }]
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(sendMessage).mockResolvedValue({ success: true, result: 'mocked content' });
+    vi.mocked(BackendClient.explainText).mockResolvedValue(mockExplainResponse);
+    vi.mocked(BackendClient.factCheckText).mockResolvedValue(mockFactCheckResponse);
   });
 
   it('should render when isOpen is true', async () => {
@@ -125,10 +147,10 @@ describe('Analysis Popover Component', () => {
   it('should show loading state in Explain view', async () => {
     // Create a promise that stays pending
     let resolvePromise: (value: any) => void;
-    const pendingPromise = new Promise<{ success: boolean, result?: string, error?: string }>((resolve) => {
+    const pendingPromise = new Promise<ExplainResponse>((resolve) => {
       resolvePromise = resolve;
     });
-    vi.mocked(sendMessage).mockReturnValue(pendingPromise as any);
+    vi.mocked(BackendClient.explainText).mockReturnValue(pendingPromise);
 
     await act(async () => {
       render(
@@ -150,8 +172,6 @@ describe('Analysis Popover Component', () => {
   });
 
   it('should display fetched content', async () => {
-    vi.mocked(sendMessage).mockResolvedValue({ success: true, result: 'This is the explanation.' });
-    
     await act(async () => {
       render(
         <AnalysisPopover 
@@ -162,14 +182,14 @@ describe('Analysis Popover Component', () => {
       );
     });
 
-    await screen.findByText('This is the explanation.');
+    await screen.findByText('Mock Summary');
+    expect(screen.getByText('Detailed mock explanation')).toBeInTheDocument();
     expect(screen.queryByTestId('loading-skeleton')).not.toBeInTheDocument();
   });
 
   it('should display verification badge in Fact Check view', async () => {
     const { userEvent } = await import('@testing-library/user-event');
     const user = userEvent.setup();
-    vi.mocked(sendMessage).mockResolvedValue({ success: true, result: 'This is true.' });
     
     await act(async () => {
       render(
@@ -184,8 +204,9 @@ describe('Analysis Popover Component', () => {
     const factCheckTab = screen.getByRole('tab', { name: /fact check/i });
     await user.click(factCheckTab);
 
-    await screen.findByText('This is true.');
-    expect(screen.getByText(/verified/i)).toBeInTheDocument();
+    await screen.findByText('True');
+    expect(screen.getByText('Mock Claim Summary')).toBeInTheDocument();
+    expect(screen.getByText('Mock Source')).toBeInTheDocument();
   });
 
   it('should display Quick Settings view', async () => {
