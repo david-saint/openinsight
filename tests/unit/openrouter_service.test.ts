@@ -94,4 +94,86 @@ describe("OpenRouterService", () => {
       code: "401",
     });
   });
+
+  it("should strip markdown code fences from JSON responses", async () => {
+    vi.mocked(settings.getApiKey).mockResolvedValue("test-key");
+
+    const mockChatResponse = {
+      choices: [
+        {
+          message: {
+            content:
+              '```json\n{"summary": "test", "explanation": "parsed"}\n```',
+          },
+        },
+      ],
+    };
+
+    vi.mocked(fetch).mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(mockChatResponse),
+    } as Response);
+
+    const result = await OpenRouterService.chatCompletion({
+      model: "test-model",
+      messages: [{ role: "user", content: "test" }],
+    });
+
+    expect(result).toEqual({ summary: "test", explanation: "parsed" });
+  });
+
+  it("should handle code fences with extra whitespace", async () => {
+    vi.mocked(settings.getApiKey).mockResolvedValue("test-key");
+
+    const mockChatResponse = {
+      choices: [
+        {
+          message: {
+            content: '  ```json  \n  {"verdict": "True"}  \n  ```  ',
+          },
+        },
+      ],
+    };
+
+    vi.mocked(fetch).mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(mockChatResponse),
+    } as Response);
+
+    const result = await OpenRouterService.chatCompletion({
+      model: "test-model",
+      messages: [{ role: "user", content: "test" }],
+    });
+
+    expect(result).toEqual({ verdict: "True" });
+  });
+
+  it("should normalize smart/curly quotes to straight quotes", async () => {
+    vi.mocked(settings.getApiKey).mockResolvedValue("test-key");
+
+    // Smart quotes used as JSON delimiters (the actual problem case)
+    const mockChatResponse = {
+      choices: [
+        {
+          message: {
+            // Using curly quotes as JSON string delimiters: "key": "value"
+            content:
+              "{\u201Csummary\u201D: \u201CTest response\u201D, \u201Cverdict\u201D: \u201CTrue\u201D}",
+          },
+        },
+      ],
+    };
+
+    vi.mocked(fetch).mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(mockChatResponse),
+    } as Response);
+
+    const result = await OpenRouterService.chatCompletion({
+      model: "test-model",
+      messages: [{ role: "user", content: "test" }],
+    });
+
+    expect(result).toEqual({ summary: "Test response", verdict: "True" });
+  });
 });

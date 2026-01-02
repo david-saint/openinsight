@@ -5,6 +5,28 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import Options from '../../src/options/Options.js';
 import * as settings from '../../src/lib/settings.js';
+import { BackendClient } from '../../src/lib/backend-client.js';
+
+// Mock chrome API
+const mockChrome = {
+  runtime: {
+    sendMessage: vi.fn(),
+    lastError: null,
+  },
+  tabs: {
+    create: vi.fn(),
+  },
+};
+
+vi.stubGlobal('chrome', mockChrome);
+
+// Mock BackendClient
+vi.mock('../../src/lib/backend-client.js', () => ({
+  BackendClient: {
+    fetchModels: vi.fn().mockResolvedValue([]),
+    testKey: vi.fn().mockResolvedValue(true),
+  },
+}));
 
 // Mock settings module
 vi.mock('../../src/lib/settings.js', () => ({

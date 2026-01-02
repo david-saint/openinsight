@@ -123,14 +123,21 @@ export class OpenRouterService {
         } as AppError;
       }
 
-      let content = message.content;
+      let content = message.content.trim();
 
       // Strip markdown code fences if present (LLMs often wrap JSON in ```json ... ```)
-      if (content.startsWith("```")) {
-        content = content
-          .replace(/^```(?:json)?\s*/i, "")
-          .replace(/\s*```\s*$/, "");
+      // Handle various formats: ```json, ``` json, ```JSON, or just ```
+      const codeBlockMatch = content.match(
+        /^```(?:json)?\s*\n?([\s\S]*?)\n?\s*```$/i
+      );
+      if (codeBlockMatch && codeBlockMatch[1]) {
+        content = codeBlockMatch[1].trim();
       }
+
+      // Normalize smart/curly quotes to straight quotes (some models use typographic quotes)
+      content = content
+        .replace(/[\u201C\u201D]/g, '"') // " " → "
+        .replace(/[\u2018\u2019]/g, "'"); // ' ' → '
 
       try {
         return JSON.parse(content);
