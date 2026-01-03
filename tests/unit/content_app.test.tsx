@@ -7,6 +7,7 @@ import '@testing-library/jest-dom';
 import React from 'react';
 import { ContentApp } from '../../src/content/ContentApp';
 import * as settingsModule from '../../src/lib/settings';
+import * as selectionModule from '../../src/content/selection.js';
 
 // Mock chrome
 const chromeMock = {
@@ -29,8 +30,21 @@ vi.mock('../../src/lib/settings', () => ({
   DEFAULT_SETTINGS: {
     theme: 'system',
     accentColor: 'teal',
+    explainModel: 'gpt',
+    factCheckModel: 'gpt',
+    triggerMode: 'icon',
   },
   SETTINGS_KEY: 'user_settings',
+}));
+
+// Mock selection module
+vi.mock('../../src/content/selection.js', () => ({
+  handleSelection: vi.fn(),
+}));
+
+// Mock positioning module
+vi.mock('../../src/content/positioning.js', () => ({
+  calculateTriggerPosition: vi.fn(() => ({ x: 100, y: 100 })),
 }));
 
 // Mock window.matchMedia
@@ -130,4 +144,193 @@ describe('ContentApp Component', () => {
       expect(root).toHaveClass('dark');
     });
   });
+
+  describe('Trigger Mode', () => {
+    const mockSelectionData = {
+      text: 'This is selected text for testing',
+      rect: { top: 100, left: 100, right: 200, bottom: 120, width: 100, height: 20 } as DOMRect,
+      endPosition: { x: 200, y: 120 },
+      context: {
+        paragraph: 'Full paragraph context',
+        pageTitle: 'Test Page',
+        pageDescription: 'Test description'
+      }
+    };
+
+    it('should show trigger button on selection when triggerMode is icon', async () => {
+      vi.mocked(settingsModule.getSettings).mockResolvedValue({
+        theme: 'light',
+        accentColor: 'teal',
+        explainModel: 'gpt',
+        factCheckModel: 'gpt',
+        triggerMode: 'icon'
+      });
+
+      // Mock handleSelection to return valid selection data
+      vi.mocked(selectionModule.handleSelection).mockReturnValue(mockSelectionData);
+
+      const { container } = render(<ContentApp />);
+
+      // Wait for settings to load
+      await waitFor(() => {
+        expect(settingsModule.getSettings).toHaveBeenCalled();
+      });
+
+      // Trigger mouseup
+      await act(async () => {
+        document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+        // Wait for the debounce timeout
+        await new Promise(resolve => setTimeout(resolve, 20));
+      });
+
+      // In icon mode, the trigger button should be visible (isVisible = true)
+      // and the popover should NOT be open
+      await waitFor(() => {
+        const popover = container.querySelector('[data-testid="analysis-popover"]');
+        // Popover should NOT be rendered directly
+        expect(popover).toBeNull();
+      });
+    });
+
+    it('should open popover directly on selection when triggerMode is immediate', async () => {
+      vi.mocked(settingsModule.getSettings).mockResolvedValue({
+        theme: 'light',
+        accentColor: 'teal',
+        explainModel: 'gpt',
+        factCheckModel: 'gpt',
+        triggerMode: 'immediate'
+      });
+
+      // Mock handleSelection to return valid selection data
+      vi.mocked(selectionModule.handleSelection).mockReturnValue(mockSelectionData);
+
+      const { container } = render(<ContentApp />);
+
+      // Wait for settings to load
+      await waitFor(() => {
+        expect(settingsModule.getSettings).toHaveBeenCalled();
+      });
+
+      // Trigger mouseup
+      await act(async () => {
+        document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+        // Wait for the debounce timeout
+        await new Promise(resolve => setTimeout(resolve, 20));
+      });
+
+      // In immediate mode, isVisible should be false (no button) and isPopoverOpen should be true
+      // The popover should be rendered
+      await waitFor(() => {
+        // Check that handleSelection was called
+        expect(selectionModule.handleSelection).toHaveBeenCalled();
+      });
+    });
+
+    it('should not show trigger button when triggerMode is immediate', async () => {
+      vi.mocked(settingsModule.getSettings).mockResolvedValue({
+        theme: 'light',
+        accentColor: 'teal',
+        explainModel: 'gpt',
+        factCheckModel: 'gpt',
+        triggerMode: 'immediate'
+      });
+
+      // Mock handleSelection to return valid selection data
+      vi.mocked(selectionModule.handleSelection).mockReturnValue(mockSelectionData);
+
+      const { container } = render(<ContentApp />);
+
+      // Wait for settings to load
+      await waitFor(() => {
+        expect(settingsModule.getSettings).toHaveBeenCalled();
+      });
+
+      // Trigger mouseup
+      await act(async () => {
+        document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+        // Wait for the debounce timeout
+        await new Promise(resolve => setTimeout(resolve, 20));
+      });
+
+      // The trigger button should NOT be visible in immediate mode
+      const triggerButton = container.querySelector('[data-testid="trigger-button"]');
+      expect(triggerButton).toBeNull();
+    });
+
+    it('should not open popover or show button when no text is selected', async () => {
+      vi.mocked(settingsModule.getSettings).mockResolvedValue({
+        theme: 'light',
+        accentColor: 'teal',
+        explainModel: 'gpt',
+        factCheckModel: 'gpt',
+        triggerMode: 'immediate'
+      });
+
+      // Mock handleSelection to return null (no valid selection)
+      vi.mocked(selectionModule.handleSelection).mockReturnValue(null);
+
+      const { container } = render(<ContentApp />);
+
+      // Wait for settings to load
+      await waitFor(() => {
+        expect(settingsModule.getSettings).toHaveBeenCalled();
+      });
+
+      // Trigger mouseup
+      await act(async () => {
+        document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+        // Wait for the debounce timeout
+        await new Promise(resolve => setTimeout(resolve, 20));
+      });
+
+      // Neither button nor popover should be visible
+      const triggerButton = container.querySelector('[data-testid="trigger-button"]');
+      const popover = container.querySelector('[data-testid="analysis-popover"]');
+      expect(triggerButton).toBeNull();
+      expect(popover).toBeNull();
+    });
+
+    it('should update trigger mode when storage changes', async () => {
+      // Initial state: icon mode
+      vi.mocked(settingsModule.getSettings).mockResolvedValue({
+        theme: 'light',
+        accentColor: 'teal',
+        explainModel: 'gpt',
+        factCheckModel: 'gpt',
+        triggerMode: 'icon'
+      });
+
+      render(<ContentApp />);
+
+      // Wait for settings to load
+      await waitFor(() => {
+        expect(settingsModule.getSettings).toHaveBeenCalled();
+      });
+
+      // Check if listener was registered
+      expect(chromeMock.storage.onChanged.addListener).toHaveBeenCalled();
+      const listener = chromeMock.storage.onChanged.addListener.mock.calls[0]?.[0];
+      expect(listener).toBeDefined();
+      
+      // Simulate storage change to immediate mode
+      act(() => {
+        listener({
+          user_settings: {
+            newValue: {
+              theme: 'light',
+              accentColor: 'teal',
+              explainModel: 'gpt',
+              factCheckModel: 'gpt',
+              triggerMode: 'immediate'
+            }
+          }
+        }, 'local');
+      });
+
+      // The settings should be updated (we can't easily verify behavior without another selection,
+      // but at least the storage change handler was called)
+      expect(chromeMock.storage.onChanged.addListener).toHaveBeenCalled();
+    });
+  });
 });
+

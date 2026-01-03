@@ -44,7 +44,14 @@ export const ContentApp: React.FC = () => {
           setTriggerPosition(pos);
           setSelectionText(selectionData.text);
           setSelectionContext(selectionData.context);
-          setIsVisible(true);
+          
+          // Check trigger mode: immediate opens popover directly, icon shows button
+          if (settings.triggerMode === 'immediate') {
+            setIsVisible(false);
+            setIsPopoverOpen(true);
+          } else {
+            setIsVisible(true);
+          }
         } else {
           setIsVisible(false);
         }
@@ -57,7 +64,7 @@ export const ContentApp: React.FC = () => {
       window.clearTimeout(timeoutRef.current);
       chrome.storage.onChanged.removeListener(handleStorageChange);
     };
-  }, [isPopoverOpen]);
+  }, [isPopoverOpen, settings.triggerMode]);
 
   const handleTrigger = useCallback(() => {
     setIsVisible(false);
