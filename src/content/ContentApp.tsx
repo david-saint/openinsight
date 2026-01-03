@@ -85,15 +85,17 @@ export const ContentApp: React.FC = () => {
         />
       )}
       
-      <AnalysisPopover 
-        isOpen={isPopoverOpen} 
-        onClose={handleClosePopover}
-        selectionText={selectionText}
-        selectionContext={selectionContext}
-        accentColor={settings.accentColor}
-        onAccentChange={handleAccentChange}
-        position={triggerPosition || undefined}
-      />
+      {isPopoverOpen && (
+        <AnalysisPopover
+          isOpen={isPopoverOpen}
+          onClose={handleClosePopover}
+          selectionText={selectionText}
+          selectionContext={selectionContext}
+          accentColor={settings.accentColor}
+          onAccentChange={handleAccentChange}
+          position={triggerPosition || undefined}
+        />
+      )}
     </div>
   );
 };
