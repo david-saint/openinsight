@@ -193,6 +193,8 @@ describe('ContentApp Component', () => {
     });
 
     it('should open popover directly on selection when triggerMode is immediate', async () => {
+      vi.useFakeTimers();
+      
       vi.mocked(settingsModule.getSettings).mockResolvedValue({
         theme: 'light',
         accentColor: 'teal',
@@ -204,26 +206,27 @@ describe('ContentApp Component', () => {
       // Mock handleSelection to return valid selection data
       vi.mocked(selectionModule.handleSelection).mockReturnValue(mockSelectionData);
 
-      const { container } = render(<ContentApp />);
+      render(<ContentApp />);
 
-      // Wait for settings to load
-      await waitFor(() => {
-        expect(settingsModule.getSettings).toHaveBeenCalled();
+      // Flush the pending getSettings promise
+      await act(async () => {
+        await vi.runAllTimersAsync();
       });
 
       // Trigger mouseup
-      await act(async () => {
+      act(() => {
         document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
-        // Wait for the debounce timeout
-        await new Promise(resolve => setTimeout(resolve, 20));
       });
 
-      // In immediate mode, isVisible should be false (no button) and isPopoverOpen should be true
-      // The popover should be rendered
-      await waitFor(() => {
-        // Check that handleSelection was called
-        expect(selectionModule.handleSelection).toHaveBeenCalled();
+      // Advance timers to trigger the 10ms debounce in the component
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(20);
       });
+
+      // Verify handleSelection was called
+      expect(selectionModule.handleSelection).toHaveBeenCalled();
+      
+      vi.useRealTimers();
     });
 
     it('should not show trigger button when triggerMode is immediate', async () => {

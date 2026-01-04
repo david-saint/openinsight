@@ -37,11 +37,11 @@ vi.mock('../../src/lib/settings.js', () => ({
   DEFAULT_SETTINGS: {
     theme: 'system',
     accentColor: 'teal',
-    explainModel: 'google/gemini-2.0-flash-exp:free',
+    explainModel: 'nvidia/nemotron-3-nano-30b-a3b:free',
     factCheckModel: 'google/gemini-2.0-flash-exp:free',
     triggerMode: 'icon',
-    explainSettings: { temperature: 0.7, max_tokens: 512, system_prompt: 'explain' },
-    factCheckSettings: { temperature: 0.3, max_tokens: 512, system_prompt: 'factcheck' },
+    explainSettings: { temperature: 0.1, max_tokens: 1024, system_prompt: '' },
+    factCheckSettings: { temperature: 0.1, max_tokens: 1024, system_prompt: '' },
   },
 }));
 
@@ -94,11 +94,11 @@ describe('Options Component', () => {
     const factCheckSelect = await screen.findByLabelText(/fact-check model/i);
     
     fireEvent.change(explainSelect, { target: { value: 'meta-llama/llama-3.3-70b-instruct:free' } });
-    fireEvent.change(factCheckSelect, { target: { value: 'mistralai/devstral-2512:free' } });
+    fireEvent.change(factCheckSelect, { target: { value: 'nvidia/nemotron-3-nano-30b-a3b:free' } });
     
     expect(settings.saveSettings).toHaveBeenCalledWith(expect.objectContaining({
       explainModel: 'meta-llama/llama-3.3-70b-instruct:free',
-      factCheckModel: 'mistralai/devstral-2512:free',
+      factCheckModel: 'nvidia/nemotron-3-nano-30b-a3b:free',
     }));
   });
 
