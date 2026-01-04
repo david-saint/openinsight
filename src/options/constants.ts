@@ -24,9 +24,9 @@ export const THEME_COLORS = {
 export type ThemeColor = keyof typeof THEME_COLORS;
 
 export const MODELS = [
+  { id: "nvidia/nemotron-3-nano-30b-a3b:free", name: "Nemotron 3 Nano 30B" },
   { id: "google/gemini-2.0-flash-exp:free", name: "Gemini 2.0 Flash" },
   { id: "meta-llama/llama-3.3-70b-instruct:free", name: "Llama 3.3 70B" },
   { id: "meta-llama/llama-3.1-405b-instruct:free", name: "Llama 3.1 405B" },
   { id: "nousresearch/hermes-3-llama-3.1-405b:free", name: "Hermes 3 405B" },
-  { id: "mistralai/devstral-2512:free", name: "Mistral Devstral" },
 ];
