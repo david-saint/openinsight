@@ -6,6 +6,7 @@ import { calculateTriggerPosition } from './positioning.js';
 import type { Position } from './positioning.js';
 import { getSettings, saveSettings, DEFAULT_SETTINGS, SETTINGS_KEY } from '../lib/settings.js';
 import type { Settings } from '../lib/settings.js';
+import { useTheme } from './hooks/useTheme.js';
 
 export const ContentApp: React.FC = () => {
   const [triggerPosition, setTriggerPosition] = useState<Position | null>(null);
@@ -15,6 +16,9 @@ export const ContentApp: React.FC = () => {
   const [selectionContext, setSelectionContext] = useState<{ paragraph: string; pageTitle: string; pageDescription: string } | undefined>(undefined);
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const timeoutRef = React.useRef<number | undefined>(undefined);
+
+  // Optimized theme handling using custom hook
+  const isDark = useTheme(settings.theme);
 
   useEffect(() => {
     // Load settings once
@@ -80,8 +84,6 @@ export const ContentApp: React.FC = () => {
     setSettings(newSettings);
     saveSettings(newSettings);
   }, [settings]);
-
-  const isDark = settings.theme === 'dark' || (settings.theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
   return (
     <div className={`openinsight-content-root ${isDark ? 'dark' : ''}`} data-accent={settings.accentColor}>
