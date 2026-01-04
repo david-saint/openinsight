@@ -21,18 +21,18 @@ export interface Settings {
 export const DEFAULT_SETTINGS: Settings = {
   theme: "system",
   accentColor: "teal",
-  explainModel: "google/gemini-2.0-flash-exp:free",
+  explainModel: "nvidia/nemotron-3-nano-30b-a3b:free",
   factCheckModel: "google/gemini-2.0-flash-exp:free",
   triggerMode: "icon",
   stylePreference: "Concise",
   explainSettings: {
     temperature: 0.1, // Lower temperature for more consistent JSON
-    max_tokens: 1000,
+    max_tokens: 1024,
     system_prompt: "", // No longer used for direct user editing
   },
   factCheckSettings: {
     temperature: 0.1,
-    max_tokens: 1000,
+    max_tokens: 1024,
     system_prompt: "", // No longer used for direct user editing
   },
 };
@@ -44,7 +44,7 @@ export const STYLE_PRESETS: Record<
   StylePreference,
   Pick<LLMSettings, "temperature" | "max_tokens">
 > = {
-  Concise: { temperature: 0.1, max_tokens: 512 },
+  Concise: { temperature: 0.1, max_tokens: 1024 },
   Detailed: { temperature: 0.3, max_tokens: 1536 },
 };
 
