@@ -12,7 +12,7 @@ interface TabReorderListProps {
   allTabs: Tab[];
 }
 
-export const TabReorderList: React.FC<TabReorderListProps> = ({ enabledTabs, onSave, allTabs }) => {
+export const TabReorderList: React.FC<TabReorderListProps> = ({ enabledTabs = [], onSave, allTabs }) => {
   // We want to show all tabs, but maintain the order of enabled ones first, then disabled ones.
   // Actually, the requirement says "reorder the tabs". Usually, this means reordering the entire list
   // and having a checkbox to enable/disable.

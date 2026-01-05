@@ -37,6 +37,7 @@ vi.mock('../../src/lib/settings.js', () => ({
   DEFAULT_SETTINGS: {
     theme: 'system',
     accentColor: 'teal',
+    enabledTabs: ['explain', 'fact-check'],
     explainModel: 'nvidia/nemotron-3-nano-30b-a3b:free',
     factCheckModel: 'google/gemini-2.0-flash-exp:free',
     triggerMode: 'icon',

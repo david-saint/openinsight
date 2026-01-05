@@ -1,12 +1,18 @@
 import React from 'react';
 import { Palette } from 'lucide-react';
 import type { Settings } from '../../lib/settings.js';
+import { TabReorderList } from './TabReorderList.js';
 
 interface AppearanceSectionProps {
   settings: Settings;
   onSave: (newSettings: Settings) => void;
   themeColors: Record<string, { name: string; ring: string; bg: string }>;
 }
+
+const ALL_TABS = [
+  { id: 'explain', label: 'Explain' },
+  { id: 'fact-check', label: 'Fact-check' },
+];
 
 export const AppearanceSection: React.FC<AppearanceSectionProps> = ({
   settings,
@@ -56,6 +62,20 @@ export const AppearanceSection: React.FC<AppearanceSectionProps> = ({
               />
             ))}
           </div>
+        </div>
+
+        <div className="pt-4 border-t border-slate-100 dark:border-slate-700">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-sm font-medium opacity-90">Popover Tabs</span>
+          </div>
+          <TabReorderList 
+            enabledTabs={settings.enabledTabs}
+            onSave={(newTabs) => onSave({ ...settings, enabledTabs: newTabs })}
+            allTabs={ALL_TABS}
+          />
+          <p className="mt-2 text-[11px] text-slate-400 dark:text-slate-500">
+            Drag (coming soon) or use arrows to reorder. Toggle to show/hide.
+          </p>
         </div>
       </div>
     </div>
