@@ -26,7 +26,7 @@
     - [ ] Test disabling/enabling logic (and the "must have one" constraint).
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Options UI' (Protocol in workflow.md)
 
-## Phase 3: Content Script & Trigger Logic Updates
+## Phase 3: Content Script & Trigger Logic Updates [checkpoint: eaf3fe4]
 - [x] Task: Update Trigger Logic in `src/content/selection.ts` (or relevant handler) c1dd804
     - [ ] Read `enabledTabs` from settings.
     - [ ] Modify the logic that decides whether to show the trigger button.
