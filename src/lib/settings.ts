@@ -62,6 +62,9 @@ export async function getSettings(): Promise<Settings> {
 }
 
 export async function saveSettings(settings: Settings): Promise<void> {
+  if (settings.enabledTabs && settings.enabledTabs.length === 0) {
+    throw new Error("At least one tab must be enabled");
+  }
   await setStorage(SETTINGS_KEY, settings);
 }
 

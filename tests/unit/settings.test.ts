@@ -88,5 +88,10 @@ describe('Settings Module', () => {
       // @ts-ignore
       expect(settings.enabledTabs).toEqual(['fact-check']);
     });
+
+    it('should throw error when saving empty enabledTabs', async () => {
+      const invalidSettings = { ...DEFAULT_SETTINGS, enabledTabs: [] };
+      await expect(saveSettings(invalidSettings)).rejects.toThrow('At least one tab must be enabled');
+    });
   });
 });
