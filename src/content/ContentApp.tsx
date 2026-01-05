@@ -41,16 +41,35 @@ export const ContentApp: React.FC = () => {
       window.clearTimeout(timeoutRef.current);
 
       // Small timeout to allow selection to finalize
-      timeoutRef.current = window.setTimeout(() => {
+      timeoutRef.current = window.setTimeout(async () => {
         const selectionData = handleSelection();
         if (selectionData && !isPopoverOpen) {
+          // Re-fetch settings before checking validity to ensure we have the latest
+          const currentSettings = await getSettings();
+          
+          // Check if selection is valid for any enabled tab
+          // Default to true if settings haven't loaded yet to avoid flickering/missing trigger
+          const enabledTabs = currentSettings.enabledTabs || ['explain', 'fact-check'];
+          const isExplainEnabled = enabledTabs.includes('explain');
+          const isFactCheckEnabled = enabledTabs.includes('fact-check');
+          const isLongEnoughForFactCheck = selectionData.text.length >= 50;
+
+          const isValidForEnabledTabs = 
+            (isExplainEnabled) || 
+            (isFactCheckEnabled && isLongEnoughForFactCheck);
+
+          if (!isValidForEnabledTabs) {
+            setIsVisible(false);
+            return;
+          }
+
           const pos = calculateTriggerPosition(selectionData.endPosition);
           setTriggerPosition(pos);
           setSelectionText(selectionData.text);
           setSelectionContext(selectionData.context);
           
           // Check trigger mode: immediate opens popover directly, icon shows button
-          if (settings.triggerMode === 'immediate') {
+          if (currentSettings.triggerMode === 'immediate') {
             setIsVisible(false);
             setIsPopoverOpen(true);
           } else {

@@ -10,6 +10,7 @@ export const TriggerButton = React.memo(({ position, onTrigger }: TriggerButtonP
   return (
     <button
       onClick={onTrigger}
+      data-testid="trigger-button"
       style={{
         top: `${position.top}px`,
         left: `${position.left}px`,
