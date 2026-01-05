@@ -27,7 +27,7 @@
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Options UI' (Protocol in workflow.md)
 
 ## Phase 3: Content Script & Trigger Logic Updates
-- [ ] Task: Update Trigger Logic in `src/content/selection.ts` (or relevant handler)
+- [x] Task: Update Trigger Logic in `src/content/selection.ts` (or relevant handler) c1dd804
     - [ ] Read `enabledTabs` from settings.
     - [ ] Modify the logic that decides whether to show the trigger button.
     - [ ] **Logic:** `showTrigger = (enabledTabs.includes('explain') && validForExplain) || (enabledTabs.includes('fact-check') && validForFactCheck)`.
