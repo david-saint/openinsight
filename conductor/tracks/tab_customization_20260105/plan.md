@@ -17,7 +17,7 @@
     - [ ] Implement drag-and-drop reordering or high-quality manual reorder buttons.
     - [ ] Implement toggle switches for visibility.
     - [ ] **Validation:** Prevent disabling the last active tab.
-- [ ] Task: Integrate into `AppearanceSection`
+- [x] Task: Integrate into `AppearanceSection` 51fd467
     - [ ] Update `src/options/components/AppearanceSection.tsx` to include `TabReorderList`.
     - [ ] Connect to `useSettings` hook or equivalent state management.
 - [ ] Task: Test Options UI (TDD)
