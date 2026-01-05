@@ -31,7 +31,7 @@
     - [ ] Read `enabledTabs` from settings.
     - [ ] Modify the logic that decides whether to show the trigger button.
     - [ ] **Logic:** `showTrigger = (enabledTabs.includes('explain') && validForExplain) || (enabledTabs.includes('fact-check') && validForFactCheck)`.
-- [ ] Task: Test Trigger Logic (TDD)
+- [x] Task: Test Trigger Logic (TDD) c1dd804
     - [ ] Update `tests/unit/selection.test.ts`.
     - [ ] Case: Explain disabled, Short text -> No Trigger.
     - [ ] Case: Explain enabled, Short text -> Trigger.
