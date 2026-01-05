@@ -11,6 +11,7 @@ interface AnalysisHeaderProps {
   onSettingsClick: () => void;
   onBackClick: () => void;
   isFactCheckVisible: boolean;
+  enabledTabs: string[];
 }
 
 export const AnalysisHeader = React.memo<AnalysisHeaderProps>(({
@@ -20,7 +21,8 @@ export const AnalysisHeader = React.memo<AnalysisHeaderProps>(({
   showSettings,
   onSettingsClick,
   onBackClick,
-  isFactCheckVisible
+  isFactCheckVisible,
+  enabledTabs
 }) => {
   return (
     <div className="bg-[#f8fafc] dark:bg-[#0f172a] border-b border-[#f1f5f9] dark:border-[#334155] px-[4px] pt-[4px] flex justify-between items-center h-[40px]">
@@ -40,34 +42,30 @@ export const AnalysisHeader = React.memo<AnalysisHeaderProps>(({
       ) : (
         <>
           <div className="flex gap-[4px] ml-[4px]" role="tablist">
-            <button
-              onClick={() => onTabChange('explain')}
-              role="tab"
-              aria-selected={activeTab === 'explain'}
-              className={`px-[16px] py-[10px] text-[12px] font-semibold rounded-t-lg transition-colors flex items-center gap-[6px] ${
-                activeTab === 'explain'
-                  ? 'bg-[#ffffff] dark:bg-[#1e293b] text-[#1e293b] dark:text-[#f1f5f9] shadow-sm border-t border-x border-[#f1f5f9] dark:border-[#334155] translate-y-[1px]'
-                  : 'text-[#64748b] hover:text-[#334155] dark:hover:text-[#cbd5e1]'
-              }`}
-            >
-              <BookOpen size={12} />
-              Explain
-            </button>
-            {isFactCheckVisible && (
-              <button
-                onClick={() => onTabChange('fact-check')}
-                role="tab"
-                aria-selected={activeTab === 'fact-check'}
-                className={`px-[16px] py-[10px] text-[12px] font-semibold rounded-t-lg transition-colors flex items-center gap-[6px] ${
-                  activeTab === 'fact-check'
-                    ? 'bg-[#ffffff] dark:bg-[#1e293b] text-[#1e293b] dark:text-[#f1f5f9] shadow-sm border-t border-x border-[#f1f5f9] dark:border-[#334155] translate-y-[1px]'
-                    : 'text-[#64748b] hover:text-[#334155] dark:hover:text-[#cbd5e1]'
-                }`}
-              >
-                <Search size={12} />
-                Fact Check
-              </button>
-            )}
+            {enabledTabs.map(tabId => {
+              if (tabId === 'fact-check' && !isFactCheckVisible) return null;
+              
+              const isExplain = tabId === 'explain';
+              const label = isExplain ? 'Explain' : 'Fact Check';
+              const Icon = isExplain ? BookOpen : Search;
+
+              return (
+                <button
+                  key={tabId}
+                  onClick={() => onTabChange(tabId as TabId)}
+                  role="tab"
+                  aria-selected={activeTab === tabId}
+                  className={`px-[16px] py-[10px] text-[12px] font-semibold rounded-t-lg transition-colors flex items-center gap-[6px] ${
+                    activeTab === tabId
+                      ? 'bg-[#ffffff] dark:bg-[#1e293b] text-[#1e293b] dark:text-[#f1f5f9] shadow-sm border-t border-x border-[#f1f5f9] dark:border-[#334155] translate-y-[1px]'
+                      : 'text-[#64748b] hover:text-[#334155] dark:hover:text-[#cbd5e1]'
+                  }`}
+                >
+                  <Icon size={12} />
+                  {label}
+                </button>
+              );
+            })}
           </div>
           <div className="flex items-center gap-[4px] pr-[8px]">
             <button

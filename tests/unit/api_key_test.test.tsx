@@ -37,7 +37,8 @@ vi.mock('../../src/lib/settings', () => ({
   DEFAULT_SETTINGS: {
     theme: 'system',
     accentColor: 'teal',
-    explainModel: 'm',
+    enabledTabs: ['explain', 'fact-check'],
+    explainModel: 'nvidia/nemotron-3-nano-30b-a3b:free',
     factCheckModel: 'm',
     triggerMode: 'icon',
     explainSettings: { temperature: 0.7, max_tokens: 512, system_prompt: 's' },

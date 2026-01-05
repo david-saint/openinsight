@@ -10,6 +10,7 @@ import type { StylePreference } from "./prompt-manager.js";
 export interface Settings {
   theme: "light" | "dark" | "system";
   accentColor: "teal" | "indigo" | "rose" | "amber";
+  enabledTabs: string[];
   explainModel: string;
   factCheckModel: string;
   triggerMode: "icon" | "immediate";
@@ -21,6 +22,7 @@ export interface Settings {
 export const DEFAULT_SETTINGS: Settings = {
   theme: "system",
   accentColor: "teal",
+  enabledTabs: ["explain", "fact-check"],
   explainModel: "nvidia/nemotron-3-nano-30b-a3b:free",
   factCheckModel: "google/gemini-2.0-flash-exp:free",
   triggerMode: "icon",
@@ -60,6 +62,9 @@ export async function getSettings(): Promise<Settings> {
 }
 
 export async function saveSettings(settings: Settings): Promise<void> {
+  if (settings.enabledTabs && settings.enabledTabs.length === 0) {
+    throw new Error("At least one tab must be enabled");
+  }
   await setStorage(SETTINGS_KEY, settings);
 }
 

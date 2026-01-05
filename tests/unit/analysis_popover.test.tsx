@@ -259,4 +259,72 @@ describe('Analysis Popover Component', () => {
 
     expect(screen.queryByRole('tab', { name: /fact check/i })).not.toBeInTheDocument();
   });
+
+  describe('Enabled Tabs Customization', () => {
+    it('should only render enabled tabs', async () => {
+      await act(async () => {
+        render(
+          <AnalysisPopover 
+            isOpen={true} 
+            onClose={() => {}} 
+            selectionText={longText}
+            enabledTabs={['fact-check']}
+          />
+        );
+      });
+
+      expect(screen.queryByRole('tab', { name: /explain/i })).not.toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /fact check/i })).toBeInTheDocument();
+    });
+
+    it('should render tabs in the specified order', async () => {
+      await act(async () => {
+        render(
+          <AnalysisPopover 
+            isOpen={true} 
+            onClose={() => {}} 
+            selectionText={longText}
+            enabledTabs={['fact-check', 'explain']}
+          />
+        );
+      });
+
+      const tabs = screen.getAllByRole('tab');
+      expect(tabs[0]).toHaveTextContent(/fact check/i);
+      expect(tabs[1]).toHaveTextContent(/explain/i);
+    });
+
+    it('should use the first enabled tab as default active tab', async () => {
+      await act(async () => {
+        render(
+          <AnalysisPopover 
+            isOpen={true} 
+            onClose={() => {}} 
+            selectionText={longText}
+            enabledTabs={['fact-check', 'explain']}
+          />
+        );
+      });
+
+      expect(screen.getByRole('tab', { name: /fact check/i })).toHaveAttribute('aria-selected', 'true');
+    });
+
+    it('should fallback to second tab if first is fact-check but selection is too short', async () => {
+      const shortText = 'Short';
+      await act(async () => {
+        render(
+          <AnalysisPopover 
+            isOpen={true} 
+            onClose={() => {}} 
+            selectionText={shortText}
+            enabledTabs={['fact-check', 'explain']}
+          />
+        );
+      });
+
+      // Fact check should be hidden, and explain should be active
+      expect(screen.queryByRole('tab', { name: /fact check/i })).not.toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /explain/i })).toHaveAttribute('aria-selected', 'true');
+    });
+  });
 });

@@ -72,4 +72,26 @@ describe('Settings Module', () => {
       expect(DEFAULT_SETTINGS.factCheckSettings).toHaveProperty('system_prompt');
     });
   });
+
+  describe('Tab Customization', () => {
+    it('should have enabledTabs in default settings', () => {
+      // @ts-ignore - Property 'enabledTabs' does not exist on type 'Settings' yet
+      expect(DEFAULT_SETTINGS.enabledTabs).toEqual(['explain', 'fact-check']);
+    });
+
+    it('should allow overriding enabledTabs', async () => {
+      const storedSettings = { enabledTabs: ['fact-check'] };
+      vi.mocked(storage.getStorage).mockResolvedValue(storedSettings);
+
+      const settings = await getSettings();
+
+      // @ts-ignore
+      expect(settings.enabledTabs).toEqual(['fact-check']);
+    });
+
+    it('should throw error when saving empty enabledTabs', async () => {
+      const invalidSettings = { ...DEFAULT_SETTINGS, enabledTabs: [] };
+      await expect(saveSettings(invalidSettings)).rejects.toThrow('At least one tab must be enabled');
+    });
+  });
 });
