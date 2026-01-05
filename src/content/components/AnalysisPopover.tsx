@@ -19,6 +19,7 @@ interface AnalysisPopoverProps {
   accentColor?: string;
   onAccentChange?: (color: string) => void;
   position?: { top: number; left: number };
+  enabledTabs?: string[];
 }
 
 interface TabData {
@@ -27,6 +28,8 @@ interface TabData {
   error: string | null;
 }
 
+const DEFAULT_ENABLED_TABS = ['explain', 'fact-check'];
+
 export const AnalysisPopover = React.memo(({
   isOpen, 
   onClose, 
@@ -34,9 +37,10 @@ export const AnalysisPopover = React.memo(({
   selectionContext,
   accentColor = 'teal',
   onAccentChange,
-  position
+  position,
+  enabledTabs = DEFAULT_ENABLED_TABS
 }: AnalysisPopoverProps) => {
-  const [activeTab, setActiveTab] = useState<TabId>('explain');
+  const [activeTab, setActiveTab] = useState<TabId>(enabledTabs[0] as TabId);
   const [showSettings, setShowSettings] = useState(false);
   const [data, setData] = useState<Record<TabId, TabData>>({
     explain: { content: null, loading: false, error: null },
@@ -54,11 +58,21 @@ export const AnalysisPopover = React.memo(({
         explain: { content: null, loading: false, error: null },
         'fact-check': { content: null, loading: false, error: null },
       });
-      setActiveTab('explain');
+      
+      // Determine default active tab based on enabledTabs and visibility
+      let defaultTab = enabledTabs[0] as TabId;
+      if (defaultTab === 'fact-check' && selectionText.length <= 50) {
+        // If first tab is fact-check but not visible, try second tab if it exists
+        if (enabledTabs.length > 1) {
+          defaultTab = enabledTabs[1] as TabId;
+        }
+      }
+      
+      setActiveTab(defaultTab);
       setShowSettings(false);
-      fetchData('explain', selectionText);
+      fetchData(defaultTab, selectionText);
     }
-  }, [isOpen, selectionText]);
+  }, [isOpen, selectionText, enabledTabs]);
 
   const fetchData = async (tab: TabId, text: string) => {
     setData(prev => ({ ...prev, [tab]: { ...prev[tab], loading: true, error: null } }));
@@ -136,6 +150,7 @@ export const AnalysisPopover = React.memo(({
           onSettingsClick={handleSettingsClick}
           onBackClick={handleBackClick}
           isFactCheckVisible={isFactCheckVisible}
+          enabledTabs={enabledTabs}
         />
 
         {showSettings ? (
