@@ -39,11 +39,11 @@
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Trigger Logic' (Protocol in workflow.md)
 
 ## Phase 4: Popover UI Updates
-- [ ] Task: Update `AnalysisPopover` and Header
+- [x] Task: Update `AnalysisPopover` and Header da7359d
     - [ ] Update `src/content/components/analysis-popover/AnalysisHeader.tsx` to render tabs based on `enabledTabs`.
     - [ ] Ensure the first tab in `enabledTabs` is active by default when opening.
     - [ ] Handle switching logic (only switch to enabled tabs).
-- [ ] Task: Test Popover UI (TDD)
+- [x] Task: Test Popover UI (TDD) da7359d
     - [ ] Update `tests/unit/analysis_popover.test.tsx`.
     - [ ] Verify tab rendering order matches settings.
     - [ ] Verify hidden tabs are not DOM-present or are visually hidden.
