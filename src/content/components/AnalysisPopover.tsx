@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { sendMessage } from '../../lib/messaging.js';
 import { BackendClient } from '../../lib/backend-client.js';
 import type { ExplainResponse, FactCheckResponse } from '../../lib/types.js';
@@ -77,17 +77,30 @@ export const AnalysisPopover = React.memo(({
     }
   };
 
-  const handleTabChange = (tab: TabId) => {
+  // We use refs to access the latest data and fetchData function inside the stable callback
+  const dataRef = useRef(data);
+  useEffect(() => { dataRef.current = data; }, [data]);
+
+  const fetchDataRef = useRef(fetchData);
+  useEffect(() => { fetchDataRef.current = fetchData; });
+
+  const handleTabChange = useCallback((tab: TabId) => {
     setActiveTab(tab);
     setShowSettings(false);
-    if (!data[tab].content && !data[tab].loading) {
-      fetchData(tab, selectionText);
-    }
-  };
 
-  const openFullSettings = () => {
+    // Check if we need to fetch data for this tab
+    const currentData = dataRef.current;
+    if (!currentData[tab].content && !currentData[tab].loading) {
+      fetchDataRef.current(tab, selectionText);
+    }
+  }, [selectionText]);
+
+  const openFullSettings = useCallback(() => {
     sendMessage('OPEN_OPTIONS', {});
-  };
+  }, []);
+
+  const handleSettingsClick = useCallback(() => setShowSettings(true), []);
+  const handleBackClick = useCallback(() => setShowSettings(false), []);
 
   if (!isOpen) return null;
 
@@ -120,8 +133,8 @@ export const AnalysisPopover = React.memo(({
           onTabChange={handleTabChange}
           onClose={onClose}
           showSettings={showSettings}
-          onSettingsClick={() => setShowSettings(true)}
-          onBackClick={() => setShowSettings(false)}
+          onSettingsClick={handleSettingsClick}
+          onBackClick={handleBackClick}
           isFactCheckVisible={isFactCheckVisible}
         />
 

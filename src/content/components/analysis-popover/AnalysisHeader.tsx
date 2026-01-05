@@ -13,7 +13,7 @@ interface AnalysisHeaderProps {
   isFactCheckVisible: boolean;
 }
 
-export const AnalysisHeader: React.FC<AnalysisHeaderProps> = ({
+export const AnalysisHeader = React.memo<AnalysisHeaderProps>(({
   activeTab,
   onTabChange,
   onClose,
@@ -89,4 +89,6 @@ export const AnalysisHeader: React.FC<AnalysisHeaderProps> = ({
       )}
     </div>
   );
-};
+});
+
+AnalysisHeader.displayName = 'AnalysisHeader';
