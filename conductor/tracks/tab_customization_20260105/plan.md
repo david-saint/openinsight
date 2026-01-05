@@ -38,7 +38,7 @@
     - [ ] Case: Fact-check disabled, Long text -> Trigger (if Explain enabled).
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Trigger Logic' (Protocol in workflow.md)
 
-## Phase 4: Popover UI Updates
+## Phase 4: Popover UI Updates [checkpoint: 3e2cfec]
 - [x] Task: Update `AnalysisPopover` and Header da7359d
     - [ ] Update `src/content/components/analysis-popover/AnalysisHeader.tsx` to render tabs based on `enabledTabs`.
     - [ ] Ensure the first tab in `enabledTabs` is active by default when opening.
@@ -48,7 +48,7 @@
     - [ ] Verify tab rendering order matches settings.
     - [ ] Verify hidden tabs are not DOM-present or are visually hidden.
     - [ ] Verify default active tab.
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Popover UI' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Popover UI' (Protocol in workflow.md) 3e2cfec
 
 ## Phase 5: Verification
 - [ ] Task: Conductor - User Manual Verification 'End-to-End Verification' (Protocol in workflow.md)
