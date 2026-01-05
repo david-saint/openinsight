@@ -11,7 +11,7 @@
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Core Settings' (Protocol in workflow.md)
 
 ## Phase 2: Options UI Implementation
-- [ ] Task: Create `TabReorderList` component
+- [x] Task: Create `TabReorderList` component 4b59669
     - [ ] Create `src/options/components/TabReorderList.tsx`.
     - [ ] Implement list rendering based on `enabledTabs`.
     - [ ] Implement drag-and-drop reordering or high-quality manual reorder buttons.
