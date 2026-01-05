@@ -1,6 +1,6 @@
 # Plan: Popover Tab Customization
 
-## Phase 1: Core Settings & State Management
+## Phase 1: Core Settings & State Management [checkpoint: b03dce0]
 - [x] Task: Update `Settings` interface and defaults in `src/lib/settings.ts` de71a45
     - [ ] Add `enabledTabs` (string array) to `Settings`.
     - [ ] Update `DEFAULT_SETTINGS` to `enabledTabs: ['explain', 'fact-check']`.
