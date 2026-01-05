@@ -10,7 +10,7 @@
     - [ ] Verify validation logic (ensure at least one tab is always present) - *Note: Logic might be in UI handler or settings setter.*
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Core Settings' (Protocol in workflow.md)
 
-## Phase 2: Options UI Implementation
+## Phase 2: Options UI Implementation [checkpoint: 10476a6]
 - [x] Task: Create `TabReorderList` component 4b59669
     - [ ] Create `src/options/components/TabReorderList.tsx`.
     - [ ] Implement list rendering based on `enabledTabs`.
