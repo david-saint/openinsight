@@ -20,7 +20,7 @@
 - [x] Task: Integrate into `AppearanceSection` 51fd467
     - [ ] Update `src/options/components/AppearanceSection.tsx` to include `TabReorderList`.
     - [ ] Connect to `useSettings` hook or equivalent state management.
-- [ ] Task: Test Options UI (TDD)
+- [x] Task: Test Options UI (TDD) 51fd467
     - [ ] Create `tests/unit/tab_reorder_list.test.tsx`.
     - [ ] Test reordering logic.
     - [ ] Test disabling/enabling logic (and the "must have one" constraint).
