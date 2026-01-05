@@ -122,6 +122,7 @@ export const ContentApp: React.FC = () => {
           accentColor={settings.accentColor}
           onAccentChange={handleAccentChange}
           position={triggerPosition || undefined}
+          enabledTabs={settings.enabledTabs}
         />
       )}
     </div>

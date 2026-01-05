@@ -71,6 +71,7 @@ describe('ContentApp Component', () => {
     vi.mocked(settingsModule.getSettings).mockResolvedValue({
       theme: 'dark',
       accentColor: 'teal',
+      enabledTabs: ['explain', 'fact-check'],
       explainModel: 'gpt',
       factCheckModel: 'gpt',
       triggerMode: 'icon'
@@ -88,6 +89,7 @@ describe('ContentApp Component', () => {
     vi.mocked(settingsModule.getSettings).mockResolvedValue({
       theme: 'light',
       accentColor: 'teal',
+      enabledTabs: ['explain', 'fact-check'],
       explainModel: 'gpt',
       factCheckModel: 'gpt',
       triggerMode: 'icon'
@@ -106,6 +108,7 @@ describe('ContentApp Component', () => {
     vi.mocked(settingsModule.getSettings).mockResolvedValue({
       theme: 'light',
       accentColor: 'teal',
+      enabledTabs: ['explain', 'fact-check'],
       explainModel: 'gpt',
       factCheckModel: 'gpt',
       triggerMode: 'icon'
@@ -130,6 +133,7 @@ describe('ContentApp Component', () => {
           newValue: {
             theme: 'dark',
             accentColor: 'teal',
+            enabledTabs: ['explain', 'fact-check'],
             explainModel: 'gpt',
             factCheckModel: 'gpt',
             triggerMode: 'icon'
@@ -161,6 +165,7 @@ describe('ContentApp Component', () => {
       vi.mocked(settingsModule.getSettings).mockResolvedValue({
         theme: 'light',
         accentColor: 'teal',
+        enabledTabs: ['explain', 'fact-check'],
         explainModel: 'gpt',
         factCheckModel: 'gpt',
         triggerMode: 'icon'
@@ -198,6 +203,7 @@ describe('ContentApp Component', () => {
       vi.mocked(settingsModule.getSettings).mockResolvedValue({
         theme: 'light',
         accentColor: 'teal',
+        enabledTabs: ['explain', 'fact-check'],
         explainModel: 'gpt',
         factCheckModel: 'gpt',
         triggerMode: 'immediate'
@@ -233,6 +239,7 @@ describe('ContentApp Component', () => {
       vi.mocked(settingsModule.getSettings).mockResolvedValue({
         theme: 'light',
         accentColor: 'teal',
+        enabledTabs: ['explain', 'fact-check'],
         explainModel: 'gpt',
         factCheckModel: 'gpt',
         triggerMode: 'immediate'
@@ -264,6 +271,7 @@ describe('ContentApp Component', () => {
       vi.mocked(settingsModule.getSettings).mockResolvedValue({
         theme: 'light',
         accentColor: 'teal',
+        enabledTabs: ['explain', 'fact-check'],
         explainModel: 'gpt',
         factCheckModel: 'gpt',
         triggerMode: 'immediate'
@@ -298,6 +306,7 @@ describe('ContentApp Component', () => {
       vi.mocked(settingsModule.getSettings).mockResolvedValue({
         theme: 'light',
         accentColor: 'teal',
+        enabledTabs: ['explain', 'fact-check'],
         explainModel: 'gpt',
         factCheckModel: 'gpt',
         triggerMode: 'icon'
@@ -322,6 +331,7 @@ describe('ContentApp Component', () => {
             newValue: {
               theme: 'light',
               accentColor: 'teal',
+              enabledTabs: ['explain', 'fact-check'],
               explainModel: 'gpt',
               factCheckModel: 'gpt',
               triggerMode: 'immediate'

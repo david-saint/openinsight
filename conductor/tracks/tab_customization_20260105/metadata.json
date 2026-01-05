@@ -1,0 +1,8 @@
+{
+  "track_id": "tab_customization_20260105",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-01-05T10:00:00Z",
+  "updated_at": "2026-01-05T10:00:00Z",
+  "description": "The ability to reorder the tabs of the popover. As a user, I should be able to reorder or disable certain tabs completely (should not be able to disable both tabs)."
+}
