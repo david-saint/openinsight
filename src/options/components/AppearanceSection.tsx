@@ -64,8 +64,8 @@ export const AppearanceSection: React.FC<AppearanceSectionProps> = ({
           </div>
         </div>
 
-        <div className="pt-4 border-t border-slate-100 dark:border-slate-700">
-          <div className="flex items-center justify-between mb-4">
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
             <span className="text-sm font-medium opacity-90">Popover Tabs</span>
           </div>
           <TabReorderList 
@@ -73,8 +73,8 @@ export const AppearanceSection: React.FC<AppearanceSectionProps> = ({
             onSave={(newTabs) => onSave({ ...settings, enabledTabs: newTabs })}
             allTabs={ALL_TABS}
           />
-          <p className="mt-2 text-[11px] text-slate-400 dark:text-slate-500">
-            Drag (coming soon) or use arrows to reorder. Toggle to show/hide.
+          <p className="text-[11px] text-slate-400 dark:text-slate-500">
+            Toggle visibility and use arrows to set tab order.
           </p>
         </div>
       </div>
