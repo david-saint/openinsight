@@ -5,7 +5,7 @@
     - [ ] Add `enabledTabs` (string array) to `Settings`.
     - [ ] Update `DEFAULT_SETTINGS` to `enabledTabs: ['explain', 'fact-check']`.
     - [ ] Ensure backward compatibility (migration if needed, though simple default should suffice).
-- [ ] Task: Test Settings Updates (TDD)
+- [x] Task: Test Settings Updates (TDD) c0ed59f
     - [ ] Create/Update `tests/unit/settings.test.ts` to verify `enabledTabs` persistence and default values.
     - [ ] Verify validation logic (ensure at least one tab is always present) - *Note: Logic might be in UI handler or settings setter.*
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Core Settings' (Protocol in workflow.md)
