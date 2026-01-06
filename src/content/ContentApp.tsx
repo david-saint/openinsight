@@ -16,6 +16,12 @@ export const ContentApp: React.FC = () => {
   const [selectionContext, setSelectionContext] = useState<{ paragraph: string; pageTitle: string; pageDescription: string } | undefined>(undefined);
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const timeoutRef = React.useRef<number | undefined>(undefined);
+  const settingsRef = React.useRef<Settings>(settings);
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    settingsRef.current = settings;
+  }, [settings]);
 
   // Optimized theme handling using custom hook
   const isDark = useTheme(settings.theme);
@@ -41,11 +47,11 @@ export const ContentApp: React.FC = () => {
       window.clearTimeout(timeoutRef.current);
 
       // Small timeout to allow selection to finalize
-      timeoutRef.current = window.setTimeout(async () => {
+      timeoutRef.current = window.setTimeout(() => {
         const selectionData = handleSelection();
         if (selectionData && !isPopoverOpen) {
-          // Re-fetch settings before checking validity to ensure we have the latest
-          const currentSettings = await getSettings();
+          // Use ref to access latest settings without async call or stale closure
+          const currentSettings = settingsRef.current;
           
           // Check if selection is valid for any enabled tab
           // Default to true if settings haven't loaded yet to avoid flickering/missing trigger

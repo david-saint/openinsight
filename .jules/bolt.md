@@ -5,3 +5,7 @@
 ## 2024-05-24 - React Component Conditional Rendering
 **Learning:** Returning `null` from a React component does not prevent its hooks (useState, useEffect, custom hooks) from executing. In a high-frequency interaction path (like text selection in a content script), rendering a hidden component can still cause significant overhead.
 **Action:** Use conditional rendering (`{isOpen && <Component />}`) instead of internal early returns (`if (!isOpen) return null`) for complex components (like popovers or modals) that are often hidden, to ensure they consume zero resources when not needed.
+
+## 2024-05-25 - Synchronous Event Handlers
+**Learning:** Calling async functions (like `chrome.storage.local.get`) inside frequent event handlers (like `mouseup` or `scroll`) introduces avoidable latency, even if debounced. This can make the UI feel sluggish.
+**Action:** Use a `useRef` to maintain a synchronous copy of the necessary state (e.g., settings) that is updated via `useEffect`. Access `ref.current` in the event handler instead of awaiting the async function.
