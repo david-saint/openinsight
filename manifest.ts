@@ -14,12 +14,11 @@ export default defineManifest({
   /**
    * Permissions:
    * - storage: Required for chrome.storage.local (settings, encrypted API keys)
-   * - activeTab: Required to access the current tab when user interacts with the extension
    *
    * Note: host_permissions are not needed as content_scripts.matches covers injection.
    * The content script CSS is injected programmatically via Shadow DOM to ensure isolation.
    */
-  permissions: ["storage", "activeTab"],
+  permissions: ["storage"],
   background: {
     service_worker: "src/background/background.ts",
     type: "module",

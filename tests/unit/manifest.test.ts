@@ -4,7 +4,6 @@ import manifest from "../../manifest";
 describe("Manifest Configuration", () => {
   it("should have the correct permissions", () => {
     expect(manifest.permissions).toContain("storage");
-    expect(manifest.permissions).toContain("activeTab");
   });
 
   it("should have icons defined", () => {
