@@ -105,10 +105,11 @@ export const ContentApp: React.FC = () => {
   }, []);
 
   const handleAccentChange = useCallback((color: string) => {
-    const newSettings = { ...settings, accentColor: color };
+    // Use ref to avoid re-creating callback when other settings change
+    const newSettings = { ...settingsRef.current, accentColor: color };
     setSettings(newSettings);
     saveSettings(newSettings);
-  }, [settings]);
+  }, []);
 
   return (
     <div className={`openinsight-content-root ${isDark ? 'dark' : ''}`} data-accent={settings.accentColor}>
