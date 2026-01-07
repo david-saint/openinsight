@@ -250,16 +250,21 @@ describe('ContentApp Component', () => {
 
       const { container } = render(<ContentApp />);
 
-      // Wait for settings to load
+      // Wait for settings to load and state to update
       await waitFor(() => {
         expect(settingsModule.getSettings).toHaveBeenCalled();
+      });
+      
+      // Additional small wait to ensure useEffect for settingsRef has run
+      await act(async () => {
+        await new Promise(resolve => setTimeout(resolve, 10));
       });
 
       // Trigger mouseup
       await act(async () => {
         document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
-        // Wait for the debounce timeout
-        await new Promise(resolve => setTimeout(resolve, 20));
+        // Wait for the debounce timeout in ContentApp
+        await new Promise(resolve => setTimeout(resolve, 50));
       });
 
       // The trigger button should NOT be visible in immediate mode
