@@ -1,23 +1,18 @@
-export type MessageType = "EXPLAIN" | "FACT_CHECK" | "OPEN_OPTIONS";
+import type { BackendMessage, BackendMessageType, BackendResponse } from "./types.js";
 
-export interface MessagePayload {
-  text?: string;
-}
+export type MessageType = BackendMessageType | "OPEN_OPTIONS";
 
-export interface Message<T extends MessageType> {
+export interface Message<T extends MessageType = MessageType> {
   type: T;
-  payload: MessagePayload;
+  payload?: any;
 }
 
-export interface Response {
-  success: boolean;
-  result?: string;
-  error?: string;
-}
+// Re-export Response type for compatibility, but ideally we use BackendResponse
+export type Response = BackendResponse<any>;
 
 export async function sendMessage<T extends MessageType>(
   type: T,
-  payload: MessagePayload
+  payload?: any
 ): Promise<Response> {
   try {
     const response = await chrome.runtime.sendMessage({ type, payload });
@@ -25,17 +20,23 @@ export async function sendMessage<T extends MessageType>(
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : String(error),
+      error: {
+        type: 'unknown',
+        message: error instanceof Error ? error.message : String(error)
+      },
     };
   }
 }
 
 export function onMessage(
   handler: (
-    message: Message<MessageType>,
+    message: Message,
     sender: chrome.runtime.MessageSender,
     sendResponse: (response: Response) => void
   ) => void | boolean
 ) {
-  chrome.runtime.onMessage.addListener(handler);
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    // Cast the incoming message to our known structure
+    return handler(message as Message, sender, sendResponse);
+  });
 }

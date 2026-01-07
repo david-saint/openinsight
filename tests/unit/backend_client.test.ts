@@ -16,31 +16,42 @@ describe('BackendClient', () => {
   });
 
   it('should call BACKEND_EXPLAIN', async () => {
+    const mockResponse = { summary: 'summary', explanation: 'explanation' };
     vi.mocked(chrome.runtime.sendMessage).mockImplementation((_msg, callback) => {
-      callback({ success: true, result: 'explanation' });
+      callback({ success: true, result: mockResponse });
     });
 
-    const result = await BackendClient.explain('test text');
+    const result = await BackendClient.explainText('test text');
 
     expect(chrome.runtime.sendMessage).toHaveBeenCalledWith(
       { type: 'BACKEND_EXPLAIN', payload: { text: 'test text' } },
       expect.any(Function)
     );
-    expect(result).toBe('explanation');
+    expect(result).toEqual(mockResponse);
   });
 
   it('should call BACKEND_FACT_CHECK', async () => {
+    const mockResponse = { summary: 'summary', verdict: 'True', details: 'details' };
     vi.mocked(chrome.runtime.sendMessage).mockImplementation((_msg, callback) => {
-      callback({ success: true, result: 'fact check' });
+      callback({ success: true, result: mockResponse });
     });
 
-    const result = await BackendClient.factCheck('test text');
+    const mockContext = {
+      paragraph: 'p',
+      pageTitle: 't',
+      pageDescription: 'd'
+    };
+
+    const result = await BackendClient.factCheckText('test text', mockContext);
 
     expect(chrome.runtime.sendMessage).toHaveBeenCalledWith(
-      { type: 'BACKEND_FACT_CHECK', payload: { text: 'test text' } },
+      { 
+        type: 'BACKEND_FACT_CHECK', 
+        payload: { text: 'test text', context: mockContext } 
+      },
       expect.any(Function)
     );
-    expect(result).toBe('fact check');
+    expect(result).toEqual(mockResponse);
   });
 
   it('should call BACKEND_FETCH_MODELS', async () => {
@@ -78,6 +89,6 @@ describe('BackendClient', () => {
       callback({ success: false, error: mockError });
     });
 
-    await expect(BackendClient.explain('test')).rejects.toEqual(mockError);
+    await expect(BackendClient.explainText('test')).rejects.toEqual(mockError);
   });
 });

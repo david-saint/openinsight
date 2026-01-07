@@ -65,28 +65,6 @@ export class BackendClient {
   }
 
   /**
-   * Requests an explanation for the provided text.
-   * @deprecated Use explainText for structured responses.
-   */
-  static async explain(text: string): Promise<string> {
-    return BackendClient.send<string>({
-      type: 'BACKEND_EXPLAIN',
-      payload: { text }
-    });
-  }
-
-  /**
-   * Requests a fact-check for the provided text.
-   * @deprecated Use factCheckText for structured responses.
-   */
-  static async factCheck(text: string): Promise<string> {
-    return BackendClient.send<string>({
-      type: 'BACKEND_FACT_CHECK',
-      payload: { text }
-    });
-  }
-
-  /**
    * Fetches the list of available models from OpenRouter.
    */
   static async fetchModels(): Promise<OpenRouterModel[]> {

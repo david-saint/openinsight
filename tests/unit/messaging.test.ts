@@ -18,28 +18,28 @@ describe('Messaging Bus', () => {
     vi.clearAllMocks();
   });
 
-  it('should send an EXPLAIN message', async () => {
-    chromeMock.runtime.sendMessage.mockResolvedValue({ success: true, result: 'explanation' });
+  it('should send a BACKEND_EXPLAIN message', async () => {
+    chromeMock.runtime.sendMessage.mockResolvedValue({ success: true, result: { summary: 'explanation', explanation: 'details' } });
     
-    const response = await sendMessage('EXPLAIN', { text: 'test text' });
+    const response = await sendMessage('BACKEND_EXPLAIN', { text: 'test text' });
     
     expect(chromeMock.runtime.sendMessage).toHaveBeenCalledWith({
-      type: 'EXPLAIN',
+      type: 'BACKEND_EXPLAIN',
       payload: { text: 'test text' },
     });
-    expect(response).toEqual({ success: true, result: 'explanation' });
+    expect(response).toEqual({ success: true, result: { summary: 'explanation', explanation: 'details' } });
   });
 
-  it('should send a FACT_CHECK message', async () => {
-    chromeMock.runtime.sendMessage.mockResolvedValue({ success: true, result: 'fact check' });
+  it('should send a BACKEND_FACT_CHECK message', async () => {
+    chromeMock.runtime.sendMessage.mockResolvedValue({ success: true, result: { summary: 'fact check', verdict: 'True' } });
     
-    const response = await sendMessage('FACT_CHECK', { text: 'another text' });
+    const response = await sendMessage('BACKEND_FACT_CHECK', { text: 'another text' });
     
     expect(chromeMock.runtime.sendMessage).toHaveBeenCalledWith({
-      type: 'FACT_CHECK',
+      type: 'BACKEND_FACT_CHECK',
       payload: { text: 'another text' },
     });
-    expect(response).toEqual({ success: true, result: 'fact check' });
+    expect(response).toEqual({ success: true, result: { summary: 'fact check', verdict: 'True' } });
   });
 
   it('should register a listener for messages', () => {

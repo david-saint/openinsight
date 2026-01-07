@@ -37,30 +37,6 @@ onMessage((message, _sender, sendResponse) => {
       handleAsync(() => handleFactCheck(payload));
       break;
 
-    // --- Legacy Support (Phase 1 Transitional) ---
-    case "EXPLAIN":
-      handleAsync(async () => {
-        const response = await handleExplain(payload.text);
-        // Fallback to simple string for existing UI
-        return response.summary || response.explanation || JSON.stringify(response);
-      });
-      break;
-
-    case "FACT_CHECK":
-      handleAsync(async () => {
-        // Pass text and optional context from payload
-        const response = await handleFactCheck({ 
-          text: payload.text,
-          context: payload.context
-        });
-        // Fallback to simple string for existing UI
-        return response.verdict 
-          ? `${response.verdict}: ${response.summary}` 
-          : JSON.stringify(response);
-      });
-      break;
-    // ---------------------------------------------
-
     case "BACKEND_TEST_KEY":
       handleAsync(() => handleTestApiKey(payload.apiKey));
       break;
