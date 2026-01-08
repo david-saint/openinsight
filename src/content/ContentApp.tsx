@@ -36,12 +36,20 @@ export const ContentApp: React.FC = () => {
       areaName: string
     ) => {
       if (areaName === 'local' && changes[SETTINGS_KEY]) {
-        setSettings((prev) => ({ ...prev, ...changes[SETTINGS_KEY].newValue }));
+        const newValue = changes[SETTINGS_KEY].newValue as Partial<Settings> | undefined;
+        if (newValue) {
+          setSettings((prev) => ({ ...prev, ...newValue }));
+        }
       }
     };
 
     chrome.storage.onChanged.addListener(handleStorageChange);
+    return () => {
+      chrome.storage.onChanged.removeListener(handleStorageChange);
+    };
+  }, []); // Only run once on mount
 
+  useEffect(() => {
     const onMouseUp = () => {
       // Clear existing timeout to debounce
       window.clearTimeout(timeoutRef.current);
@@ -91,9 +99,8 @@ export const ContentApp: React.FC = () => {
     return () => {
       document.removeEventListener('mouseup', onMouseUp);
       window.clearTimeout(timeoutRef.current);
-      chrome.storage.onChanged.removeListener(handleStorageChange);
     };
-  }, [isPopoverOpen, settings.triggerMode]);
+  }, [isPopoverOpen]); // Re-run when popover state changes (to correctly block/allow selection handling)
 
   const handleTrigger = useCallback(() => {
     setIsVisible(false);
@@ -106,7 +113,7 @@ export const ContentApp: React.FC = () => {
 
   const handleAccentChange = useCallback((color: string) => {
     // Use ref to avoid re-creating callback when other settings change
-    const newSettings = { ...settingsRef.current, accentColor: color };
+    const newSettings = { ...settingsRef.current, accentColor: color as Settings['accentColor'] };
     setSettings(newSettings);
     saveSettings(newSettings);
   }, []);
@@ -128,7 +135,7 @@ export const ContentApp: React.FC = () => {
           selectionContext={selectionContext}
           accentColor={settings.accentColor}
           onAccentChange={handleAccentChange}
-          position={triggerPosition || undefined}
+          {...(triggerPosition ? { position: triggerPosition } : {})}
           enabledTabs={settings.enabledTabs}
         />
       )}
