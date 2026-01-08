@@ -1,11 +1,9 @@
-import type { 
-  BackendMessage, 
-  BackendResponse, 
-  OpenRouterModel, 
-  AppError,
+import { sendMessage } from "./messaging.js";
+import type {
+  OpenRouterModel,
   ExplainResponse,
-  FactCheckResponse
-} from './types.js';
+  FactCheckResponse,
+} from "./types.js";
 
 /**
  * Client class to interact with the background service worker.
@@ -13,37 +11,11 @@ import type {
  */
 export class BackendClient {
   /**
-   * Internal helper to send messages to the background script.
-   */
-  private static send<T>(message: BackendMessage): Promise<T> {
-    return new Promise((resolve, reject) => {
-      chrome.runtime.sendMessage(message, (response: BackendResponse<T>) => {
-        // Handle runtime errors (e.g. extension context invalidated)
-        if (chrome.runtime.lastError) {
-          return reject({
-            type: 'unknown',
-            message: chrome.runtime.lastError.message || 'Extension runtime error'
-          } as AppError);
-        }
-
-        if (response.success) {
-          resolve(response.result as T);
-        } else {
-          reject(response.error);
-        }
-      });
-    });
-  }
-
-  /**
    * Requests an explanation for the provided text.
    * Returns a structured ExplainResponse object.
    */
   static async explainText(text: string): Promise<ExplainResponse> {
-    return BackendClient.send<ExplainResponse>({
-      type: 'BACKEND_EXPLAIN',
-      payload: { text }
-    });
+    return sendMessage("BACKEND_EXPLAIN", { text });
   }
 
   /**
@@ -51,35 +23,27 @@ export class BackendClient {
    * Returns a structured FactCheckResponse object.
    */
   static async factCheckText(
-    text: string, 
-    context: { 
-      paragraph: string; 
-      pageTitle: string; 
-      pageDescription: string; 
+    text: string,
+    context: {
+      paragraph: string;
+      pageTitle: string;
+      pageDescription: string;
     }
   ): Promise<FactCheckResponse> {
-    return BackendClient.send<FactCheckResponse>({
-      type: 'BACKEND_FACT_CHECK',
-      payload: { text, context }
-    });
+    return sendMessage("BACKEND_FACT_CHECK", { text, context });
   }
 
   /**
    * Fetches the list of available models from OpenRouter.
    */
   static async fetchModels(): Promise<OpenRouterModel[]> {
-    return BackendClient.send<OpenRouterModel[]>({
-      type: 'BACKEND_FETCH_MODELS'
-    });
+    return sendMessage("BACKEND_FETCH_MODELS", undefined);
   }
 
   /**
    * Verifies the provided API key with OpenRouter.
    */
   static async testApiKey(apiKey: string): Promise<boolean> {
-    return BackendClient.send<boolean>({
-      type: 'BACKEND_TEST_KEY',
-      payload: { apiKey }
-    });
+    return sendMessage("BACKEND_TEST_KEY", { apiKey });
   }
 }

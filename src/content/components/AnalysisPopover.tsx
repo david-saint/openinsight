@@ -110,7 +110,7 @@ export const AnalysisPopover = React.memo(({
   }, [selectionText]);
 
   const openFullSettings = useCallback(() => {
-    sendMessage('OPEN_OPTIONS', {});
+    sendMessage('OPEN_OPTIONS', undefined);
   }, []);
 
   const handleSettingsClick = useCallback(() => setShowSettings(true), []);
