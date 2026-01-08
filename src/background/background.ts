@@ -1,16 +1,15 @@
 import { onMessage } from "../lib/messaging.js";
-import { 
-  handleExplain, 
-  handleFactCheck, 
-  handleFetchModels, 
-  handleTestApiKey 
+import {
+  handleExplain,
+  handleFactCheck,
+  handleFetchModels,
+  handleTestApiKey,
 } from "./handlers.js";
 
 console.log("OpenInsight background script initialized.");
 
 onMessage((message, _sender, sendResponse) => {
-  const { type, payload } = message;
-  console.log("Background received message:", type);
+  console.log("Background received message:", message.type);
 
   // Use a helper for async responses
   const handleAsync = async (fn: () => Promise<any>) => {
@@ -18,51 +17,30 @@ onMessage((message, _sender, sendResponse) => {
       const result = await fn();
       sendResponse({ success: true, result });
     } catch (error: any) {
-      console.error(`Error handling ${type}:`, error);
+      console.error(`Error handling ${message.type}:`, error);
       // Ensure we always send a structured error object
-      const appError = error?.type ? error : {
-        type: 'unknown',
-        message: error?.message || String(error)
-      };
+      const appError = error?.type
+        ? error
+        : {
+            type: "unknown",
+            message: error?.message || String(error),
+          };
       sendResponse({ success: false, error: appError });
     }
   };
 
-  switch (type) {
+  // Re-writing the whole switch block to use message.type
+  switch (message.type) {
     case "BACKEND_EXPLAIN":
-      handleAsync(() => handleExplain(payload.text));
+      handleAsync(() => handleExplain(message.payload.text));
       break;
 
     case "BACKEND_FACT_CHECK":
-      handleAsync(() => handleFactCheck(payload));
+      handleAsync(() => handleFactCheck(message.payload));
       break;
-
-    // --- Legacy Support (Phase 1 Transitional) ---
-    case "EXPLAIN":
-      handleAsync(async () => {
-        const response = await handleExplain(payload.text);
-        // Fallback to simple string for existing UI
-        return response.summary || response.explanation || JSON.stringify(response);
-      });
-      break;
-
-    case "FACT_CHECK":
-      handleAsync(async () => {
-        // Pass text and optional context from payload
-        const response = await handleFactCheck({ 
-          text: payload.text,
-          context: payload.context
-        });
-        // Fallback to simple string for existing UI
-        return response.verdict 
-          ? `${response.verdict}: ${response.summary}` 
-          : JSON.stringify(response);
-      });
-      break;
-    // ---------------------------------------------
 
     case "BACKEND_TEST_KEY":
-      handleAsync(() => handleTestApiKey(payload.apiKey));
+      handleAsync(() => handleTestApiKey(message.payload.apiKey));
       break;
 
     case "BACKEND_FETCH_MODELS":
@@ -76,8 +54,12 @@ onMessage((message, _sender, sendResponse) => {
       break;
 
     default:
-      console.warn("Unknown message type:", type);
-      sendResponse({ success: false, error: "Unknown message type" });
+      // message.type is never here if exhaustive, but type at runtime can be anything.
+      console.warn("Unknown message type:", (message as any).type);
+      sendResponse({
+        success: false,
+        error: { type: "unknown", message: "Unknown message type" },
+      });
   }
 
   return true; // Keep message channel open for async response

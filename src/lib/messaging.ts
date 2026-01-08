@@ -1,41 +1,55 @@
-export type MessageType = "EXPLAIN" | "FACT_CHECK" | "OPEN_OPTIONS";
+import type { BackendResponse, MessageSchema, MessageType } from "./types.js";
 
-export interface MessagePayload {
-  text?: string;
-}
+// Export Message interface so consumers can use it (e.g. in background.ts)
+export type Message = {
+  [K in MessageType]: { type: K; payload: MessageSchema[K]["payload"] };
+}[MessageType];
 
-export interface Message<T extends MessageType> {
-  type: T;
-  payload: MessagePayload;
-}
-
-export interface Response {
-  success: boolean;
-  result?: string;
-  error?: string;
-}
+// Helper to get the response type for a given message type
+export type Response<T extends MessageType> = BackendResponse<
+  MessageSchema[T]["response"]
+>;
 
 export async function sendMessage<T extends MessageType>(
   type: T,
-  payload: MessagePayload
-): Promise<Response> {
+  payload: MessageSchema[T]["payload"]
+): Promise<MessageSchema[T]["response"]> {
   try {
     const response = await chrome.runtime.sendMessage({ type, payload });
-    return response as Response;
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : String(error),
+
+    // Check for runtime errors first
+    if (chrome.runtime.lastError) {
+      throw {
+        type: "unknown",
+        message: chrome.runtime.lastError.message || "Extension runtime error",
+      };
+    }
+
+    if (!response.success) {
+      // Re-throw the structured AppError from the backend
+      throw (
+        response.error || { type: "unknown", message: "Unknown error occurred" }
+      );
+    }
+
+    return response.result;
+  } catch (error: any) {
+    if (error.type) throw error;
+    throw {
+      type: "unknown",
+      message: error.message || String(error),
     };
   }
 }
 
 export function onMessage(
   handler: (
-    message: Message<MessageType>,
+    message: Message,
     sender: chrome.runtime.MessageSender,
-    sendResponse: (response: Response) => void
+    sendResponse: (response: BackendResponse<any>) => void
   ) => void | boolean
 ) {
-  chrome.runtime.onMessage.addListener(handler);
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    return handler(message as Message, sender, sendResponse);
+  });
 }

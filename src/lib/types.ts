@@ -103,16 +103,31 @@ export interface AppError {
   code?: string;
 }
 
-export type BackendMessageType =
-  | "BACKEND_EXPLAIN"
-  | "BACKEND_FACT_CHECK"
-  | "BACKEND_FETCH_MODELS"
-  | "BACKEND_TEST_KEY";
-
-export interface BackendMessage {
-  type: BackendMessageType;
-  payload?: any;
+// Message Schema Mapping
+export interface MessageSchema {
+  BACKEND_EXPLAIN: {
+    payload: { text: string };
+    response: ExplainResponse;
+  };
+  BACKEND_FACT_CHECK: {
+    payload: { text: string; context: FactCheckContext };
+    response: FactCheckResponse;
+  };
+  BACKEND_FETCH_MODELS: {
+    payload: undefined;
+    response: OpenRouterModel[];
+  };
+  BACKEND_TEST_KEY: {
+    payload: { apiKey: string };
+    response: boolean;
+  };
+  OPEN_OPTIONS: {
+    payload: undefined;
+    response: void;
+  };
 }
+
+export type MessageType = keyof MessageSchema;
 
 export interface BackendResponse<T> {
   success: boolean;
