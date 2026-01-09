@@ -17,11 +17,16 @@ export const ContentApp: React.FC = () => {
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const timeoutRef = React.useRef<number | undefined>(undefined);
   const settingsRef = React.useRef<Settings>(settings);
+  const isPopoverOpenRef = React.useRef<boolean>(isPopoverOpen);
 
-  // Keep ref in sync with state
+  // Keep refs in sync with state
   useEffect(() => {
     settingsRef.current = settings;
   }, [settings]);
+
+  useEffect(() => {
+    isPopoverOpenRef.current = isPopoverOpen;
+  }, [isPopoverOpen]);
 
   // Optimized theme handling using custom hook
   const isDark = useTheme(settings.theme);
@@ -57,7 +62,7 @@ export const ContentApp: React.FC = () => {
       // Small timeout to allow selection to finalize
       timeoutRef.current = window.setTimeout(() => {
         const selectionData = handleSelection();
-        if (selectionData && !isPopoverOpen) {
+        if (selectionData && !isPopoverOpenRef.current) {
           // Use ref to access latest settings without async call or stale closure
           const currentSettings = settingsRef.current;
           
@@ -100,7 +105,7 @@ export const ContentApp: React.FC = () => {
       document.removeEventListener('mouseup', onMouseUp);
       window.clearTimeout(timeoutRef.current);
     };
-  }, [isPopoverOpen]); // Re-run when popover state changes (to correctly block/allow selection handling)
+  }, []); // Only run once on mount, state is accessed via refs
 
   const handleTrigger = useCallback(() => {
     setIsVisible(false);
