@@ -18,6 +18,7 @@ export const ContentApp: React.FC = () => {
   const timeoutRef = React.useRef<number | undefined>(undefined);
   const settingsRef = React.useRef<Settings>(settings);
   const isPopoverOpenRef = React.useRef<boolean>(isPopoverOpen);
+  const selectionContextGetterRef = React.useRef<(() => { paragraph: string; pageTitle: string; pageDescription: string }) | null>(null);
 
   // Keep refs in sync with state
   useEffect(() => {
@@ -85,17 +86,20 @@ export const ContentApp: React.FC = () => {
           const pos = calculateTriggerPosition(selectionData.endPosition);
           setTriggerPosition(pos);
           setSelectionText(selectionData.text);
-          setSelectionContext(selectionData.context);
+          selectionContextGetterRef.current = selectionData.getContext;
           
           // Check trigger mode: immediate opens popover directly, icon shows button
           if (currentSettings.triggerMode === 'immediate') {
+            setSelectionContext(selectionData.getContext());
             setIsVisible(false);
             setIsPopoverOpen(true);
           } else {
+            setSelectionContext(undefined);
             setIsVisible(true);
           }
         } else {
           setIsVisible(false);
+          selectionContextGetterRef.current = null;
         }
       }, 10);
     };
@@ -108,6 +112,9 @@ export const ContentApp: React.FC = () => {
   }, []); // Only run once on mount, state is accessed via refs
 
   const handleTrigger = useCallback(() => {
+    if (selectionContextGetterRef.current) {
+      setSelectionContext(selectionContextGetterRef.current());
+    }
     setIsVisible(false);
     setIsPopoverOpen(true);
   }, []);
