@@ -64,9 +64,10 @@ describe("Selection Logic", () => {
     const result = handleSelection();
     expect(result).not.toBeNull();
     expect(result?.text).toBe(validText);
+    expect(typeof result?.getContext).toBe('function');
   });
 
-  it("should include context in selection data", () => {
+  it("should include context in selection data when getContext is called", () => {
     document.title = "Page Title";
     const meta = document.createElement('meta');
     meta.name = "description";
@@ -77,7 +78,10 @@ describe("Selection Logic", () => {
     setupMockSelection(validText);
     
     const result = handleSelection();
-    expect(result?.context).toEqual({
+    // Context is not computed yet
+
+    const context = result?.getContext();
+    expect(context).toEqual({
       paragraph: expect.any(String),
       pageTitle: "Page Title",
       pageDescription: "Page Description"

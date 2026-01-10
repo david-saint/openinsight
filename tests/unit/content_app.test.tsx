@@ -150,15 +150,17 @@ describe('ContentApp Component', () => {
   });
 
   describe('Trigger Mode', () => {
+    const mockContext = {
+      paragraph: 'Full paragraph context',
+      pageTitle: 'Test Page',
+      pageDescription: 'Test description'
+    };
+
     const mockSelectionData = {
       text: 'This is selected text for testing',
       rect: { top: 100, left: 100, right: 200, bottom: 120, width: 100, height: 20 } as DOMRect,
       endPosition: { x: 200, y: 120 },
-      context: {
-        paragraph: 'Full paragraph context',
-        pageTitle: 'Test Page',
-        pageDescription: 'Test description'
-      }
+      getContext: vi.fn(() => mockContext)
     };
 
     it('should show trigger button on selection when triggerMode is icon', async () => {
@@ -195,6 +197,9 @@ describe('ContentApp Component', () => {
         // Popover should NOT be rendered directly
         expect(popover).toBeNull();
       });
+
+      // getContext should NOT be called yet
+      expect(mockSelectionData.getContext).not.toHaveBeenCalled();
     });
 
     it('should open popover directly on selection when triggerMode is immediate', async () => {
@@ -209,7 +214,8 @@ describe('ContentApp Component', () => {
         triggerMode: 'immediate'
       });
 
-      // Mock handleSelection to return valid selection data
+      // Reset mock before use
+      mockSelectionData.getContext.mockClear();
       vi.mocked(selectionModule.handleSelection).mockReturnValue(mockSelectionData);
 
       render(<ContentApp />);
@@ -231,6 +237,8 @@ describe('ContentApp Component', () => {
 
       // Verify handleSelection was called
       expect(selectionModule.handleSelection).toHaveBeenCalled();
+      // Verify getContext was called immediately
+      expect(mockSelectionData.getContext).toHaveBeenCalled();
       
       vi.useRealTimers();
     });
@@ -351,4 +359,3 @@ describe('ContentApp Component', () => {
     });
   });
 });
-
