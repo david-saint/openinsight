@@ -63,7 +63,20 @@ export const usePopoverPosition = (
       adjustedTop = scrollY + VIEWPORT_PADDING;
     }
 
-    setAdjustedPosition({ top: adjustedTop, left: adjustedLeft });
+    // Optimization: Only update state if position actually changed
+    if (adjustedTop === top && adjustedLeft === left) {
+      // If position is unchanged, ensure state is null to use originalPosition.
+      // We explicitly set to null. React's useState bailout will prevent re-render if it was already null.
+      setAdjustedPosition(null);
+    } else {
+      // If position changed, only update if values differ from current state
+      setAdjustedPosition((prev) => {
+        if (prev && prev.top === adjustedTop && prev.left === adjustedLeft) {
+          return prev;
+        }
+        return { top: adjustedTop, left: adjustedLeft };
+      });
+    }
   }, [isOpen, originalPosition]);
 
   return adjustedPosition || originalPosition;
