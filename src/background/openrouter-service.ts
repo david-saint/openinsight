@@ -145,19 +145,32 @@ export class OpenRouterService {
       }
 
       // Normalize smart/curly quotes to straight quotes (some models use typographic quotes)
-      content = content
-        .replace(/[\u201C\u201D]/g, '"') // " " → "
-        .replace(/[\u2018\u2019]/g, "'"); // ' ' → '
+      // BUT only do this if the initial parse fails, because valid JSON might contain smart quotes
+      // inside strings (e.g. text content), and replacing them would break the JSON syntax.
 
+      let parsed;
       try {
-        return JSON.parse(content);
+        // Attempt 1: Strict parse (preserves smart quotes in content)
+        parsed = JSON.parse(content);
       } catch (e) {
-        // If not JSON, return as summary for backward compatibility or simple responses
-        return {
-          summary: content,
-          error: "Failed to parse LLM response as JSON",
-        };
+        // Attempt 2: Normalize quotes and retry
+        // This handles cases where the model used smart quotes for the JSON structure itself
+        const normalizedContent = content
+          .replace(/[\u201C\u201D]/g, '"') // " " → "
+          .replace(/[\u2018\u2019]/g, "'"); // ' ' → '
+
+        try {
+          parsed = JSON.parse(normalizedContent);
+        } catch (e2) {
+          // If not JSON, return as summary for backward compatibility or simple responses
+          return {
+            summary: content, // Return original content to avoid double-corruption
+            error: "Failed to parse LLM response as JSON",
+          };
+        }
       }
+
+      return parsed;
     } catch (error) {
       if ((error as AppError).type) throw error;
       throw await this.mapError(error, "OpenRouter request failed");
