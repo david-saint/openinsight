@@ -4,5 +4,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Keyword Emphasis in Analysis**
+- [x] **Track: Keyword Emphasis in Analysis**
 *Link: [./tracks/keyword_emphasis_20260301/](./tracks/keyword_emphasis_20260301/)*
