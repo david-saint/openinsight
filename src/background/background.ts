@@ -32,7 +32,9 @@ onMessage((message, _sender, sendResponse) => {
   // Re-writing the whole switch block to use message.type
   switch (message.type) {
     case "BACKEND_EXPLAIN":
-      handleAsync(() => handleExplain(message.payload.text));
+      handleAsync(() =>
+        handleExplain(message.payload.text, message.payload.emphasizedWords)
+      );
       break;
 
     case "BACKEND_FACT_CHECK":
