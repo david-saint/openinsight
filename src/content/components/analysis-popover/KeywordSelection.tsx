@@ -52,7 +52,7 @@ export const KeywordSelection: React.FC<KeywordSelectionProps> = ({
               onClick={() => onToggleWord(cleaned)}
               className={`px-[6px] py-[2px] rounded-md text-[13px] transition-all duration-200 border ${
                 isEmphasized
-                  ? 'bg-accent-500 text-white border-accent-600 shadow-sm'
+                  ? 'bg-accent-500 text-white border-accent-600 shadow-sm border-b-2'
                   : 'bg-[#f1f5f9] dark:bg-[#334155] text-[#475569] dark:text-[#cbd5e1] border-[#e2e8f0] dark:border-[#475569] hover:border-accent-500'
               }`}
             >

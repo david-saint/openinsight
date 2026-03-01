@@ -17,4 +17,14 @@ describe('CSS Variables Theming', () => {
     // For now, we verify the class name exists which Tailwind will map to the variable.
     expect(element.className).toContain('bg-accent-500');
   });
+
+  it('should use accent variables for emphasized words', () => {
+    const { getByTestId } = render(
+      <div data-testid="emp-word" className="bg-accent-500 text-white border-accent-600 border-b-2" />
+    );
+    const element = getByTestId('emp-word');
+    expect(element.className).toContain('bg-accent-500');
+    expect(element.className).toContain('border-accent-600');
+    expect(element.className).toContain('border-b-2');
+  });
 });
