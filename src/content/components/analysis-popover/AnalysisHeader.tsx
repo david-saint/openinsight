@@ -12,6 +12,8 @@ interface AnalysisHeaderProps {
   onBackClick: () => void;
   isFactCheckVisible: boolean;
   enabledTabs: string[];
+  isSelectingKeywords: boolean;
+  onBackToKeywords: () => void;
 }
 
 export const AnalysisHeader = React.memo<AnalysisHeaderProps>(({
@@ -22,7 +24,9 @@ export const AnalysisHeader = React.memo<AnalysisHeaderProps>(({
   onSettingsClick,
   onBackClick,
   isFactCheckVisible,
-  enabledTabs
+  enabledTabs,
+  isSelectingKeywords,
+  onBackToKeywords
 }) => {
   return (
     <div className="bg-[#f8fafc] dark:bg-[#0f172a] border-b border-[#f1f5f9] dark:border-[#334155] px-[4px] pt-[4px] flex justify-between items-center h-[40px]">
@@ -39,9 +43,29 @@ export const AnalysisHeader = React.memo<AnalysisHeaderProps>(({
           </span>
           <div className="w-[32px]" />
         </div>
+      ) : isSelectingKeywords ? (
+        <div className="flex items-center w-[100%] px-[8px]">
+          <span className="mx-auto text-[12px] font-bold uppercase tracking-wider text-[#94a3b8] dark:text-[#64748b]">
+            Analysis Configuration
+          </span>
+          <button
+            onClick={onClose}
+            className="p-[6px] rounded-md transition-colors text-[#94a3b8] hover:text-[#475569] dark:hover:text-[#e2e8f0] hover:bg-[#f1f5f9] dark:hover:bg-[#334155]"
+            title="Close"
+          >
+            <X size={14} />
+          </button>
+        </div>
       ) : (
         <>
           <div className="flex gap-[4px] ml-[4px]" role="tablist">
+            <button
+              onClick={onBackToKeywords}
+              className="px-[8px] py-[10px] text-[#94a3b8] hover:text-[#475569] dark:hover:text-[#e2e8f0] transition-colors"
+              title="Back to Keywords"
+            >
+              ←
+            </button>
             {enabledTabs.map(tabId => {
               if (tabId === 'fact-check' && !isFactCheckVisible) return null;
               

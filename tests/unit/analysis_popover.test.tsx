@@ -42,6 +42,13 @@ describe('Analysis Popover Component', () => {
     vi.mocked(BackendClient.factCheckText).mockResolvedValue(mockFactCheckResponse);
   });
 
+  const bypassKeywordSelection = async () => {
+    const { userEvent } = await import('@testing-library/user-event');
+    const user = userEvent.setup();
+    const analyzeButton = screen.getByRole('button', { name: /analyze selection/i });
+    await user.click(analyzeButton);
+  };
+
   it('should render when isOpen is true', async () => {
     await act(async () => {
       render(
@@ -101,6 +108,8 @@ describe('Analysis Popover Component', () => {
       );
     });
 
+    await bypassKeywordSelection();
+
     expect(screen.getByRole('tab', { name: /explain/i })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: /fact check/i })).toBeInTheDocument();
   });
@@ -115,6 +124,8 @@ describe('Analysis Popover Component', () => {
         />
       );
     });
+
+    await bypassKeywordSelection();
 
     const explainTab = screen.getByRole('tab', { name: /explain/i });
     expect(explainTab).toHaveAttribute('aria-selected', 'true');
@@ -136,6 +147,8 @@ describe('Analysis Popover Component', () => {
         />
       );
     });
+
+    await bypassKeywordSelection();
 
     const factCheckTab = screen.getByRole('tab', { name: /fact check/i });
     await user.click(factCheckTab);
@@ -162,6 +175,8 @@ describe('Analysis Popover Component', () => {
       );
     });
 
+    await bypassKeywordSelection();
+
     // Initial state should be loading (simulated by pulse in the current implementation)
     expect(screen.getByTestId('loading-skeleton')).toBeInTheDocument();
     
@@ -182,6 +197,8 @@ describe('Analysis Popover Component', () => {
       );
     });
 
+    await bypassKeywordSelection();
+
     await screen.findByText('Mock Summary');
     expect(screen.getByText('Detailed mock explanation')).toBeInTheDocument();
     expect(screen.queryByTestId('loading-skeleton')).not.toBeInTheDocument();
@@ -200,6 +217,8 @@ describe('Analysis Popover Component', () => {
         />
       );
     });
+
+    await bypassKeywordSelection();
 
     const factCheckTab = screen.getByRole('tab', { name: /fact check/i });
     await user.click(factCheckTab);
@@ -223,6 +242,8 @@ describe('Analysis Popover Component', () => {
       );
     });
 
+    await bypassKeywordSelection();
+
     const settingsButton = screen.getByTitle(/settings/i);
     await user.click(settingsButton);
 
@@ -242,6 +263,8 @@ describe('Analysis Popover Component', () => {
       );
     });
 
+    await bypassKeywordSelection();
+
     expect(screen.getByRole('tab', { name: /fact check/i })).toBeInTheDocument();
   });
 
@@ -256,6 +279,8 @@ describe('Analysis Popover Component', () => {
         />
       );
     });
+
+    await bypassKeywordSelection();
 
     expect(screen.queryByRole('tab', { name: /fact check/i })).not.toBeInTheDocument();
   });
@@ -273,6 +298,8 @@ describe('Analysis Popover Component', () => {
         );
       });
 
+      await bypassKeywordSelection();
+
       expect(screen.queryByRole('tab', { name: /explain/i })).not.toBeInTheDocument();
       expect(screen.getByRole('tab', { name: /fact check/i })).toBeInTheDocument();
     });
@@ -288,6 +315,8 @@ describe('Analysis Popover Component', () => {
           />
         );
       });
+
+      await bypassKeywordSelection();
 
       const tabs = screen.getAllByRole('tab');
       expect(tabs[0]).toHaveTextContent(/fact check/i);
@@ -306,6 +335,8 @@ describe('Analysis Popover Component', () => {
         );
       });
 
+      await bypassKeywordSelection();
+
       expect(screen.getByRole('tab', { name: /fact check/i })).toHaveAttribute('aria-selected', 'true');
     });
 
@@ -321,6 +352,8 @@ describe('Analysis Popover Component', () => {
           />
         );
       });
+
+      await bypassKeywordSelection();
 
       // Fact check should be hidden, and explain should be active
       expect(screen.queryByRole('tab', { name: /fact check/i })).not.toBeInTheDocument();
