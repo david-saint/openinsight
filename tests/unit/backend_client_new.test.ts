@@ -31,7 +31,7 @@ describe("BackendClient - New Methods", () => {
 
     expect(chrome.runtime.sendMessage).toHaveBeenCalledWith({
       type: "BACKEND_EXPLAIN",
-      payload: { text: "test text" },
+      payload: { text: "test text", emphasizedWords: [] },
     });
     expect(result).toEqual(mockResponse);
   });
@@ -50,6 +50,7 @@ describe("BackendClient - New Methods", () => {
         pageTitle: "Page Title",
         pageDescription: "Page Description",
       },
+      emphasizedWords: [],
     };
 
     vi.mocked(chrome.runtime.sendMessage).mockResolvedValue({

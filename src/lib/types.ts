@@ -106,11 +106,11 @@ export interface AppError {
 // Message Schema Mapping
 export interface MessageSchema {
   BACKEND_EXPLAIN: {
-    payload: { text: string };
+    payload: { text: string; emphasizedWords?: string[] };
     response: ExplainResponse;
   };
   BACKEND_FACT_CHECK: {
-    payload: { text: string; context: FactCheckContext };
+    payload: { text: string; context: FactCheckContext; emphasizedWords?: string[] };
     response: FactCheckResponse;
   };
   BACKEND_FETCH_MODELS: {
