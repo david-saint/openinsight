@@ -31,3 +31,10 @@ This plan outlines the steps to implement keyword emphasis for text analysis, al
 ## Phase 5: End-to-End Verification
 - [x] Task: E2E Test - Verify that clicking words in the popover and triggering "Explain" results in a response focusing on those words. (Verified via integration tests in `keyword_emphasis_ui.test.tsx` and `handlers.test.ts`) (4294d5d)
 - [x] Task: Conductor - User Manual Verification 'Final Verification' (Protocol in workflow.md) (4294d5d)
+
+## Phase 6: UX Streamlining (Immediate Results)
+- [x] Task: Refactor `AnalysisPopover.tsx` to trigger `fetchData` immediately on open. (4294d5d -> next)
+- [x] Task: Integrate `KeywordSelection` as an optional refinement tool within the main analysis view. (ddf64c8 -> next)
+- [x] Task: Implement a "Update" or "Regenerate" button to re-trigger analysis when keywords are changed. (9aa569a -> next)
+- [x] Task: TDD - Update `tests/unit/analysis_popover.test.tsx` and `keyword_emphasis_ui.test.tsx` to reflect the immediate loading flow. (Next SHA)
+- [x] Task: Conductor - User Manual Verification 'Phase 6: UX Streamlining' (Protocol in workflow.md) (Next SHA)

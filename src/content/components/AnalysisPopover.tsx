@@ -43,7 +43,7 @@ export const AnalysisPopover = React.memo(({
 }: AnalysisPopoverProps) => {
   const [activeTab, setActiveTab] = useState<TabId>(enabledTabs[0] as TabId);
   const [showSettings, setShowSettings] = useState(false);
-  const [isSelectingKeywords, setIsSelectingKeywords] = useState(true);
+  const [isSelectingKeywords, setIsSelectingKeywords] = useState(false);
   const [emphasizedWords, setEmphasizedWords] = useState<string[]>([]);
   const [data, setData] = useState<Record<TabId, TabData>>({
     explain: { content: null, loading: false, error: null },
@@ -73,8 +73,11 @@ export const AnalysisPopover = React.memo(({
       
       setActiveTab(defaultTab);
       setShowSettings(false);
-      setIsSelectingKeywords(true);
+      setIsSelectingKeywords(false);
       setEmphasizedWords([]);
+      
+      // Trigger initial fetch immediately
+      fetchData(defaultTab, selectionText);
     }
   }, [isOpen, selectionText, enabledTabs]);
 
@@ -141,7 +144,7 @@ export const AnalysisPopover = React.memo(({
 
   const handleSettingsClick = useCallback(() => setShowSettings(true), []);
   const handleBackClick = useCallback(() => setShowSettings(false), []);
-  const handleBackToKeywords = useCallback(() => setIsSelectingKeywords(true), []);
+  const handleToggleKeywords = useCallback(() => setIsSelectingKeywords(prev => !prev), []);
 
   if (!isOpen) return null;
 
@@ -179,7 +182,7 @@ export const AnalysisPopover = React.memo(({
           isFactCheckVisible={isFactCheckVisible}
           enabledTabs={enabledTabs}
           isSelectingKeywords={isSelectingKeywords}
-          onBackToKeywords={handleBackToKeywords}
+          onToggleKeywords={handleToggleKeywords}
         />
 
         {showSettings ? (
@@ -190,19 +193,24 @@ export const AnalysisPopover = React.memo(({
               onOpenFullSettings={openFullSettings}
             />
           </div>
-        ) : isSelectingKeywords ? (
-          <KeywordSelection 
-            text={selectionText}
-            emphasizedWords={emphasizedWords}
-            onToggleWord={handleToggleWord}
-            onAnalyze={handleAnalyze}
-            accentColor={accentColor}
-          />
         ) : (
-          <AnalysisContent 
-            activeTab={activeTab} 
-            data={data[activeTab]} 
-          />
+          <>
+            {isSelectingKeywords && (
+              <div className="border-b border-[#f1f5f9] dark:border-[#334155] bg-[#f8fafc] dark:bg-[#0f172a]/50">
+                <KeywordSelection 
+                  text={selectionText}
+                  emphasizedWords={emphasizedWords}
+                  onToggleWord={handleToggleWord}
+                  onAnalyze={handleAnalyze}
+                  accentColor={accentColor}
+                />
+              </div>
+            )}
+            <AnalysisContent 
+              activeTab={activeTab} 
+              data={data[activeTab]} 
+            />
+          </>
         )}
       </div>
     </>

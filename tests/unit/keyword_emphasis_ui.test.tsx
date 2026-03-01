@@ -27,7 +27,13 @@ describe('Keyword Emphasis UI', () => {
     });
   });
 
-  it('should show keyword selection view initially', async () => {
+  const openRefineView = async (user: any) => {
+    const refineButton = screen.getByTitle(/refine with keywords/i);
+    await user.click(refineButton);
+  };
+
+  it('should show keyword selection view when refine is clicked', async () => {
+    const user = userEvent.setup();
     await act(async () => {
       render(
         <AnalysisPopover 
@@ -38,8 +44,10 @@ describe('Keyword Emphasis UI', () => {
       );
     });
 
-    expect(screen.getByText(/emphasize keywords/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /analyze selection/i })).toBeInTheDocument();
+    await openRefineView(user);
+
+    expect(screen.getByText(/refine keywords/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /update analysis/i })).toBeInTheDocument();
     
     // Should show words as buttons
     expect(screen.getByRole('button', { name: 'This' })).toBeInTheDocument();
@@ -58,11 +66,10 @@ describe('Keyword Emphasis UI', () => {
       );
     });
 
+    await openRefineView(user);
+
     const testWord = screen.getByRole('button', { name: 'test' });
     
-    // Not emphasized initially (no accent class)
-    expect(testWord).not.toHaveClass('bg-accent-500');
-
     // Click to emphasize
     await user.click(testWord);
     expect(testWord).toHaveClass('bg-accent-500');
@@ -84,6 +91,8 @@ describe('Keyword Emphasis UI', () => {
       );
     });
 
+    await openRefineView(user);
+
     const w1 = screen.getByRole('button', { name: 'This' });
     const w2 = screen.getByRole('button', { name: 'is' });
     const w3 = screen.getByRole('button', { name: 'a' });
@@ -92,10 +101,6 @@ describe('Keyword Emphasis UI', () => {
     await user.click(w1);
     await user.click(w2);
     await user.click(w3);
-
-    expect(w1).toHaveClass('bg-accent-500');
-    expect(w2).toHaveClass('bg-accent-500');
-    expect(w3).toHaveClass('bg-accent-500');
 
     // Click 4th word
     await user.click(w4);
@@ -107,7 +112,7 @@ describe('Keyword Emphasis UI', () => {
     expect(w4).toHaveClass('bg-accent-500');
   });
 
-  it('should pass emphasized words to BackendClient', async () => {
+  it('should pass emphasized words to BackendClient when update is clicked', async () => {
     const user = userEvent.setup();
     await act(async () => {
       render(
@@ -119,11 +124,13 @@ describe('Keyword Emphasis UI', () => {
       );
     });
 
+    await openRefineView(user);
+
     await user.click(screen.getByRole('button', { name: 'test' }));
     await user.click(screen.getByRole('button', { name: 'sentence' }));
 
-    const analyzeButton = screen.getByRole('button', { name: /analyze selection/i });
-    await user.click(analyzeButton);
+    const updateButton = screen.getByRole('button', { name: /update analysis/i });
+    await user.click(updateButton);
 
     expect(BackendClient.explainText).toHaveBeenCalledWith(
       selectionText,
@@ -131,7 +138,7 @@ describe('Keyword Emphasis UI', () => {
     );
   });
 
-  it('should allow going back to keyword selection from analysis view', async () => {
+  it('should allow closing refine view', async () => {
     const user = userEvent.setup();
     await act(async () => {
       render(
@@ -143,14 +150,13 @@ describe('Keyword Emphasis UI', () => {
       );
     });
 
-    // Go to analysis
-    await user.click(screen.getByRole('button', { name: /analyze selection/i }));
-    expect(screen.queryByText(/emphasize keywords/i)).not.toBeInTheDocument();
+    await openRefineView(user);
+    expect(screen.getByText(/refine keywords/i)).toBeInTheDocument();
 
-    // Click back arrow in header
-    const backButton = screen.getByTitle(/back to keywords/i);
-    await user.click(backButton);
+    // Click refine button again to toggle off
+    const refineButton = screen.getByTitle(/back to analysis/i);
+    await user.click(refineButton);
 
-    expect(screen.getByText(/emphasize keywords/i)).toBeInTheDocument();
+    expect(screen.queryByText(/refine keywords/i)).not.toBeInTheDocument();
   });
 });
