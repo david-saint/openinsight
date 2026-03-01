@@ -163,7 +163,7 @@ export const AnalysisPopover = React.memo(({
         ref={popoverRef}
         role="dialog"
         aria-modal="true"
-        className="absolute z-[9999] w-[320px] bg-[#ffffff] dark:bg-[#1e293b] rounded-xl shadow-2xl border border-[#f1f5f9] dark:border-[#334155] overflow-hidden flex flex-col animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-300 font-sans"
+        className="absolute z-[9999] w-[330px] bg-[#ffffff] dark:bg-[#1e293b] rounded-xl shadow-2xl border border-[#f1f5f9] dark:border-[#334155] overflow-hidden flex flex-col animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-300 font-sans"
         style={{
           top: finalPosition ? finalPosition.top : '50%',
           left: finalPosition ? finalPosition.left : '50%',
