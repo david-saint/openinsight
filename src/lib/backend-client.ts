@@ -14,8 +14,11 @@ export class BackendClient {
    * Requests an explanation for the provided text.
    * Returns a structured ExplainResponse object.
    */
-  static async explainText(text: string): Promise<ExplainResponse> {
-    return sendMessage("BACKEND_EXPLAIN", { text });
+  static async explainText(
+    text: string,
+    emphasizedWords: string[] = []
+  ): Promise<ExplainResponse> {
+    return sendMessage("BACKEND_EXPLAIN", { text, emphasizedWords });
   }
 
   /**
@@ -28,9 +31,10 @@ export class BackendClient {
       paragraph: string;
       pageTitle: string;
       pageDescription: string;
-    }
+    },
+    emphasizedWords: string[] = []
   ): Promise<FactCheckResponse> {
-    return sendMessage("BACKEND_FACT_CHECK", { text, context });
+    return sendMessage("BACKEND_FACT_CHECK", { text, context, emphasizedWords });
   }
 
   /**

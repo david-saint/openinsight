@@ -1,6 +1,6 @@
 import { useState, useLayoutEffect } from "react";
 
-const POPOVER_WIDTH = 320;
+const POPOVER_WIDTH = 330;
 const POPOVER_ESTIMATED_HEIGHT = 300; // Estimated max height for positioning calculations
 const VIEWPORT_PADDING = 16; // Minimum distance from viewport edges
 

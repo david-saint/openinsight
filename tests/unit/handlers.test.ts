@@ -78,6 +78,18 @@ describe("Background Handlers", () => {
       expect(result).toEqual({ summary: "Explanation result" });
     });
 
+    it("should include emphasized words in the system prompt", async () => {
+      vi.mocked(settings.getSettings).mockResolvedValue(mockSettings as any);
+      vi.mocked(ModelManager.supportsStructuredOutputs).mockResolvedValue(true);
+      vi.mocked(OpenRouterService.chatCompletion).mockResolvedValue({});
+
+      await handleExplain("text", ["keyword1", "keyword2"]);
+
+      const callArgs = vi.mocked(OpenRouterService.chatCompletion).mock.calls[0][0];
+      const systemPrompt = callArgs.messages[0].content;
+      expect(systemPrompt).toContain("THE USER HAS EMPHASIZED THESE KEYWORDS: keyword1, keyword2");
+    });
+
     it("should propagate errors from OpenRouterService", async () => {
       vi.mocked(settings.getSettings).mockResolvedValue(mockSettings as any);
       vi.mocked(ModelManager.supportsStructuredOutputs).mockResolvedValue(true);
@@ -169,6 +181,18 @@ describe("Background Handlers", () => {
         response_format: FACT_CHECK_RESPONSE_SCHEMA,
       });
       expect(result).toEqual({ summary: "Fact check result" });
+    });
+
+    it("should include emphasized words in the system prompt", async () => {
+      vi.mocked(settings.getSettings).mockResolvedValue(mockSettings as any);
+      vi.mocked(ModelManager.supportsStructuredOutputs).mockResolvedValue(true);
+      vi.mocked(OpenRouterService.chatCompletion).mockResolvedValue({});
+
+      await handleFactCheck({ text: "text", emphasizedWords: ["word1"] });
+
+      const callArgs = vi.mocked(OpenRouterService.chatCompletion).mock.calls[0][0];
+      const systemPrompt = callArgs.messages[0].content;
+      expect(systemPrompt).toContain("THE USER HAS EMPHASIZED THESE KEYWORDS: word1");
     });
   });
 

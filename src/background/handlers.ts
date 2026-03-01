@@ -11,7 +11,10 @@ import { PromptManager } from "../lib/prompt-manager.js";
 /**
  * Handles the "Explain" request by calling OpenRouterService.
  */
-export async function handleExplain(text: string): Promise<any> {
+export async function handleExplain(
+  text: string,
+  emphasizedWords: string[] = []
+): Promise<any> {
   const settings = await getSettings();
   const { explainModel, explainSettings, stylePreference } = settings;
 
@@ -20,7 +23,10 @@ export async function handleExplain(text: string): Promise<any> {
     explainModel
   );
 
-  const systemPrompt = PromptManager.getExplainPrompt(stylePreference);
+  const systemPrompt = PromptManager.getExplainPrompt(
+    stylePreference,
+    emphasizedWords
+  );
 
   try {
     return await OpenRouterService.chatCompletion({
@@ -67,6 +73,7 @@ export async function handleFactCheck(payload: {
     pageTitle: string;
     pageDescription: string;
   };
+  emphasizedWords?: string[];
 }): Promise<any> {
   const settings = await getSettings();
   const { factCheckModel, factCheckSettings, stylePreference } = settings;
@@ -105,7 +112,10 @@ export async function handleFactCheck(payload: {
     factCheckModel
   );
 
-  const systemPrompt = PromptManager.getFactCheckPrompt(stylePreference);
+  const systemPrompt = PromptManager.getFactCheckPrompt(
+    stylePreference,
+    payload.emphasizedWords || []
+  );
 
   try {
     return await OpenRouterService.chatCompletion({

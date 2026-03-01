@@ -22,16 +22,16 @@ describe("BackendClient", () => {
       result: mockResponse,
     });
 
-    const result = await BackendClient.explainText("test text");
+    const result = await BackendClient.explainText("test text", ["word1", "word2"]);
 
     expect(chrome.runtime.sendMessage).toHaveBeenCalledWith({
       type: "BACKEND_EXPLAIN",
-      payload: { text: "test text" },
+      payload: { text: "test text", emphasizedWords: ["word1", "word2"] },
     });
     expect(result).toEqual(mockResponse);
   });
 
-  it("should call BACKEND_FACT_CHECK", async () => {
+  it("should call BACKEND_FACT_CHECK with emphasizedWords", async () => {
     const mockResponse = {
       summary: "summary",
       verdict: "True",
@@ -48,11 +48,11 @@ describe("BackendClient", () => {
       pageDescription: "d",
     };
 
-    const result = await BackendClient.factCheckText("test text", mockContext);
+    const result = await BackendClient.factCheckText("test text", mockContext, ["word1"]);
 
     expect(chrome.runtime.sendMessage).toHaveBeenCalledWith({
       type: "BACKEND_FACT_CHECK",
-      payload: { text: "test text", context: mockContext },
+      payload: { text: "test text", context: mockContext, emphasizedWords: ["word1"] },
     });
     expect(result).toEqual(mockResponse);
   });

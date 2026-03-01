@@ -40,24 +40,44 @@ Response MUST be a valid JSON object following this EXACT schema:
   /**
    * Generates the system prompt for the "Explain" action.
    */
-  static getExplainPrompt(style: StylePreference): string {
+  static getExplainPrompt(
+    style: StylePreference,
+    emphasizedWords: string[] = []
+  ): string {
     const styleInstruction =
       style === "Concise"
         ? "Be extremely concise, direct, and use simple language."
         : "Provide a comprehensive, nuanced, and detailed breakdown of the concept.";
 
-    return `${this.EXPLAIN_BASE} ${styleInstruction}\n${this.JSON_INSTRUCTION_EXPLAIN}`;
+    let keywordInstruction = "";
+    if (emphasizedWords.length > 0) {
+      keywordInstruction = `\n\nTHE USER HAS EMPHASIZED THESE KEYWORDS: ${emphasizedWords.join(
+        ", "
+      )}. Please ensure your explanation pays special attention to these terms, providing deeper context or sub-explanations for them within the overall response.`;
+    }
+
+    return `${this.EXPLAIN_BASE} ${styleInstruction}${keywordInstruction}\n${this.JSON_INSTRUCTION_EXPLAIN}`;
   }
 
   /**
    * Generates the system prompt for the "Fact-check" action.
    */
-  static getFactCheckPrompt(style: StylePreference): string {
+  static getFactCheckPrompt(
+    style: StylePreference,
+    emphasizedWords: string[] = []
+  ): string {
     const styleInstruction =
       style === "Concise"
         ? "Be concise. Provide a brief verdict and the most essential evidence."
         : "Provide a detailed analysis of the claim, exploring nuances and providing multiple data points if available.";
 
-    return `${this.FACT_CHECK_BASE} ${styleInstruction}\n${this.JSON_INSTRUCTION_FACT_CHECK}`;
+    let keywordInstruction = "";
+    if (emphasizedWords.length > 0) {
+      keywordInstruction = `\n\nTHE USER HAS EMPHASIZED THESE KEYWORDS: ${emphasizedWords.join(
+        ", "
+      )}. Please prioritize these terms in your fact-check, ensuring their specific accuracy or role in the claim is thoroughly addressed.`;
+    }
+
+    return `${this.FACT_CHECK_BASE} ${styleInstruction}${keywordInstruction}\n${this.JSON_INSTRUCTION_FACT_CHECK}`;
   }
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BookOpen, Search, Settings, X } from 'lucide-react';
+import { BookOpen, Search, Settings, X, MousePointer2 } from 'lucide-react';
 
 export type TabId = 'explain' | 'fact-check';
 
@@ -12,6 +12,8 @@ interface AnalysisHeaderProps {
   onBackClick: () => void;
   isFactCheckVisible: boolean;
   enabledTabs: string[];
+  isSelectingKeywords: boolean;
+  onToggleKeywords: () => void;
 }
 
 export const AnalysisHeader = React.memo<AnalysisHeaderProps>(({
@@ -22,7 +24,9 @@ export const AnalysisHeader = React.memo<AnalysisHeaderProps>(({
   onSettingsClick,
   onBackClick,
   isFactCheckVisible,
-  enabledTabs
+  enabledTabs,
+  isSelectingKeywords,
+  onToggleKeywords
 }) => {
   return (
     <div className="bg-[#f8fafc] dark:bg-[#0f172a] border-b border-[#f1f5f9] dark:border-[#334155] px-[4px] pt-[4px] flex justify-between items-center h-[40px]">
@@ -68,6 +72,17 @@ export const AnalysisHeader = React.memo<AnalysisHeaderProps>(({
             })}
           </div>
           <div className="flex items-center gap-[4px] pr-[8px]">
+            <button
+              onClick={onToggleKeywords}
+              className={`p-[6px] rounded-md transition-colors ${
+                isSelectingKeywords 
+                  ? 'text-accent-500 bg-accent-100 dark:bg-accent-900/30' 
+                  : 'text-[#94a3b8] hover:text-accent-500 hover:bg-accent-100 dark:hover:bg-accent-900/20'
+              }`}
+              title={isSelectingKeywords ? "Back to Analysis" : "Refine with Keywords"}
+            >
+              <MousePointer2 size={14} />
+            </button>
             <button
               onClick={onSettingsClick}
               className="p-[6px] rounded-md transition-colors text-[#94a3b8] hover:text-[#475569] dark:hover:text-[#e2e8f0] hover:bg-[#f1f5f9] dark:hover:bg-[#334155]"
