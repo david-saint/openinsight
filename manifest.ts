@@ -3,7 +3,7 @@ import { defineManifest } from "@crxjs/vite-plugin";
 export default defineManifest({
   manifest_version: 3,
   name: "OpenInsight",
-  version: "1.0.3",
+  version: "1.0.4",
   description: "AI-powered text explanation and fact-checking.",
   icons: {
     16: "logos/icons/icon-16.png",
