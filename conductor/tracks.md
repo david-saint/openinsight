@@ -4,5 +4,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Area-capture/region-selection feature to capture specific visual regions or elements for targeted questions.**
+- [x] **Track: Area-capture/region-selection feature to capture specific visual regions or elements for targeted questions.**
   _Link: [./tracks/area_capture_20260409/](./tracks/area_capture_20260409/)_
