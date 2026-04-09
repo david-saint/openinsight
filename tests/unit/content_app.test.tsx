@@ -2,12 +2,13 @@
  * @vitest-environment happy-dom
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, waitFor, act } from '@testing-library/react';
+import { render, waitFor, act, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import React from 'react';
 import { ContentApp } from '../../src/content/ContentApp';
 import * as settingsModule from '../../src/lib/settings';
 import * as selectionModule from '../../src/content/selection.js';
+import * as messagingModule from '../../src/lib/messaging.js';
 
 // Mock chrome
 const chromeMock = {
@@ -61,6 +62,11 @@ Object.defineProperty(window, 'matchMedia', {
     dispatchEvent: vi.fn(),
   })),
 });
+
+// Mock messaging
+vi.mock('../../src/lib/messaging.js', () => ({
+  sendMessage: vi.fn(),
+}));
 
 describe('ContentApp Component', () => {
   beforeEach(() => {
@@ -357,5 +363,89 @@ describe('ContentApp Component', () => {
       // but at least the storage change handler was called)
       expect(chromeMock.storage.onChanged.addListener).toHaveBeenCalled();
     });
+  });
+
+  it('activates CaptureOverlay when openinsight:capture-activated is dispatched', async () => {
+    const { getByTestId, queryByTestId } = render(<ContentApp />);
+    
+    // Initially, the overlay is not active, so it renders null (no testid)
+    expect(queryByTestId('capture-overlay')).toBeNull();
+
+    act(() => {
+      document.dispatchEvent(new Event('openinsight:capture-activated'));
+    });
+
+    // The overlay should now be active
+    await waitFor(() => {
+      expect(getByTestId('capture-overlay')).toBeInTheDocument();
+    });
+  });
+
+  it('shows CapturePromptInput after a region is captured and handles submission end-to-end', async () => {
+    // Provide a mocked getBoundingClientRect for DOM elements so elementFromPoint mock works cleanly
+    Element.prototype.getBoundingClientRect = vi.fn(() => ({
+      width: 100, height: 100, top: 50, left: 50, bottom: 150, right: 150, x: 50, y: 50, toJSON: () => {}
+    }));
+    document.elementsFromPoint = vi.fn(() => [document.body]);
+
+    const mockSendMessage = vi.fn().mockResolvedValue('data:image/png;base64,mockcroppedbase64');
+    vi.mocked(messagingModule.sendMessage).mockImplementation(mockSendMessage);
+
+    const { getByTestId, queryByTestId, getByPlaceholderText, getByRole } = render(<ContentApp />);
+    
+    act(() => {
+      document.dispatchEvent(new Event('openinsight:capture-activated'));
+    });
+
+    // Overlay is active
+    await waitFor(() => {
+      expect(getByTestId('capture-overlay')).toBeInTheDocument();
+    });
+
+    // Simulate capturing a region (drag on overlay)
+    const overlay = getByTestId('capture-overlay');
+    act(() => {
+      fireEvent.mouseDown(overlay, { clientX: 100, clientY: 100 });
+    });
+    act(() => {
+      fireEvent.mouseMove(overlay, { clientX: 200, clientY: 200 });
+    });
+    act(() => {
+      fireEvent.mouseUp(overlay, { clientX: 200, clientY: 200 });
+    });
+
+    // The prompt input should now be active
+    await waitFor(() => {
+      expect(getByTestId('capture-prompt-container')).toBeInTheDocument();
+    });
+    
+    // Overlay should be gone
+    expect(queryByTestId('capture-overlay')).toBeNull();
+
+    // Type a prompt and submit
+    const input = getByPlaceholderText('Ask about this image...');
+    act(() => {
+      fireEvent.change(input, { target: { value: 'Explain this chart' } });
+      fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+    });
+
+    // Verify sendMessage was called
+    await waitFor(() => {
+      expect(mockSendMessage).toHaveBeenCalledWith('BACKEND_CAPTURE_VISIBLE_TAB', {
+        rect: {
+          x: 100,
+          y: 100,
+          width: 100,
+          height: 100
+        }
+      });
+    });
+
+    // Verify popover opens with Explain tab
+    await waitFor(() => {
+      expect(getByRole('dialog')).toBeInTheDocument();
+    });
+    
+    expect(getByRole('tab', { name: /explain/i })).toHaveAttribute('aria-selected', 'true');
   });
 });

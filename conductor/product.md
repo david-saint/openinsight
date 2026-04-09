@@ -15,6 +15,7 @@ The core mission of OpenInsight is to bridge the gap between information consump
 
 ## Key Features
 *   **Smart Pop-up Interface:** A minimalist interface that appears on text selection (10-2000 chars), with context-aware actions like Fact-check (available for >50 chars).
+*   **Area Capture for Visual Content:** Users can capture specific visual regions (images, charts, UI elements) via a crosshair overlay and prompt the AI for multimodal analysis.
 *   **Interactive Keyword Emphasis:** Users can selectively emphasize up to 3 keywords within the highlighted text to guide the LLM towards deeper insights on specific terms.
 *   **Structured Insights:** Provides clear, structured explanations and fact-check verdicts with clickable sources, ensuring clarity and truth in every response.
 *   **Epistemic Minimalism:** A design philosophy focused on clarity and truth, removing UI clutter to keep the user focused on the information.

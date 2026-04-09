@@ -29,8 +29,16 @@ const chromeMock = {
   runtime: {
     openOptionsPage: vi.fn(),
   },
+  tabs: {
+    query: vi.fn(),
+    sendMessage: vi.fn(),
+  },
 };
 vi.stubGlobal('chrome', chromeMock);
+
+// Mock window.close
+const windowCloseMock = vi.fn();
+vi.stubGlobal('close', windowCloseMock);
 
 describe('Popup Component', () => {
   beforeEach(() => {
@@ -66,8 +74,12 @@ describe('Popup Component', () => {
     expect(wrapper?.getAttribute('data-accent')).toBe('rose');
 
     // Verify Open Settings button
-    const button = screen.getByRole('button', { name: /open settings/i });
-    expect(button).toBeDefined();
+    const settingsButton = screen.getByRole('button', { name: /open settings/i });
+    expect(settingsButton).toBeDefined();
+
+    // Verify Area Capture button
+    const captureButton = screen.getByRole('button', { name: /capture area/i });
+    expect(captureButton).toBeDefined();
   });
 
   it('opens options page when settings button is clicked', async () => {
@@ -81,5 +93,30 @@ describe('Popup Component', () => {
     fireEvent.click(button);
 
     expect(chromeMock.runtime.openOptionsPage).toHaveBeenCalledTimes(1);
+  });
+
+  it('sends ACTIVATE_CAPTURE to active tab and closes popup when capture area button is clicked', async () => {
+    render(<Popup />);
+    
+    await waitFor(() => {
+      expect(screen.queryByText(/loading/i)).toBeNull();
+    });
+
+    // Mock tabs.query to return an active tab
+    chromeMock.tabs.query.mockResolvedValue([{ id: 789 }]);
+
+    const captureButton = screen.getByRole('button', { name: /capture area/i });
+    fireEvent.click(captureButton);
+
+    await waitFor(() => {
+      expect(chromeMock.tabs.query).toHaveBeenCalledWith({
+        active: true,
+        currentWindow: true,
+      });
+      expect(chromeMock.tabs.sendMessage).toHaveBeenCalledWith(789, {
+        type: 'ACTIVATE_CAPTURE',
+      });
+      expect(windowCloseMock).toHaveBeenCalledTimes(1);
+    });
   });
 });

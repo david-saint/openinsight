@@ -30,6 +30,18 @@ const Popup: React.FC = () => {
     }
   }, [settings.theme]);
 
+  const handleCaptureArea = async () => {
+    try {
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      if (tab?.id) {
+        await chrome.tabs.sendMessage(tab.id, { type: 'ACTIVATE_CAPTURE' });
+        window.close();
+      }
+    } catch (error) {
+      console.error('Error sending capture message:', error);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="w-64 h-48 bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
@@ -45,7 +57,14 @@ const Popup: React.FC = () => {
     >
       <PopupHeader />
       
-      <div className="space-y-2">
+      <div className="space-y-2 mt-4">
+        <button 
+          onClick={handleCaptureArea}
+          className="w-full py-2.5 bg-accent-600 text-white dark:bg-accent-600 dark:text-white rounded-lg hover:bg-accent-700 dark:hover:bg-accent-700 transition-colors text-xs font-medium uppercase tracking-wide shadow-sm"
+        >
+          Capture Area
+        </button>
+
         <button 
           onClick={() => chrome.runtime.openOptionsPage()}
           className="w-full py-2.5 bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-300 rounded-lg hover:bg-accent-200 dark:hover:bg-accent-900/50 transition-colors text-xs font-medium uppercase tracking-wide"

@@ -4,9 +4,14 @@ import {
   handleFactCheck,
   handleFetchModels,
   handleTestApiKey,
+  initializeCaptureListeners,
+  handleCaptureVisibleTab,
 } from "./handlers.js";
 
 console.log("OpenInsight background script initialized.");
+
+// Initialize background listeners for context menus and commands
+initializeCaptureListeners();
 
 onMessage((message, _sender, sendResponse) => {
   console.log("Background received message:", message.type);
@@ -33,7 +38,11 @@ onMessage((message, _sender, sendResponse) => {
   switch (message.type) {
     case "BACKEND_EXPLAIN":
       handleAsync(() =>
-        handleExplain(message.payload.text, message.payload.emphasizedWords)
+        handleExplain(
+          message.payload.text,
+          message.payload.emphasizedWords,
+          message.payload.imageUrl
+        )
       );
       break;
 
@@ -47,6 +56,10 @@ onMessage((message, _sender, sendResponse) => {
 
     case "BACKEND_FETCH_MODELS":
       handleAsync(() => handleFetchModels());
+      break;
+
+    case "BACKEND_CAPTURE_VISIBLE_TAB":
+      handleAsync(() => handleCaptureVisibleTab(message.payload.rect));
       break;
 
     case "OPEN_OPTIONS":

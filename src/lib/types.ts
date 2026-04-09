@@ -36,7 +36,11 @@ export interface OpenRouterModelsResponse {
 
 export interface OpenRouterMessage {
   role: "user" | "assistant" | "system";
-  content: string;
+  content: string | Array<{
+    type: "text" | "image_url";
+    text?: string;
+    image_url?: { url: string };
+  }>;
 }
 
 export interface OpenRouterChoice {
@@ -106,7 +110,7 @@ export interface AppError {
 // Message Schema Mapping
 export interface MessageSchema {
   BACKEND_EXPLAIN: {
-    payload: { text: string; emphasizedWords?: string[] };
+    payload: { text: string; emphasizedWords?: string[]; imageUrl?: string; imagePrompt?: string; };
     response: ExplainResponse;
   };
   BACKEND_FACT_CHECK: {
@@ -120,6 +124,10 @@ export interface MessageSchema {
   BACKEND_TEST_KEY: {
     payload: { apiKey: string };
     response: boolean;
+  };
+  BACKEND_CAPTURE_VISIBLE_TAB: {
+    payload: { rect: { x: number; y: number; width: number; height: number } };
+    response: string; // Base64 encoded image
   };
   OPEN_OPTIONS: {
     payload: undefined;

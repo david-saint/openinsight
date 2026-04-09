@@ -79,7 +79,7 @@ describe('Keyword Emphasis UI', () => {
     expect(testWord).not.toHaveClass('bg-accent-500');
   });
 
-  it('should enforce 3-word limit using FIFO', async () => {
+  it('should enforce 3-phrase limit using FIFO', async () => {
     const user = userEvent.setup();
     await act(async () => {
       render(
@@ -93,16 +93,17 @@ describe('Keyword Emphasis UI', () => {
 
     await openRefineView(user);
 
+    // Pick non-adjacent words to test the 3-phrase limit
     const w1 = screen.getByRole('button', { name: 'This' });
-    const w2 = screen.getByRole('button', { name: 'is' });
-    const w3 = screen.getByRole('button', { name: 'a' });
-    const w4 = screen.getByRole('button', { name: 'test' });
+    const w2 = screen.getByRole('button', { name: 'a' });
+    const w3 = screen.getByRole('button', { name: 'sentence' });
+    const w4 = screen.getByRole('button', { name: 'emphasis.' });
 
     await user.click(w1);
     await user.click(w2);
     await user.click(w3);
 
-    // Click 4th word
+    // Click 4th word, forming a 4th non-adjacent phrase
     await user.click(w4);
 
     // w1 should be de-emphasized (FIFO), w2, w3, w4 should be emphasized
@@ -112,7 +113,7 @@ describe('Keyword Emphasis UI', () => {
     expect(w4).toHaveClass('bg-accent-500');
   });
 
-  it('should pass emphasized words to BackendClient when update is clicked', async () => {
+  it('should pass emphasized phrases to BackendClient when update is clicked', async () => {
     const user = userEvent.setup();
     await act(async () => {
       render(
@@ -126,6 +127,7 @@ describe('Keyword Emphasis UI', () => {
 
     await openRefineView(user);
 
+    // test and sentence are adjacent, they should form a single linked phrase "test sentence"
     await user.click(screen.getByRole('button', { name: 'test' }));
     await user.click(screen.getByRole('button', { name: 'sentence' }));
 
@@ -134,7 +136,7 @@ describe('Keyword Emphasis UI', () => {
 
     expect(BackendClient.explainText).toHaveBeenCalledWith(
       selectionText,
-      ['test', 'sentence']
+      ['test sentence']
     );
   });
 

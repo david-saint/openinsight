@@ -11,12 +11,14 @@ import { KeywordSelection } from './analysis-popover/KeywordSelection.js';
 interface AnalysisPopoverProps {
   isOpen: boolean;
   onClose: () => void;
-  selectionText: string;
+  selectionText?: string;
   selectionContext?: {
     paragraph: string;
     pageTitle: string;
     pageDescription: string;
   } | undefined;
+  imageUrl?: string;
+  imagePrompt?: string;
   accentColor?: string;
   onAccentChange?: (color: string) => void;
   position?: { top: number; left: number };
@@ -36,15 +38,34 @@ export const AnalysisPopover = React.memo(({
   onClose, 
   selectionText,
   selectionContext,
+  imageUrl,
+  imagePrompt,
   accentColor = 'teal',
   onAccentChange,
   position,
   enabledTabs = DEFAULT_ENABLED_TABS
 }: AnalysisPopoverProps) => {
-  const [activeTab, setActiveTab] = useState<TabId>(enabledTabs[0] as TabId);
+  // Image captures strictly require the 'explain' tab
+  const actualEnabledTabs = React.useMemo(() => {
+    if (imageUrl) return ['explain'];
+    return enabledTabs;
+  }, [imageUrl, enabledTabs]);
+
+  const [activeTab, setActiveTab] = useState<TabId>(actualEnabledTabs[0] as TabId);
   const [showSettings, setShowSettings] = useState(false);
   const [isSelectingKeywords, setIsSelectingKeywords] = useState(false);
-  const [emphasizedWords, setEmphasizedWords] = useState<string[]>([]);
+  const [keywordGroups, setKeywordGroups] = useState<number[][]>([]);
+
+  const emphasizedWords = React.useMemo(() => {
+    if (!selectionText) return [];
+    const words = selectionText.split(/\s+/).filter(w => w.length > 0);
+    const cleanWord = (word: string) => word.replace(/[.,!?;:()]/g, '');
+    
+    return keywordGroups.map(group => 
+      group.map(idx => cleanWord(words[idx])).join(' ')
+    );
+  }, [selectionText, keywordGroups]);
+
   const [data, setData] = useState<Record<TabId, TabData>>({
     explain: { content: null, loading: false, error: null },
     'fact-check': { content: null, loading: false, error: null },
@@ -56,38 +77,43 @@ export const AnalysisPopover = React.memo(({
   const finalPosition = usePopoverPosition(isOpen, position);
 
   useEffect(() => {
-    if (isOpen && selectionText) {
+    if (isOpen && (selectionText || imageUrl)) {
       setData({
         explain: { content: null, loading: false, error: null },
         'fact-check': { content: null, loading: false, error: null },
       });
       
-      // Determine default active tab based on enabledTabs and visibility
-      let defaultTab = enabledTabs[0] as TabId;
-      if (defaultTab === 'fact-check' && selectionText.length <= 50) {
+      // Determine default active tab based on actualEnabledTabs and visibility
+      let defaultTab = actualEnabledTabs[0] as TabId;
+      const isFactCheckVisible = selectionText ? selectionText.length > 50 : false;
+      if (defaultTab === 'fact-check' && !isFactCheckVisible) {
         // If first tab is fact-check but not visible, try second tab if it exists
-        if (enabledTabs.length > 1) {
-          defaultTab = enabledTabs[1] as TabId;
+        if (actualEnabledTabs.length > 1) {
+          defaultTab = actualEnabledTabs[1] as TabId;
         }
       }
       
       setActiveTab(defaultTab);
       setShowSettings(false);
       setIsSelectingKeywords(false);
-      setEmphasizedWords([]);
+      setKeywordGroups([]);
       
       // Trigger initial fetch immediately
-      fetchData(defaultTab, selectionText);
+      fetchData(defaultTab, selectionText || '', [], imageUrl, imagePrompt);
     }
-  }, [isOpen, selectionText, enabledTabs]);
+  }, [isOpen, selectionText, imageUrl, imagePrompt, actualEnabledTabs]);
 
-  const fetchData = async (tab: TabId, text: string, keywords: string[] = []) => {
+  const fetchData = async (tab: TabId, text: string, keywords: string[] = [], img?: string, prompt?: string) => {
     setData(prev => ({ ...prev, [tab]: { ...prev[tab], loading: true, error: null } }));
     
     try {
       let result;
       if (tab === 'explain') {
-        result = await BackendClient.explainText(text, keywords);
+        if (img) {
+          result = await BackendClient.explainImage(img, prompt || text);
+        } else {
+          result = await BackendClient.explainText(text, keywords);
+        }
       } else {
         result = await BackendClient.factCheckText(
           text, 
@@ -117,24 +143,81 @@ export const AnalysisPopover = React.memo(({
     if (!isSelectingKeywords) {
       const currentData = dataRef.current;
       if (!currentData[tab].content && !currentData[tab].loading) {
-        fetchDataRef.current(tab, selectionText, emphasizedWords);
+        fetchDataRef.current(tab, selectionText ?? '', emphasizedWords);
       }
     }
   }, [selectionText, isSelectingKeywords, emphasizedWords]);
 
   const handleAnalyze = useCallback(() => {
     setIsSelectingKeywords(false);
-    fetchDataRef.current(activeTab, selectionText, emphasizedWords);
+    fetchDataRef.current(activeTab, selectionText ?? '', emphasizedWords);
   }, [activeTab, selectionText, emphasizedWords]);
 
-  const handleToggleWord = useCallback((word: string) => {
-    setEmphasizedWords(prev => {
-      if (prev.includes(word)) {
-        return prev.filter(w => w !== word);
+  const handleToggleKeyword = useCallback((index: number) => {
+    setKeywordGroups(prev => {
+      const groupIdx = prev.findIndex(g => g.includes(index));
+      if (groupIdx !== -1) {
+        let newGroups = [...prev];
+        const g = newGroups[groupIdx];
+        const before = g.filter(x => x < index);
+        const after = g.filter(x => x > index);
+        
+        newGroups.splice(groupIdx, 1);
+        if (after.length) newGroups.splice(groupIdx, 0, after);
+        if (before.length) newGroups.splice(groupIdx, 0, before);
+        
+        // FIFO if more than 3
+        if (newGroups.length > 3) {
+          return newGroups.slice(-3);
+        }
+        
+        return newGroups;
+      } else {
+        let newGroups = [...prev];
+        let mergedGroup = [index];
+        const prevGroupIdx = newGroups.findIndex(g => g.includes(index - 1));
+        const nextGroupIdx = newGroups.findIndex(g => g.includes(index + 1));
+        
+        const groupsToRemove = new Set<number>();
+        if (prevGroupIdx !== -1) {
+           mergedGroup = [...newGroups[prevGroupIdx], ...mergedGroup];
+           groupsToRemove.add(prevGroupIdx);
+        }
+        if (nextGroupIdx !== -1) {
+           mergedGroup = [...mergedGroup, ...newGroups[nextGroupIdx]];
+           groupsToRemove.add(nextGroupIdx);
+        }
+        
+        newGroups = newGroups.filter((_, i) => !groupsToRemove.has(i));
+        newGroups.push(mergedGroup);
+        // Sort by first element
+        newGroups.sort((a, b) => a[0] - b[0]);
+        
+        // FIFO if more than 3
+        if (newGroups.length > 3) {
+          return newGroups.slice(-3);
+        }
+        return newGroups;
       }
-      // FIFO if more than 3
-      const next = [...prev, word];
-      return next.slice(-3);
+    });
+  }, []);
+
+  const handleBreakLink = useCallback((indexLeft: number) => {
+    setKeywordGroups(prev => {
+      const groupIdx = prev.findIndex(g => g.includes(indexLeft) && g.includes(indexLeft + 1));
+      if (groupIdx === -1) return prev;
+      
+      const newGroups = [...prev];
+      const g = newGroups[groupIdx];
+      const before = g.filter(x => x <= indexLeft);
+      const after = g.filter(x => x > indexLeft);
+      
+      newGroups.splice(groupIdx, 1, before, after);
+      
+      if (newGroups.length > 3) {
+        return newGroups.slice(-3);
+      }
+      return newGroups;
     });
   }, []);
 
@@ -149,21 +232,22 @@ export const AnalysisPopover = React.memo(({
   if (!isOpen) return null;
 
   // Fact check tab visibility logic
-  const isFactCheckVisible = selectionText.length > 50;
+  const isFactCheckVisible = selectionText ? selectionText.length > 50 : false;
 
   return (
     <>
       {/* Transparent backdrop for click-outside closing */}
       <div 
-        className="fixed inset-0 z-[9998] bg-[transparent]"
+        className="fixed inset-0 z-[9998] bg-[transparent] pointer-events-auto"
         onClick={onClose}
       />
       
       <div 
         ref={popoverRef}
         role="dialog"
-        aria-modal="true"
-        className="absolute z-[9999] w-[330px] bg-[#ffffff] dark:bg-[#1e293b] rounded-xl shadow-2xl border border-[#f1f5f9] dark:border-[#334155] overflow-hidden flex flex-col animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-300 font-sans"
+        aria-modal="false"
+        aria-label="Analysis popover"
+        className="absolute z-[9999] w-[330px] bg-[#ffffff] dark:bg-[#1e293b] rounded-xl shadow-2xl border border-[#f1f5f9] dark:border-[#334155] overflow-hidden flex flex-col animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-300 font-sans pointer-events-auto"
         style={{
           top: finalPosition ? finalPosition.top : '50%',
           left: finalPosition ? finalPosition.left : '50%',
@@ -180,9 +264,10 @@ export const AnalysisPopover = React.memo(({
           onSettingsClick={handleSettingsClick}
           onBackClick={handleBackClick}
           isFactCheckVisible={isFactCheckVisible}
-          enabledTabs={enabledTabs}
+          enabledTabs={actualEnabledTabs}
           isSelectingKeywords={isSelectingKeywords}
           onToggleKeywords={handleToggleKeywords}
+          showKeywordsTool={!imageUrl && !!selectionText}
         />
 
         {showSettings ? (
@@ -195,12 +280,13 @@ export const AnalysisPopover = React.memo(({
           </div>
         ) : (
           <>
-            {isSelectingKeywords && (
+            {isSelectingKeywords && selectionText && (
               <div className="border-b border-[#f1f5f9] dark:border-[#334155] bg-[#f8fafc] dark:bg-[#0f172a]/50">
                 <KeywordSelection 
                   text={selectionText}
-                  emphasizedWords={emphasizedWords}
-                  onToggleWord={handleToggleWord}
+                  keywordGroups={keywordGroups}
+                  onToggleWord={handleToggleKeyword}
+                  onBreakLink={handleBreakLink}
                   onAnalyze={handleAnalyze}
                   accentColor={accentColor}
                 />
