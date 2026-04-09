@@ -12,10 +12,16 @@ export const CaptureOverlay: React.FC<CaptureOverlayProps> = ({
   onCapture
 }) => {
   const [highlightRect, setHighlightRect] = useState<{ x: number, y: number, width: number, height: number } | null>(null);
-  
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [startPoint, setStartPoint] = useState<{ x: number, y: number } | null>(null);
+  const [currentPoint, setCurrentPoint] = useState<{ x: number, y: number } | null>(null);
+
   useEffect(() => {
     if (!isActive) {
       setHighlightRect(null);
+      setIsDrawing(false);
+      setStartPoint(null);
+      setCurrentPoint(null);
       return;
     }
 
@@ -31,10 +37,23 @@ export const CaptureOverlay: React.FC<CaptureOverlayProps> = ({
     };
   }, [isActive, onCancel]);
 
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isActive) return;
+    setIsDrawing(true);
+    setStartPoint({ x: e.clientX, y: e.clientY });
+    setCurrentPoint({ x: e.clientX, y: e.clientY });
+    setHighlightRect(null); // Clear element highlight when starting to draw
+  };
+
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!isActive) return;
 
-    // Use pointer events to find underlying element
+    if (isDrawing && startPoint) {
+      setCurrentPoint({ x: e.clientX, y: e.clientY });
+      return;
+    }
+
+    // Hover highlighting (only when not drawing)
     const overlay = e.currentTarget;
     const oldPointerEvents = overlay.style.pointerEvents;
     overlay.style.pointerEvents = 'none';
@@ -54,18 +73,46 @@ export const CaptureOverlay: React.FC<CaptureOverlayProps> = ({
     }
   };
 
-  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!isActive) return;
 
+    if (isDrawing && startPoint && currentPoint) {
+      setIsDrawing(false);
+      const width = Math.abs(currentPoint.x - startPoint.x);
+      const height = Math.abs(currentPoint.y - startPoint.y);
+
+      if (width > 5 && height > 5) {
+        onCapture({
+          x: Math.min(startPoint.x, currentPoint.x),
+          y: Math.min(startPoint.y, currentPoint.y),
+          width,
+          height
+        });
+        return;
+      }
+      // If the drag was too small, maybe treat it as a click instead.
+    }
+
     if (highlightRect) {
-      // User clicked on a highlighted element
       onCapture(highlightRect);
       return;
     }
 
-    // Temporary fallback click-to-cancel until freeform drawing is fully implemented
     onCancel();
   };
+
+  // Calculate the drawing box rect if currently drawing
+  let drawRect = null;
+  if (isDrawing && startPoint && currentPoint) {
+    drawRect = {
+      x: Math.min(startPoint.x, currentPoint.x),
+      y: Math.min(startPoint.y, currentPoint.y),
+      width: Math.abs(currentPoint.x - startPoint.x),
+      height: Math.abs(currentPoint.y - startPoint.y),
+    };
+  }
+
+  const activeRect = drawRect || highlightRect;
 
   if (!isActive) return null;
 
@@ -75,19 +122,21 @@ export const CaptureOverlay: React.FC<CaptureOverlayProps> = ({
       className="fixed inset-0 z-[999999] cursor-crosshair"
       style={{
         backgroundColor: 'rgba(0, 0, 0, 0.3)',
+        userSelect: 'none'
       }}
+      onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
-      onClick={handleClick}
+      onMouseUp={handleMouseUp}
     >
-      {highlightRect && (
+      {activeRect && (
         <div
           data-testid="capture-highlight"
           className="absolute border-2 border-blue-500 bg-blue-500 bg-opacity-20 pointer-events-none"
           style={{
-            left: `${highlightRect.x}px`,
-            top: `${highlightRect.y}px`,
-            width: `${highlightRect.width}px`,
-            height: `${highlightRect.height}px`,
+            left: `${activeRect.x}px`,
+            top: `${activeRect.y}px`,
+            width: `${activeRect.width}px`,
+            height: `${activeRect.height}px`,
           }}
         />
       )}
