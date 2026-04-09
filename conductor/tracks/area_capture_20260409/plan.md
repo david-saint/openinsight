@@ -11,9 +11,9 @@ This phase implements the Keyboard Shortcut, Context Menu, and Popup UI trigger 
 - [x] Task: Add Popup UI Trigger [c0e6828]
     - [x] Write Tests: Ensure popup UI button triggers the area-capture by sending a message to the background or active tab content script.
     - [x] Implement: Add an `Area Capture` button to `src/popup/Popup.tsx`.
-- [~] Task: Implement Content Script Listener
-    - [ ] Write Tests: Verify the content script receives the activate-capture message and changes internal state.
-    - [ ] Implement: Listen for `ACTIVATE_CAPTURE` message in `src/content/content.ts`.
+- [x] Task: Implement Content Script Listener [4149ec0]
+    - [x] Write Tests: Verify the content script receives the activate-capture message and changes internal state.
+    - [x] Implement: Listen for `ACTIVATE_CAPTURE` message in `src/content/content.ts`.
 - [ ] Task: Conductor - User Manual Verification 'Setup Trigger Mechanisms' (Protocol in workflow.md)
 
 ## Phase 2: Selection Overlay UI
