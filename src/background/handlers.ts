@@ -9,7 +9,7 @@ import { ModelManager } from "../lib/model-manager.js";
 import { PromptManager } from "../lib/prompt-manager.js";
 
 /**
- * Initializes listeners for commands and context menus related to Area Capture.
+ * Initializes the keyboard shortcut listener related to Area Capture.
  */
 export function initializeCaptureListeners() {
   // Handle keyboard shortcuts
