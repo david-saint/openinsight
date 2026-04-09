@@ -186,9 +186,9 @@ export const ContentApp: React.FC = () => {
             
             // Position the popover near the capture region
             setTriggerPosition({
-               x: region.x + region.width / 2,
-               y: region.y + region.height + 20
-            });
+               left: region.x + region.width / 2 + window.scrollX,
+               top: region.y + region.height + 20 + window.scrollY
+            } as Position);
             setIsPopoverOpen(true);
           } catch (error) {
              console.error("Failed to capture image:", error);
