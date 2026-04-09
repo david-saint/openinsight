@@ -28,7 +28,7 @@ This phase implements the visual overlay for element selection and the freeform 
 - [x] Task: Implement Freeform Bounding Box [5cb11f1]
     - [x] Write Tests: Mock `mousedown`, `mousemove`, `mouseup` to draw and calculate the dimensions of the selected bounding box.
     - [x] Implement: Drag-and-draw selection box logic in `CaptureOverlay.tsx`.
-- [ ] Task: Conductor - User Manual Verification 'Selection Overlay UI' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Selection Overlay UI' (Protocol in workflow.md) [05df54b]
 
 ## Phase 3: Post-Capture Prompt and Display
 This phase handles the prompt input and passing the captured image + prompt to the OpenInsight analysis pop-up.
