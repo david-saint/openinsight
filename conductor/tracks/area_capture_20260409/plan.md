@@ -42,4 +42,4 @@ This phase handles the prompt input and passing the captured image + prompt to t
 - [x] Task: Integrate with Existing Analysis Workflow
     - [x] Write Tests: Verify the cropped image and user prompt are passed to the `AnalysisPopover` and `OpenRouter` API.
     - [x] Implement: Update `AnalysisPopover.tsx` and `openrouter-service.ts` to support image payload alongside the prompt.
-- [ ] Task: Conductor - User Manual Verification 'Post-Capture Prompt and Display' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Post-Capture Prompt and Display' (Protocol in workflow.md) [25eb750]
