@@ -30,7 +30,7 @@ This phase implements the visual overlay for element selection and the freeform 
     - [x] Implement: Drag-and-draw selection box logic in `CaptureOverlay.tsx`.
 - [x] Task: Conductor - User Manual Verification 'Selection Overlay UI' (Protocol in workflow.md) [05df54b]
 
-## Phase 3: Post-Capture Prompt and Display
+## Phase 3: Post-Capture Prompt and Display [checkpoint: 2590f9c]
 This phase handles the prompt input and passing the captured image + prompt to the OpenInsight analysis pop-up.
 
 - [x] Task: Implement Prompt Input Overlay
