@@ -7,11 +7,13 @@ import type { Position } from './positioning.js';
 import { getSettings, saveSettings, DEFAULT_SETTINGS, SETTINGS_KEY } from '../lib/settings.js';
 import type { Settings } from '../lib/settings.js';
 import { useTheme } from './hooks/useTheme.js';
+import { CaptureOverlay } from './components/CaptureOverlay.js';
 
 export const ContentApp: React.FC = () => {
   const [triggerPosition, setTriggerPosition] = useState<Position | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [isCaptureActive, setIsCaptureActive] = useState(false);
   const [selectionText, setSelectionText] = useState('');
   const [selectionContext, setSelectionContext] = useState<{ paragraph: string; pageTitle: string; pageDescription: string } | undefined>(undefined);
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
@@ -54,6 +56,17 @@ export const ContentApp: React.FC = () => {
       chrome.storage.onChanged.removeListener(handleStorageChange);
     };
   }, []); // Only run once on mount
+
+  useEffect(() => {
+    const handleCaptureActivated = () => {
+      setIsCaptureActive(true);
+    };
+
+    window.addEventListener('openinsight:capture-activated', handleCaptureActivated);
+    return () => {
+      window.removeEventListener('openinsight:capture-activated', handleCaptureActivated);
+    };
+  }, []);
 
   useEffect(() => {
     const onMouseUp = () => {
@@ -132,6 +145,16 @@ export const ContentApp: React.FC = () => {
 
   return (
     <div className={`openinsight-content-root ${isDark ? 'dark' : ''}`} data-accent={settings.accentColor}>
+      <CaptureOverlay 
+        isActive={isCaptureActive} 
+        onCancel={() => setIsCaptureActive(false)} 
+        onCapture={(region) => {
+          setIsCaptureActive(false);
+          // TODO: handle region capture later
+          console.log('Captured region:', region);
+        }} 
+      />
+
       {isVisible && triggerPosition && (
         <TriggerButton 
           position={triggerPosition} 

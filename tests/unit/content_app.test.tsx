@@ -358,4 +358,20 @@ describe('ContentApp Component', () => {
       expect(chromeMock.storage.onChanged.addListener).toHaveBeenCalled();
     });
   });
+
+  it('activates CaptureOverlay when openinsight:capture-activated is dispatched', async () => {
+    const { getByTestId, queryByTestId } = render(<ContentApp />);
+    
+    // Initially, the overlay is not active, so it renders null (no testid)
+    expect(queryByTestId('capture-overlay')).toBeNull();
+
+    act(() => {
+      window.dispatchEvent(new Event('openinsight:capture-activated'));
+    });
+
+    // The overlay should now be active
+    await waitFor(() => {
+      expect(getByTestId('capture-overlay')).toBeInTheDocument();
+    });
+  });
 });

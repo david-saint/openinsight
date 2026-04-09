@@ -19,9 +19,9 @@ This phase implements the Keyboard Shortcut, Context Menu, and Popup UI trigger 
 ## Phase 2: Selection Overlay UI
 This phase implements the visual overlay for element selection and the freeform bounding box, triggered by Phase 1.
 
-- [ ] Task: Implement Overlay Component Structure
-    - [ ] Write Tests: Render a full-screen overlay component over the DOM when capture state is active.
-    - [ ] Implement: Create a new React component `CaptureOverlay.tsx` injected via `src/content/mount.ts`.
+- [x] Task: Implement Overlay Component Structure
+    - [x] Write Tests: Render a full-screen overlay component over the DOM when capture state is active.
+    - [x] Implement: Create a new React component `CaptureOverlay.tsx` injected via `src/content/mount.ts`.
 - [ ] Task: Implement Element Selection (Hover & Click)
     - [ ] Write Tests: Mock `mousemove` and `click` on elements (like `<img>`, `<svg>`), ensuring a highlight box is rendered correctly.
     - [ ] Implement: DOM traversal and measurement to highlight target visual elements in `CaptureOverlay.tsx`.
