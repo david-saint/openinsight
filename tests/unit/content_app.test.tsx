@@ -2,7 +2,7 @@
  * @vitest-environment happy-dom
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, waitFor, act } from '@testing-library/react';
+import { render, waitFor, act, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import React from 'react';
 import { ContentApp } from '../../src/content/ContentApp';
@@ -373,5 +373,44 @@ describe('ContentApp Component', () => {
     await waitFor(() => {
       expect(getByTestId('capture-overlay')).toBeInTheDocument();
     });
+  });
+
+  it('shows CapturePromptInput after a region is captured', async () => {
+    // Provide a mocked getBoundingClientRect for DOM elements so elementFromPoint mock works cleanly
+    Element.prototype.getBoundingClientRect = vi.fn(() => ({
+      width: 100, height: 100, top: 50, left: 50, bottom: 150, right: 150, x: 50, y: 50, toJSON: () => {}
+    }));
+    document.elementsFromPoint = vi.fn(() => [document.body]);
+
+    const { getByTestId, queryByTestId } = render(<ContentApp />);
+    
+    act(() => {
+      document.dispatchEvent(new Event('openinsight:capture-activated'));
+    });
+
+    // Overlay is active
+    await waitFor(() => {
+      expect(getByTestId('capture-overlay')).toBeInTheDocument();
+    });
+
+    // Simulate capturing a region (drag on overlay)
+    const overlay = getByTestId('capture-overlay');
+    act(() => {
+      fireEvent.mouseDown(overlay, { clientX: 100, clientY: 100 });
+    });
+    act(() => {
+      fireEvent.mouseMove(overlay, { clientX: 200, clientY: 200 });
+    });
+    act(() => {
+      fireEvent.mouseUp(overlay, { clientX: 200, clientY: 200 });
+    });
+
+    // The prompt input should now be active
+    await waitFor(() => {
+      expect(getByTestId('capture-prompt-container')).toBeInTheDocument();
+    });
+    
+    // Overlay should be gone
+    expect(queryByTestId('capture-overlay')).toBeNull();
   });
 });

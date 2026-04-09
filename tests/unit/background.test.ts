@@ -44,7 +44,7 @@ describe('Background Script', () => {
     // Need to wait for the async handler inside the listener
     await new Promise(resolve => setTimeout(resolve, 0));
     
-    expect(handlers.handleExplain).toHaveBeenCalledWith('test', undefined);
+    expect(handlers.handleExplain).toHaveBeenCalledWith('test', undefined, undefined);
     expect(sendResponse).toHaveBeenCalledWith({
       success: true,
       result: 'explanation result',

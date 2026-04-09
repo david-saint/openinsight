@@ -28,16 +28,16 @@ describe("CaptureOverlay Component", () => {
       toJSON: () => {},
     }));
 
-    document.elementFromPoint = vi.fn((x, y) => {
+    document.elementsFromPoint = vi.fn((x, y) => {
       // Very basic mock just for our test targets
       if (x === 60 && y === 60) {
         // Return img or svg if they exist
         const img = document.querySelector("img");
-        if (img) return img;
+        if (img) return [img];
         const svg = document.querySelector("svg");
-        if (svg) return svg;
+        if (svg) return [svg];
       }
-      return document.body;
+      return [document.body];
     });
   });
 

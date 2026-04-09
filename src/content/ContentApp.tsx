@@ -2,18 +2,23 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { TriggerButton } from './components/TriggerButton.js';
 import { AnalysisPopover } from './components/AnalysisPopover.js';
 import { handleSelection } from './selection.js';
+import { sendMessage } from '../lib/messaging.js';
 import { calculateTriggerPosition } from './positioning.js';
 import type { Position } from './positioning.js';
 import { getSettings, saveSettings, DEFAULT_SETTINGS, SETTINGS_KEY } from '../lib/settings.js';
 import type { Settings } from '../lib/settings.js';
 import { useTheme } from './hooks/useTheme.js';
 import { CaptureOverlay } from './components/CaptureOverlay.js';
+import { CapturePromptInput } from './components/CapturePromptInput.js';
 
 export const ContentApp: React.FC = () => {
   const [triggerPosition, setTriggerPosition] = useState<Position | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [isCaptureActive, setIsCaptureActive] = useState(false);
+  const [capturedRegion, setCapturedRegion] = useState<{ x: number, y: number, width: number, height: number } | null>(null);
+  const [capturedImageUrl, setCapturedImageUrl] = useState<string | undefined>(undefined);
+  const [capturedImagePrompt, setCapturedImagePrompt] = useState<string | undefined>(undefined);
   const [selectionText, setSelectionText] = useState('');
   const [selectionContext, setSelectionContext] = useState<{ paragraph: string; pageTitle: string; pageDescription: string } | undefined>(undefined);
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
@@ -150,9 +155,46 @@ export const ContentApp: React.FC = () => {
         onCancel={() => setIsCaptureActive(false)} 
         onCapture={(region) => {
           setIsCaptureActive(false);
-          // TODO: handle region capture later
-          console.log('Captured region:', region);
+          setCapturedRegion(region);
         }} 
+      />
+
+      <CapturePromptInput
+        isActive={!!capturedRegion}
+        position={capturedRegion || { x: 0, y: 0, width: 0, height: 0 }}
+        onSubmit={async (prompt) => {
+          if (!capturedRegion) return;
+          
+          // Clear region to hide prompt input immediately
+          const region = { ...capturedRegion };
+          setCapturedRegion(null);
+          
+          try {
+            // Get device pixel ratio scaled rect since captureVisibleTab gives physical pixels
+            const dpr = window.devicePixelRatio || 1;
+            const physicalRect = {
+              x: region.x * dpr,
+              y: region.y * dpr,
+              width: region.width * dpr,
+              height: region.height * dpr
+            };
+
+            const dataUrl = await sendMessage('BACKEND_CAPTURE_VISIBLE_TAB', { rect: physicalRect });
+            setCapturedImageUrl(dataUrl);
+            setCapturedImagePrompt(prompt);
+            setSelectionText(undefined);
+            
+            // Position the popover near the capture region
+            setTriggerPosition({
+               x: region.x + region.width / 2,
+               y: region.y + region.height + 20
+            });
+            setIsPopoverOpen(true);
+          } catch (error) {
+             console.error("Failed to capture image:", error);
+          }
+        }}
+        onCancel={() => setCapturedRegion(null)}
       />
 
       {isVisible && triggerPosition && (
@@ -168,6 +210,8 @@ export const ContentApp: React.FC = () => {
           onClose={handleClosePopover}
           selectionText={selectionText}
           selectionContext={selectionContext}
+          imageUrl={capturedImageUrl}
+          imagePrompt={capturedImagePrompt}
           accentColor={settings.accentColor}
           onAccentChange={handleAccentChange}
           {...(triggerPosition ? { position: triggerPosition } : {})}

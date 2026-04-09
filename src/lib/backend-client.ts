@@ -22,6 +22,21 @@ export class BackendClient {
   }
 
   /**
+   * Requests an explanation for the provided image.
+   * Returns a structured ExplainResponse object.
+   */
+  static async explainImage(
+    imageUrl: string,
+    imagePrompt?: string
+  ): Promise<ExplainResponse> {
+    return sendMessage("BACKEND_EXPLAIN", { 
+      text: imagePrompt || "Please analyze this image.", 
+      imageUrl, 
+      imagePrompt 
+    });
+  }
+
+  /**
    * Requests a fact-check for the provided text with context.
    * Returns a structured FactCheckResponse object.
    */

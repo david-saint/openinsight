@@ -11,12 +11,14 @@ import { KeywordSelection } from './analysis-popover/KeywordSelection.js';
 interface AnalysisPopoverProps {
   isOpen: boolean;
   onClose: () => void;
-  selectionText: string;
+  selectionText?: string;
   selectionContext?: {
     paragraph: string;
     pageTitle: string;
     pageDescription: string;
   } | undefined;
+  imageUrl?: string;
+  imagePrompt?: string;
   accentColor?: string;
   onAccentChange?: (color: string) => void;
   position?: { top: number; left: number };
@@ -36,6 +38,8 @@ export const AnalysisPopover = React.memo(({
   onClose, 
   selectionText,
   selectionContext,
+  imageUrl,
+  imagePrompt,
   accentColor = 'teal',
   onAccentChange,
   position,
@@ -56,7 +60,7 @@ export const AnalysisPopover = React.memo(({
   const finalPosition = usePopoverPosition(isOpen, position);
 
   useEffect(() => {
-    if (isOpen && selectionText) {
+    if (isOpen && (selectionText || imageUrl)) {
       setData({
         explain: { content: null, loading: false, error: null },
         'fact-check': { content: null, loading: false, error: null },
@@ -64,7 +68,7 @@ export const AnalysisPopover = React.memo(({
       
       // Determine default active tab based on enabledTabs and visibility
       let defaultTab = enabledTabs[0] as TabId;
-      if (defaultTab === 'fact-check' && selectionText.length <= 50) {
+      if (defaultTab === 'fact-check' && selectionText && selectionText.length <= 50) {
         // If first tab is fact-check but not visible, try second tab if it exists
         if (enabledTabs.length > 1) {
           defaultTab = enabledTabs[1] as TabId;
@@ -77,17 +81,21 @@ export const AnalysisPopover = React.memo(({
       setEmphasizedWords([]);
       
       // Trigger initial fetch immediately
-      fetchData(defaultTab, selectionText);
+      fetchData(defaultTab, selectionText || '', [], imageUrl, imagePrompt);
     }
-  }, [isOpen, selectionText, enabledTabs]);
+  }, [isOpen, selectionText, imageUrl, imagePrompt, enabledTabs]);
 
-  const fetchData = async (tab: TabId, text: string, keywords: string[] = []) => {
+  const fetchData = async (tab: TabId, text: string, keywords: string[] = [], img?: string, prompt?: string) => {
     setData(prev => ({ ...prev, [tab]: { ...prev[tab], loading: true, error: null } }));
     
     try {
       let result;
       if (tab === 'explain') {
-        result = await BackendClient.explainText(text, keywords);
+        if (img) {
+          result = await BackendClient.explainImage(img, prompt || text);
+        } else {
+          result = await BackendClient.explainText(text, keywords);
+        }
       } else {
         result = await BackendClient.factCheckText(
           text, 
@@ -149,7 +157,7 @@ export const AnalysisPopover = React.memo(({
   if (!isOpen) return null;
 
   // Fact check tab visibility logic
-  const isFactCheckVisible = selectionText.length > 50;
+  const isFactCheckVisible = selectionText ? selectionText.length > 50 : false;
 
   return (
     <>

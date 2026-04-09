@@ -60,7 +60,8 @@ export function initializeCaptureListeners() {
  */
 export async function handleExplain(
   text: string,
-  emphasizedWords: string[] = []
+  emphasizedWords: string[] = [],
+  imageUrl?: string
 ): Promise<any> {
   const settings = await getSettings();
   const { explainModel, explainSettings, stylePreference } = settings;
@@ -75,6 +76,13 @@ export async function handleExplain(
     emphasizedWords
   );
 
+  const userContent: any = imageUrl
+    ? [
+        { type: "text", text },
+        { type: "image_url", image_url: { url: imageUrl } },
+      ]
+    : text;
+
   try {
     return await OpenRouterService.chatCompletion({
       model: explainModel,
@@ -83,7 +91,7 @@ export async function handleExplain(
           role: "system",
           content: systemPrompt,
         },
-        { role: "user", content: text },
+        { role: "user", content: userContent },
       ],
       temperature: explainSettings.temperature,
       max_tokens: explainSettings.max_tokens,
@@ -102,7 +110,10 @@ export async function handleExplain(
       model: explainModel,
       messages: [
         // Merge system prompt into user message for maximum compatibility
-        { role: "user", content: `${systemPrompt}\n\n${text}` },
+        { role: "user", content: imageUrl ? [
+          { type: "text", text: `${systemPrompt}\n\n${text}` },
+          { type: "image_url", image_url: { url: imageUrl } },
+        ] : `${systemPrompt}\n\n${text}` },
       ],
       temperature: explainSettings.temperature,
       max_tokens: explainSettings.max_tokens,
@@ -224,3 +235,86 @@ export async function handleFetchModels(): Promise<OpenRouterModel[]> {
     } as AppError;
   }
 }
+
+/**
+ * Captures the currently visible tab and crops it to the specified rectangle using OffscreenCanvas.
+ * Returns the cropped image as a base64 encoded string.
+ */
+export async function handleCaptureVisibleTab(rect: { x: number; y: number; width: number; height: number }): Promise<string> {
+  return new Promise((resolve, reject) => {
+    chrome.tabs.captureVisibleTab(
+      { format: "png", quality: 100 },
+      async (dataUrl) => {
+        if (chrome.runtime.lastError) {
+          return reject({
+            type: "unknown",
+            message: chrome.runtime.lastError.message || "Failed to capture tab",
+          });
+        }
+        
+        if (!dataUrl) {
+          return reject({
+            type: "unknown",
+            message: "Failed to capture tab, no data returned",
+          });
+        }
+
+        try {
+          // Fetch the data URL to get a Blob
+          const res = await fetch(dataUrl);
+          const blob = await res.blob();
+          
+          // Use ImageBitmap for processing
+          const imageBitmap = await createImageBitmap(blob);
+          
+          // Device pixel ratio must be handled here or by the caller.
+          // Since captureVisibleTab captures the actual pixels, and the rect is in logical CSS pixels,
+          // we need to scale the rect if the screen is high DPI.
+          // We can estimate the scale factor by comparing image width to window width, 
+          // or rely on the content script to pass the correct physical pixel rect.
+          // Let's assume the content script passes the logical CSS rect, and we'll just use it directly,
+          // OR we can do the cropping in the content script.
+          // Wait, doing the cropping in the background script requires knowing devicePixelRatio.
+          // It's safer to just do the simple crop here assuming the coordinates are physical, 
+          // but if they are logical, they won't match the image size.
+          // Let's rely on the content script to pass physical pixels by multiplying with window.devicePixelRatio.
+          
+          const canvas = new OffscreenCanvas(rect.width, rect.height);
+          const ctx = canvas.getContext("2d");
+          if (!ctx) {
+             throw new Error("Failed to get 2D context");
+          }
+
+          // Draw the cropped portion
+          ctx.drawImage(
+            imageBitmap,
+            rect.x,
+            rect.y,
+            rect.width,
+            rect.height,
+            0,
+            0,
+            rect.width,
+            rect.height
+          );
+
+          const croppedBlob = await canvas.convertToBlob({ type: "image/png" });
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            resolve(reader.result as string);
+          };
+          reader.onerror = () => {
+            reject({ type: "unknown", message: "Failed to read cropped blob" });
+          };
+          reader.readAsDataURL(croppedBlob);
+        } catch (error) {
+          reject({
+            type: "unknown",
+            message: `Failed to crop image: ${(error as any)?.message || "Unexpected error"}`,
+          });
+        }
+      }
+    );
+  });
+}
+

@@ -33,13 +33,13 @@ This phase implements the visual overlay for element selection and the freeform 
 ## Phase 3: Post-Capture Prompt and Display
 This phase handles the prompt input and passing the captured image + prompt to the OpenInsight analysis pop-up.
 
-- [ ] Task: Implement Prompt Input Overlay
-    - [ ] Write Tests: Render a prompt input box when a region is selected.
-    - [ ] Implement: Create `CapturePromptInput.tsx` that appears near the bounding box after a selection is completed.
-- [ ] Task: Capture Visible Tab and Crop Image
-    - [ ] Write Tests: Verify the background script calls `chrome.tabs.captureVisibleTab` and crops it to the selected dimensions.
-    - [ ] Implement: Capture logic in background script and coordinate with `CaptureOverlay.tsx`.
-- [ ] Task: Integrate with Existing Analysis Workflow
-    - [ ] Write Tests: Verify the cropped image and user prompt are passed to the `AnalysisPopover` and `OpenRouter` API.
-    - [ ] Implement: Update `AnalysisPopover.tsx` and `openrouter-service.ts` to support image payload alongside the prompt.
+- [x] Task: Implement Prompt Input Overlay
+    - [x] Write Tests: Render a prompt input box when a region is selected.
+    - [x] Implement: Create `CapturePromptInput.tsx` that appears near the bounding box after a selection is completed.
+- [x] Task: Capture Visible Tab and Crop Image
+    - [x] Write Tests: Verify the background script calls `chrome.tabs.captureVisibleTab` and crops it to the selected dimensions.
+    - [x] Implement: Capture logic in background script and coordinate with `CaptureOverlay.tsx`.
+- [x] Task: Integrate with Existing Analysis Workflow
+    - [x] Write Tests: Verify the cropped image and user prompt are passed to the `AnalysisPopover` and `OpenRouter` API.
+    - [x] Implement: Update `AnalysisPopover.tsx` and `openrouter-service.ts` to support image payload alongside the prompt.
 - [ ] Task: Conductor - User Manual Verification 'Post-Capture Prompt and Display' (Protocol in workflow.md)
