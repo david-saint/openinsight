@@ -25,7 +25,7 @@ This phase implements the visual overlay for element selection and the freeform 
 - [x] Task: Implement Element Selection (Hover & Click) [3c90a17]
     - [x] Write Tests: Mock `mousemove` and `click` on elements (like `<img>`, `<svg>`), ensuring a highlight box is rendered correctly.
     - [x] Implement: DOM traversal and measurement to highlight target visual elements in `CaptureOverlay.tsx`.
-- [x] Task: Implement Freeform Bounding Box
+- [x] Task: Implement Freeform Bounding Box [5cb11f1]
     - [x] Write Tests: Mock `mousedown`, `mousemove`, `mouseup` to draw and calculate the dimensions of the selected bounding box.
     - [x] Implement: Drag-and-draw selection box logic in `CaptureOverlay.tsx`.
 - [ ] Task: Conductor - User Manual Verification 'Selection Overlay UI' (Protocol in workflow.md)
