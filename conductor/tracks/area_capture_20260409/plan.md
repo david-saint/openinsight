@@ -14,7 +14,7 @@ This phase implements the Keyboard Shortcut, Context Menu, and Popup UI trigger 
 - [x] Task: Implement Content Script Listener [4149ec0]
     - [x] Write Tests: Verify the content script receives the activate-capture message and changes internal state.
     - [x] Implement: Listen for `ACTIVATE_CAPTURE` message in `src/content/content.ts`.
-- [ ] Task: Conductor - User Manual Verification 'Setup Trigger Mechanisms' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Setup Trigger Mechanisms' (Protocol in workflow.md) [e917327]
 
 ## Phase 2: Selection Overlay UI
 This phase implements the visual overlay for element selection and the freeform bounding box, triggered by Phase 1.
