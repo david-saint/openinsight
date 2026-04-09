@@ -36,6 +36,8 @@ describe("CaptureOverlay Component", () => {
         if (img) return [img];
         const svg = document.querySelector("svg");
         if (svg) return [svg];
+        const canvas = document.querySelector("canvas");
+        if (canvas) return [canvas];
       }
       return [document.body];
     });
@@ -102,6 +104,33 @@ describe("CaptureOverlay Component", () => {
       expect(highlight.style.height).toBe("100px");
 
       document.body.removeChild(img);
+    });
+
+    it("should highlight target elements (canvas) on hover", () => {
+      // Create a target canvas in the DOM
+      const canvas = document.createElement("canvas");
+      document.body.appendChild(canvas);
+
+      render(
+        <CaptureOverlay
+          isActive={true}
+          onCancel={vi.fn()}
+          onCapture={vi.fn()}
+        />,
+      );
+
+      const overlay = screen.getByTestId("capture-overlay");
+
+      act(() => {
+        // Dispatch mousemove on the overlay
+        fireEvent.mouseMove(overlay, { clientX: 60, clientY: 60 });
+      });
+
+      // The highlight box should be rendered
+      const highlight = screen.getByTestId("capture-highlight");
+      expect(highlight).toBeDefined();
+
+      document.body.removeChild(canvas);
     });
 
     it("should trigger onCapture with element dimensions when a highlighted element is clicked", () => {

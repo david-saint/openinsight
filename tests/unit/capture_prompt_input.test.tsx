@@ -55,6 +55,59 @@ describe("CapturePromptInput Component", () => {
     expect(container.style.left).toBe("100px");
   });
 
+  it("should position the prompt correctly with scroll offsets", () => {
+    // Mock scroll offset
+    window.scrollY = 500;
+    window.scrollX = 200;
+
+    const { getByTestId } = render(
+      <CapturePromptInput
+        isActive={true}
+        position={{ x: 100, y: 200, width: 300, height: 100 }}
+        onSubmit={vi.fn()}
+        onCancel={vi.fn()}
+      />
+    );
+
+    const container = getByTestId("capture-prompt-container");
+    // topRel = 200 + 100 + 12 = 312. top = 312 + 500 = 812.
+    // leftRel = 100. left = 100 + 200 = 300.
+    expect(container.style.top).toBe("812px");
+    expect(container.style.left).toBe("300px");
+
+    // Restore scroll offset
+    window.scrollY = 0;
+    window.scrollX = 0;
+  });
+
+  it("should clamp prompt position to viewport edges", () => {
+    // Mock window inner width and height to force clamping
+    Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 500 });
+    Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: 300 });
+
+    const { getByTestId } = render(
+      <CapturePromptInput
+        isActive={true}
+        position={{ x: 400, y: 200, width: 100, height: 50 }}
+        onSubmit={vi.fn()}
+        onCancel={vi.fn()}
+      />
+    );
+
+    const container = getByTestId("capture-prompt-container");
+    
+    // leftRel = 400. 400 + 320 (INPUT_WIDTH) = 720 > 500. Clamped to 500 - 320 - 8 = 172.
+    expect(container.style.left).toBe("172px");
+    
+    // topRel = 200 + 50 + 12 = 262. 262 + 130 (ESTIMATED_HEIGHT) = 392 > 300.
+    // Try top instead: 200 - 130 - 12 = 58.
+    expect(container.style.top).toBe("58px");
+
+    // Restore window dimensions
+    Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 1024 });
+    Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: 768 });
+  });
+
   it("should call onSubmit with the typed prompt when Enter is pressed", () => {
     const handleSubmit = vi.fn();
     render(

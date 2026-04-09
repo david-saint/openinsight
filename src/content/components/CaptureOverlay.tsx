@@ -65,7 +65,13 @@ export const CaptureOverlay: React.FC<CaptureOverlayProps> = ({
       el.getAttribute('data-testid') !== 'capture-highlight'
     );
 
-    if (target && target.tagName && (target.tagName.toLowerCase() === 'img' || target.tagName.toLowerCase() === 'svg')) {
+    const isTargetElement = target && target.tagName && (
+      ['img', 'svg', 'canvas', 'video'].includes(target.tagName.toLowerCase()) || 
+      target.getAttribute('role') === 'img' || 
+      target.getAttribute('role') === 'graphics-document'
+    );
+
+    if (isTargetElement) {
       const rect = target.getBoundingClientRect();
       setHighlightRect({
         x: rect.left,

@@ -8,6 +8,7 @@ import React from 'react';
 import { ContentApp } from '../../src/content/ContentApp';
 import * as settingsModule from '../../src/lib/settings';
 import * as selectionModule from '../../src/content/selection.js';
+import * as messagingModule from '../../src/lib/messaging.js';
 
 // Mock chrome
 const chromeMock = {
@@ -61,6 +62,11 @@ Object.defineProperty(window, 'matchMedia', {
     dispatchEvent: vi.fn(),
   })),
 });
+
+// Mock messaging
+vi.mock('../../src/lib/messaging.js', () => ({
+  sendMessage: vi.fn(),
+}));
 
 describe('ContentApp Component', () => {
   beforeEach(() => {
@@ -375,14 +381,17 @@ describe('ContentApp Component', () => {
     });
   });
 
-  it('shows CapturePromptInput after a region is captured', async () => {
+  it('shows CapturePromptInput after a region is captured and handles submission end-to-end', async () => {
     // Provide a mocked getBoundingClientRect for DOM elements so elementFromPoint mock works cleanly
     Element.prototype.getBoundingClientRect = vi.fn(() => ({
       width: 100, height: 100, top: 50, left: 50, bottom: 150, right: 150, x: 50, y: 50, toJSON: () => {}
     }));
     document.elementsFromPoint = vi.fn(() => [document.body]);
 
-    const { getByTestId, queryByTestId } = render(<ContentApp />);
+    const mockSendMessage = vi.fn().mockResolvedValue('data:image/png;base64,mockcroppedbase64');
+    vi.mocked(messagingModule.sendMessage).mockImplementation(mockSendMessage);
+
+    const { getByTestId, queryByTestId, getByPlaceholderText, getByRole } = render(<ContentApp />);
     
     act(() => {
       document.dispatchEvent(new Event('openinsight:capture-activated'));
@@ -412,5 +421,31 @@ describe('ContentApp Component', () => {
     
     // Overlay should be gone
     expect(queryByTestId('capture-overlay')).toBeNull();
+
+    // Type a prompt and submit
+    const input = getByPlaceholderText('Ask about this image...');
+    act(() => {
+      fireEvent.change(input, { target: { value: 'Explain this chart' } });
+      fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+    });
+
+    // Verify sendMessage was called
+    await waitFor(() => {
+      expect(mockSendMessage).toHaveBeenCalledWith('BACKEND_CAPTURE_VISIBLE_TAB', {
+        rect: {
+          x: 100,
+          y: 100,
+          width: 100,
+          height: 100
+        }
+      });
+    });
+
+    // Verify popover opens with Explain tab
+    await waitFor(() => {
+      expect(getByRole('presentation')).toBeInTheDocument();
+    });
+    
+    expect(getByRole('tab', { name: /explain/i })).toHaveAttribute('aria-selected', 'true');
   });
 });

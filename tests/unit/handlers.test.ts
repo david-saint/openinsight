@@ -304,4 +304,68 @@ describe("Background Handlers", () => {
       expect(result).toEqual(mockModels);
     });
   });
+
+  describe("handleCaptureVisibleTab", () => {
+    it("should reject if captureVisibleTab fails", async () => {
+      const { handleCaptureVisibleTab } = await import("../../src/background/handlers");
+      chromeMock.tabs.captureVisibleTab = vi.fn((options, callback) => {
+        chromeMock.runtime.lastError = { message: "Capture failed" };
+        callback(null);
+        chromeMock.runtime.lastError = undefined; // cleanup
+      });
+
+      await expect(handleCaptureVisibleTab({ x: 0, y: 0, width: 100, height: 100 })).rejects.toEqual({
+        type: "unknown",
+        message: "Capture failed",
+      });
+    });
+
+    it("should resolve with cropped data URL", async () => {
+      const { handleCaptureVisibleTab } = await import("../../src/background/handlers");
+      
+      const mockDataUrl = "data:image/png;base64,mockbase64";
+      chromeMock.tabs.captureVisibleTab = vi.fn((options, callback) => {
+        callback(mockDataUrl);
+      });
+
+      // Mock fetch
+      global.fetch = vi.fn().mockResolvedValue({
+        blob: () => Promise.resolve(new Blob(["mock"], { type: "image/png" }))
+      });
+
+      // Mock createImageBitmap
+      global.createImageBitmap = vi.fn().mockResolvedValue({});
+
+      // Mock OffscreenCanvas
+      const mockContext = {
+        drawImage: vi.fn(),
+      };
+      const mockCanvas = {
+        getContext: vi.fn().mockReturnValue(mockContext),
+        convertToBlob: vi.fn().mockResolvedValue(new Blob(["mock-cropped"], { type: "image/png" })),
+      };
+      global.OffscreenCanvas = vi.fn().mockImplementation(function() {
+        return mockCanvas;
+      }) as any;
+
+      // Mock FileReader
+      const mockFileReader = {
+        readAsDataURL: vi.fn(function(this: any) {
+          this.result = "data:image/png;base64,mockcroppedbase64";
+          this.onloadend();
+        }),
+      };
+      global.FileReader = vi.fn().mockImplementation(function() {
+        return mockFileReader;
+      }) as any;
+
+      const result = await handleCaptureVisibleTab({ x: 10, y: 20, width: 100, height: 200 });
+
+      expect(result).toBe("data:image/png;base64,mockcroppedbase64");
+      expect(mockContext.drawImage).toHaveBeenCalledWith(
+        expect.anything(),
+        10, 20, 100, 200, 0, 0, 100, 200
+      );
+    });
+  });
 });

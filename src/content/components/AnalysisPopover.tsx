@@ -79,7 +79,8 @@ export const AnalysisPopover = React.memo(({
       
       // Determine default active tab based on enabledTabs and visibility
       let defaultTab = enabledTabs[0] as TabId;
-      if (defaultTab === 'fact-check' && selectionText && selectionText.length <= 50) {
+      const isFactCheckVisible = selectionText ? selectionText.length > 50 : false;
+      if (defaultTab === 'fact-check' && !isFactCheckVisible) {
         // If first tab is fact-check but not visible, try second tab if it exists
         if (enabledTabs.length > 1) {
           defaultTab = enabledTabs[1] as TabId;

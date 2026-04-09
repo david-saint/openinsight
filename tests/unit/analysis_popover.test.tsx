@@ -307,5 +307,23 @@ describe('Analysis Popover Component', () => {
       expect(screen.queryByRole('tab', { name: /fact check/i })).not.toBeInTheDocument();
       expect(screen.getByRole('tab', { name: /explain/i })).toHaveAttribute('aria-selected', 'true');
     });
+
+    it('should fallback to second tab if first is fact-check but it is an image capture (no selection text)', async () => {
+      await act(async () => {
+        render(
+          <AnalysisPopover 
+            isOpen={true} 
+            onClose={() => {}} 
+            selectionText={undefined}
+            imageUrl="data:image/png;base64,mock"
+            enabledTabs={['fact-check', 'explain']}
+          />
+        );
+      });
+
+      // Fact check should be hidden, and explain should be active
+      expect(screen.queryByRole('tab', { name: /fact check/i })).not.toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /explain/i })).toHaveAttribute('aria-selected', 'true');
+    });
   });
 });
