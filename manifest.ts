@@ -3,7 +3,7 @@ import { defineManifest } from "@crxjs/vite-plugin";
 export default defineManifest({
   manifest_version: 3,
   name: "OpenInsight",
-  version: "1.0.5",
+  version: "1.1.0",
   description: "AI-powered text explanation and fact-checking.",
   icons: {
     16: "logos/icons/icon-16.png",
@@ -14,13 +14,12 @@ export default defineManifest({
   /**
    * Permissions:
    * - storage: Required for chrome.storage.local (settings, encrypted API keys)
-   * - contextMenus: Required for right-click area capture trigger
-   * - activeTab: Required for capturing the visible tab
+   * - activeTab: Required for capturing the visible tab (screenshot) via background script
    *
    * Note: host_permissions are not needed as content_scripts.matches covers injection.
    * The content script CSS is injected programmatically via Shadow DOM to ensure isolation.
    */
-  permissions: ["storage", "contextMenus", "activeTab"],
+  permissions: ["storage", "activeTab"],
   commands: {
     "activate-area-capture": {
       suggested_key: {
