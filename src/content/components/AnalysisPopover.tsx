@@ -163,15 +163,15 @@ export const AnalysisPopover = React.memo(({
     <>
       {/* Transparent backdrop for click-outside closing */}
       <div 
-        className="fixed inset-0 z-[9998] bg-[transparent]"
+        className="fixed inset-0 z-[9998] bg-[transparent] pointer-events-auto"
         onClick={onClose}
       />
       
       <div 
         ref={popoverRef}
-        role="dialog"
-        aria-modal="true"
-        className="absolute z-[9999] w-[330px] bg-[#ffffff] dark:bg-[#1e293b] rounded-xl shadow-2xl border border-[#f1f5f9] dark:border-[#334155] overflow-hidden flex flex-col animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-300 font-sans"
+        role="presentation"
+        aria-modal="false"
+        className="absolute z-[9999] w-[330px] bg-[#ffffff] dark:bg-[#1e293b] rounded-xl shadow-2xl border border-[#f1f5f9] dark:border-[#334155] overflow-hidden flex flex-col animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-300 font-sans pointer-events-auto"
         style={{
           top: finalPosition ? finalPosition.top : '50%',
           left: finalPosition ? finalPosition.left : '50%',
@@ -191,6 +191,7 @@ export const AnalysisPopover = React.memo(({
           enabledTabs={enabledTabs}
           isSelectingKeywords={isSelectingKeywords}
           onToggleKeywords={handleToggleKeywords}
+          showKeywordsTool={!imageUrl && !!selectionText}
         />
 
         {showSettings ? (

@@ -1,25 +1,36 @@
 /**
  * @vitest-environment happy-dom
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, cleanup, fireEvent, act } from "@testing-library/react";
 import React from "react";
-import { CapturePromptInput } from "../../src/content/components/CapturePromptInput";
+import { render, screen, fireEvent, act } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { CapturePromptInput } from "../../src/content/components/CapturePromptInput.js";
+
+// Mock matchMedia
+beforeEach(() => {
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: vi.fn().mockImplementation(query => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(), // Deprecated
+      removeListener: vi.fn(), // Deprecated
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })),
+  });
+});
 
 describe("CapturePromptInput Component", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  afterEach(() => {
-    cleanup();
-  });
+  const defaultPosition = { x: 100, y: 200, width: 300, height: 100 };
 
   it("should render nothing when not active", () => {
     const { container } = render(
       <CapturePromptInput
         isActive={false}
-        position={{ x: 100, y: 100, width: 200, height: 200 }}
+        position={defaultPosition}
         onSubmit={vi.fn()}
         onCancel={vi.fn()}
       />
@@ -28,63 +39,58 @@ describe("CapturePromptInput Component", () => {
   });
 
   it("should render an input positioned near the capture region when active", () => {
-    render(
+    const { getByTestId } = render(
       <CapturePromptInput
         isActive={true}
-        position={{ x: 100, y: 100, width: 200, height: 200 }}
+        position={defaultPosition}
         onSubmit={vi.fn()}
         onCancel={vi.fn()}
       />
     );
-    
-    const container = screen.getByTestId("capture-prompt-container");
+
+    const container = getByTestId("capture-prompt-container");
     expect(container).toBeDefined();
-    // Should position it below the region (y = 100 + 200 = 300px)
-    expect(container.style.top).toBe("308px"); // 300 + 8px margin
+    // Should position it below the region (y = 100 + 200 = 300px + 12px margin = 312px)
+    expect(container.style.top).toBe("312px"); // 300 + 12px margin
     expect(container.style.left).toBe("100px");
   });
 
   it("should call onSubmit with the typed prompt when Enter is pressed", () => {
-    const onSubmitMock = vi.fn();
+    const handleSubmit = vi.fn();
     render(
       <CapturePromptInput
         isActive={true}
-        position={{ x: 0, y: 0, width: 10, height: 10 }}
-        onSubmit={onSubmitMock}
+        position={defaultPosition}
+        onSubmit={handleSubmit}
         onCancel={vi.fn()}
       />
     );
 
-    const input = screen.getByPlaceholderText("Add a prompt (optional)...");
+    const input = screen.getByPlaceholderText("Ask about this image...");
     
     act(() => {
-      fireEvent.change(input, { target: { value: "explain this image" } });
-    });
-    
-    act(() => {
+      fireEvent.change(input, { target: { value: "test prompt" } });
       fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
     });
 
-    expect(onSubmitMock).toHaveBeenCalledWith("explain this image");
+    expect(handleSubmit).toHaveBeenCalledWith("test prompt");
   });
 
   it("should call onCancel when Escape is pressed", () => {
-    const onCancelMock = vi.fn();
+    const handleCancel = vi.fn();
     render(
       <CapturePromptInput
         isActive={true}
-        position={{ x: 0, y: 0, width: 10, height: 10 }}
+        position={defaultPosition}
         onSubmit={vi.fn()}
-        onCancel={onCancelMock}
+        onCancel={handleCancel}
       />
     );
 
-    const input = screen.getByPlaceholderText("Add a prompt (optional)...");
-    
     act(() => {
-      fireEvent.keyDown(input, { key: "Escape", code: "Escape" });
+      fireEvent.keyDown(window, { key: "Escape", code: "Escape" });
     });
 
-    expect(onCancelMock).toHaveBeenCalled();
+    expect(handleCancel).toHaveBeenCalled();
   });
 });

@@ -124,7 +124,7 @@ export const CaptureOverlay: React.FC<CaptureOverlayProps> = ({
   return (
     <div
       data-testid="capture-overlay"
-      className="fixed inset-0 z-[999999] cursor-crosshair"
+      className="fixed inset-0 z-[999999] cursor-crosshair pointer-events-auto"
       style={{
         backgroundColor: 'rgba(0, 0, 0, 0.3)',
         userSelect: 'none'

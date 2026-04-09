@@ -16,7 +16,7 @@ export const TriggerButton = React.memo(({ position, onTrigger }: TriggerButtonP
         left: `${position.left}px`,
         position: 'absolute',
       }}
-      className="z-[9999] flex items-center justify-center p-2 rounded-lg bg-white dark:bg-slate-800 shadow-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all transform hover:scale-110 active:scale-95 group"
+      className="z-[9999] pointer-events-auto flex items-center justify-center p-2 rounded-lg bg-white dark:bg-slate-800 shadow-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all transform hover:scale-110 active:scale-95 group"
       aria-label="Analyze with OpenInsight"
     >
       <img

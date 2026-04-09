@@ -149,7 +149,10 @@ export const ContentApp: React.FC = () => {
   }, []);
 
   return (
-    <div className={`openinsight-content-root ${isDark ? 'dark' : ''}`} data-accent={settings.accentColor}>
+    <div 
+      className={`openinsight-content-root ${isDark ? 'dark' : ''} absolute top-0 left-0 w-full pointer-events-none z-[2147483647]`} 
+      data-accent={settings.accentColor}
+    >
       <CaptureOverlay 
         isActive={isCaptureActive} 
         onCancel={() => setIsCaptureActive(false)} 
