@@ -101,6 +101,9 @@ export const ContentApp: React.FC = () => {
             return;
           }
 
+          // If a new valid text selection is made, cancel any pending area capture
+          setCapturedRegion(null);
+
           const pos = calculateTriggerPosition(selectionData.endPosition);
           setTriggerPosition(pos);
           setSelectionText(selectionData.text);
