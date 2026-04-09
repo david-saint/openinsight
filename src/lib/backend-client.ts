@@ -31,8 +31,8 @@ export class BackendClient {
   ): Promise<ExplainResponse> {
     return sendMessage("BACKEND_EXPLAIN", { 
       text: imagePrompt || "Please analyze this image.", 
-      imageUrl, 
-      imagePrompt 
+      imageUrl,
+      ...(imagePrompt !== undefined ? { imagePrompt } : {})
     });
   }
 

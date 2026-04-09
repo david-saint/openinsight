@@ -334,7 +334,7 @@ describe("Background Handlers", () => {
       });
 
       // Mock createImageBitmap
-      global.createImageBitmap = vi.fn().mockResolvedValue({});
+      global.createImageBitmap = vi.fn().mockResolvedValue({ width: 1000, height: 1000 });
 
       // Mock OffscreenCanvas
       const mockContext = {

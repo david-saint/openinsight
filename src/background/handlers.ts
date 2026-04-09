@@ -260,6 +260,19 @@ export async function handleCaptureVisibleTab(rect: { x: number; y: number; widt
         }
 
         try {
+          // Sanitize rect values: round to integers and clamp to bitmap bounds
+          const x = Math.round(rect.x);
+          const y = Math.round(rect.y);
+          const width = Math.round(rect.width);
+          const height = Math.round(rect.height);
+
+          if (width <= 0 || height <= 0) {
+            return reject({
+              type: "unknown",
+              message: "Invalid capture rect: width and height must be positive",
+            });
+          }
+
           // Fetch the data URL to get a Blob
           const res = await fetch(dataUrl);
           const blob = await res.blob();
@@ -267,6 +280,12 @@ export async function handleCaptureVisibleTab(rect: { x: number; y: number; widt
           // Use ImageBitmap for processing
           const imageBitmap = await createImageBitmap(blob);
           
+          // Clamp the crop region to the imageBitmap bounds to prevent out-of-bounds errors
+          const clampedX = Math.max(0, Math.min(x, imageBitmap.width));
+          const clampedY = Math.max(0, Math.min(y, imageBitmap.height));
+          const clampedWidth = Math.max(1, Math.min(width, imageBitmap.width - clampedX));
+          const clampedHeight = Math.max(1, Math.min(height, imageBitmap.height - clampedY));
+
           // Device pixel ratio must be handled here or by the caller.
           // Since captureVisibleTab captures the actual pixels, and the rect is in logical CSS pixels,
           // we need to scale the rect if the screen is high DPI.
@@ -279,7 +298,7 @@ export async function handleCaptureVisibleTab(rect: { x: number; y: number; widt
           // but if they are logical, they won't match the image size.
           // Let's rely on the content script to pass physical pixels by multiplying with window.devicePixelRatio.
           
-          const canvas = new OffscreenCanvas(rect.width, rect.height);
+          const canvas = new OffscreenCanvas(clampedWidth, clampedHeight);
           const ctx = canvas.getContext("2d");
           if (!ctx) {
              throw new Error("Failed to get 2D context");
@@ -288,14 +307,14 @@ export async function handleCaptureVisibleTab(rect: { x: number; y: number; widt
           // Draw the cropped portion
           ctx.drawImage(
             imageBitmap,
-            rect.x,
-            rect.y,
-            rect.width,
-            rect.height,
+            clampedX,
+            clampedY,
+            clampedWidth,
+            clampedHeight,
             0,
             0,
-            rect.width,
-            rect.height
+            clampedWidth,
+            clampedHeight
           );
 
           const croppedBlob = await canvas.convertToBlob({ type: "image/png" });

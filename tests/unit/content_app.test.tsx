@@ -443,7 +443,7 @@ describe('ContentApp Component', () => {
 
     // Verify popover opens with Explain tab
     await waitFor(() => {
-      expect(getByRole('presentation')).toBeInTheDocument();
+      expect(getByRole('dialog')).toBeInTheDocument();
     });
     
     expect(getByRole('tab', { name: /explain/i })).toHaveAttribute('aria-selected', 'true');

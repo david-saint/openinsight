@@ -53,7 +53,7 @@ describe('Analysis Popover Component', () => {
       );
     });
 
-    const popover = screen.getByRole('presentation');
+    const popover = screen.getByRole('dialog');
     expect(popover).toBeInTheDocument();
   });
 
@@ -68,7 +68,7 @@ describe('Analysis Popover Component', () => {
       );
     });
 
-    expect(screen.queryByRole('presentation')).not.toBeInTheDocument();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
   it('should display Explain and Fact Check tabs immediately', async () => {

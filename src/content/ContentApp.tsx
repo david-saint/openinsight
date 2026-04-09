@@ -19,7 +19,7 @@ export const ContentApp: React.FC = () => {
   const [capturedRegion, setCapturedRegion] = useState<{ x: number, y: number, width: number, height: number } | null>(null);
   const [capturedImageUrl, setCapturedImageUrl] = useState<string | undefined>(undefined);
   const [capturedImagePrompt, setCapturedImagePrompt] = useState<string | undefined>(undefined);
-  const [selectionText, setSelectionText] = useState('');
+  const [selectionText, setSelectionText] = useState<string | undefined>('');
   const [selectionContext, setSelectionContext] = useState<{ paragraph: string; pageTitle: string; pageDescription: string } | undefined>(undefined);
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const timeoutRef = React.useRef<number | undefined>(undefined);
@@ -182,10 +182,10 @@ export const ContentApp: React.FC = () => {
             // Get device pixel ratio scaled rect since captureVisibleTab gives physical pixels
             const dpr = window.devicePixelRatio || 1;
             const physicalRect = {
-              x: region.x * dpr,
-              y: region.y * dpr,
-              width: region.width * dpr,
-              height: region.height * dpr
+              x: Math.round(region.x * dpr),
+              y: Math.round(region.y * dpr),
+              width: Math.max(1, Math.round(region.width * dpr)),
+              height: Math.max(1, Math.round(region.height * dpr))
             };
 
             const dataUrl = await sendMessage('BACKEND_CAPTURE_VISIBLE_TAB', { rect: physicalRect });

@@ -143,14 +143,14 @@ export const AnalysisPopover = React.memo(({
     if (!isSelectingKeywords) {
       const currentData = dataRef.current;
       if (!currentData[tab].content && !currentData[tab].loading) {
-        fetchDataRef.current(tab, selectionText, emphasizedWords);
+        fetchDataRef.current(tab, selectionText ?? '', emphasizedWords);
       }
     }
   }, [selectionText, isSelectingKeywords, emphasizedWords]);
 
   const handleAnalyze = useCallback(() => {
     setIsSelectingKeywords(false);
-    fetchDataRef.current(activeTab, selectionText, emphasizedWords);
+    fetchDataRef.current(activeTab, selectionText ?? '', emphasizedWords);
   }, [activeTab, selectionText, emphasizedWords]);
 
   const handleToggleKeyword = useCallback((index: number) => {
@@ -165,6 +165,11 @@ export const AnalysisPopover = React.memo(({
         newGroups.splice(groupIdx, 1);
         if (after.length) newGroups.splice(groupIdx, 0, after);
         if (before.length) newGroups.splice(groupIdx, 0, before);
+        
+        // FIFO if more than 3
+        if (newGroups.length > 3) {
+          return newGroups.slice(-3);
+        }
         
         return newGroups;
       } else {
@@ -239,8 +244,9 @@ export const AnalysisPopover = React.memo(({
       
       <div 
         ref={popoverRef}
-        role="presentation"
+        role="dialog"
         aria-modal="false"
+        aria-label="Analysis popover"
         className="absolute z-[9999] w-[330px] bg-[#ffffff] dark:bg-[#1e293b] rounded-xl shadow-2xl border border-[#f1f5f9] dark:border-[#334155] overflow-hidden flex flex-col animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-300 font-sans pointer-events-auto"
         style={{
           top: finalPosition ? finalPosition.top : '50%',
@@ -274,7 +280,7 @@ export const AnalysisPopover = React.memo(({
           </div>
         ) : (
           <>
-            {isSelectingKeywords && (
+            {isSelectingKeywords && selectionText && (
               <div className="border-b border-[#f1f5f9] dark:border-[#334155] bg-[#f8fafc] dark:bg-[#0f172a]/50">
                 <KeywordSelection 
                   text={selectionText}
