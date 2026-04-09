@@ -4,9 +4,13 @@ import {
   handleFactCheck,
   handleFetchModels,
   handleTestApiKey,
+  initializeCaptureListeners,
 } from "./handlers.js";
 
 console.log("OpenInsight background script initialized.");
+
+// Initialize background listeners for context menus and commands
+initializeCaptureListeners();
 
 onMessage((message, _sender, sendResponse) => {
   console.log("Background received message:", message.type);

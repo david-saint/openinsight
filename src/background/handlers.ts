@@ -9,6 +9,53 @@ import { ModelManager } from "../lib/model-manager.js";
 import { PromptManager } from "../lib/prompt-manager.js";
 
 /**
+ * Initializes listeners for commands and context menus related to Area Capture.
+ */
+export function initializeCaptureListeners() {
+  // Create context menu on install
+  chrome.runtime.onInstalled.addListener(() => {
+    chrome.contextMenus.create({
+      id: "activate-area-capture",
+      title: "Capture Area for OpenInsight",
+      contexts: ["all"],
+    });
+  });
+
+  // Handle context menu clicks
+  chrome.contextMenus.onClicked.addListener(async (info, tab) => {
+    if (info.menuItemId === "activate-area-capture") {
+      let targetTabId = tab?.id;
+
+      if (!targetTabId) {
+        const [activeTab] = await chrome.tabs.query({
+          active: true,
+          currentWindow: true,
+        });
+        targetTabId = activeTab?.id;
+      }
+
+      if (targetTabId) {
+        chrome.tabs.sendMessage(targetTabId, { type: "ACTIVATE_CAPTURE" });
+      }
+    }
+  });
+
+  // Handle keyboard shortcuts
+  chrome.commands.onCommand.addListener(async (command) => {
+    if (command === "activate-area-capture") {
+      const [tab] = await chrome.tabs.query({
+        active: true,
+        currentWindow: true,
+      });
+
+      if (tab?.id) {
+        chrome.tabs.sendMessage(tab.id, { type: "ACTIVATE_CAPTURE" });
+      }
+    }
+  });
+}
+
+/**
  * Handles the "Explain" request by calling OpenRouterService.
  */
 export async function handleExplain(

@@ -18,6 +18,7 @@ vi.mock('../../src/background/handlers', () => ({
   handleFactCheck: vi.fn(),
   handleTestApiKey: vi.fn(),
   handleFetchModels: vi.fn(),
+  initializeCaptureListeners: vi.fn(),
 }));
 
 describe('Background Script', () => {
@@ -26,8 +27,9 @@ describe('Background Script', () => {
     vi.resetModules();
   });
 
-  it('should register a message listener', async () => {
+  it('should register a message listener and initialize capture listeners', async () => {
     await import('../../src/background/background?t=' + Date.now());
+    expect(handlers.initializeCaptureListeners).toHaveBeenCalled();
     expect(chromeMock.runtime.onMessage.addListener).toHaveBeenCalled();
   });
 

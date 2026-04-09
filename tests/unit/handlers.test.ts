@@ -4,6 +4,7 @@ import {
   handleFactCheck,
   handleTestApiKey,
   handleFetchModels,
+  initializeCaptureListeners,
 } from "../../src/background/handlers";
 import { OpenRouterService } from "../../src/background/openrouter-service";
 import * as settings from "../../src/lib/settings";
@@ -12,6 +13,32 @@ import {
   EXPLAIN_RESPONSE_SCHEMA,
   FACT_CHECK_RESPONSE_SCHEMA,
 } from "../../src/lib/types";
+
+// Mock chrome
+const chromeMock = {
+  commands: {
+    onCommand: {
+      addListener: vi.fn(),
+    },
+  },
+  contextMenus: {
+    create: vi.fn(),
+    onClicked: {
+      addListener: vi.fn(),
+    },
+  },
+  runtime: {
+    onInstalled: {
+      addListener: vi.fn(),
+    },
+  },
+  tabs: {
+    query: vi.fn(),
+    sendMessage: vi.fn(),
+  },
+};
+
+vi.stubGlobal("chrome", chromeMock);
 
 vi.mock("../../src/background/openrouter-service", () => ({
   OpenRouterService: {
@@ -51,6 +78,65 @@ describe("Background Handlers", () => {
       system_prompt: "You are a fact-checker.",
     },
   };
+
+  describe("initializeCaptureListeners", () => {
+    it("should register contextMenus, commands, and onInstalled listeners", () => {
+      initializeCaptureListeners();
+
+      expect(chromeMock.commands.onCommand.addListener).toHaveBeenCalled();
+      expect(chromeMock.contextMenus.onClicked.addListener).toHaveBeenCalled();
+      expect(chromeMock.runtime.onInstalled.addListener).toHaveBeenCalled();
+    });
+
+    it("should create context menu on installed", () => {
+      initializeCaptureListeners();
+
+      const onInstalledListener =
+        chromeMock.runtime.onInstalled.addListener.mock.calls[0][0];
+      onInstalledListener();
+
+      expect(chromeMock.contextMenus.create).toHaveBeenCalledWith({
+        id: "activate-area-capture",
+        title: "Capture Area for OpenInsight",
+        contexts: ["all"],
+      });
+    });
+
+    it("should send ACTIVATE_CAPTURE message to active tab on command", async () => {
+      initializeCaptureListeners();
+
+      const onCommandListener =
+        chromeMock.commands.onCommand.addListener.mock.calls[0][0];
+      
+      chromeMock.tabs.query.mockResolvedValue([{ id: 123 }]);
+      
+      await onCommandListener("activate-area-capture");
+
+      expect(chromeMock.tabs.query).toHaveBeenCalledWith({
+        active: true,
+        currentWindow: true,
+      });
+      expect(chromeMock.tabs.sendMessage).toHaveBeenCalledWith(123, {
+        type: "ACTIVATE_CAPTURE",
+      });
+    });
+
+    it("should send ACTIVATE_CAPTURE message to active tab on context menu click", async () => {
+      initializeCaptureListeners();
+
+      const onClickedListener =
+        chromeMock.contextMenus.onClicked.addListener.mock.calls[0][0];
+      
+      chromeMock.tabs.query.mockResolvedValue([{ id: 456 }]);
+      
+      await onClickedListener({ menuItemId: "activate-area-capture" }, { id: 456 });
+
+      // If tab is provided in the callback, it can just use that
+      expect(chromeMock.tabs.sendMessage).toHaveBeenCalledWith(456, {
+        type: "ACTIVATE_CAPTURE",
+      });
+    });
+  });
 
   describe("handleExplain", () => {
     it("should call OpenRouterService with correct parameters", async () => {
