@@ -22,9 +22,9 @@ This phase implements the visual overlay for element selection and the freeform 
 - [x] Task: Implement Overlay Component Structure [f2f9971]
     - [x] Write Tests: Render a full-screen overlay component over the DOM when capture state is active.
     - [x] Implement: Create a new React component `CaptureOverlay.tsx` injected via `src/content/mount.ts`.
-- [ ] Task: Implement Element Selection (Hover & Click)
-    - [ ] Write Tests: Mock `mousemove` and `click` on elements (like `<img>`, `<svg>`), ensuring a highlight box is rendered correctly.
-    - [ ] Implement: DOM traversal and measurement to highlight target visual elements in `CaptureOverlay.tsx`.
+- [x] Task: Implement Element Selection (Hover & Click)
+    - [x] Write Tests: Mock `mousemove` and `click` on elements (like `<img>`, `<svg>`), ensuring a highlight box is rendered correctly.
+    - [x] Implement: DOM traversal and measurement to highlight target visual elements in `CaptureOverlay.tsx`.
 - [ ] Task: Implement Freeform Bounding Box
     - [ ] Write Tests: Mock `mousedown`, `mousemove`, `mouseup` to draw and calculate the dimensions of the selected bounding box.
     - [ ] Implement: Drag-and-draw selection box logic in `CaptureOverlay.tsx`.
