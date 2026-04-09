@@ -43,9 +43,31 @@ export const CapturePromptInput: React.FC<CapturePromptInputProps> = ({
     }
   };
 
+  const INPUT_WIDTH = 320;
+  const ESTIMATED_HEIGHT = 130;
+  const SPACING = 12;
+
+  let leftRel = position.x;
+  // Check if it overflows the right edge
+  if (leftRel + INPUT_WIDTH > window.innerWidth) {
+    leftRel = Math.max(8, window.innerWidth - INPUT_WIDTH - 8);
+  }
+
+  let topRel = position.y + position.height + SPACING;
+  // Check if it overflows the bottom of the viewport
+  if (topRel + ESTIMATED_HEIGHT > window.innerHeight) {
+    // Try to position above the capture region instead
+    topRel = position.y - ESTIMATED_HEIGHT - SPACING;
+    
+    // If it also overflows the top, clamp it to the bottom of the viewport
+    if (topRel < 8) {
+      topRel = Math.max(8, window.innerHeight - ESTIMATED_HEIGHT - 8);
+    }
+  }
+
   // Convert viewport coordinates to absolute document coordinates
-  const top = position.y + position.height + 12 + window.scrollY;
-  const left = position.x + window.scrollX;
+  const top = topRel + window.scrollY;
+  const left = leftRel + window.scrollX;
 
   return (
     <>
