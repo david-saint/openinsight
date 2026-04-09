@@ -5,10 +5,10 @@ This phase implements the Keyboard Shortcut, Context Menu, and Popup UI trigger 
 
 - [x] Task: Register commands in Manifest V3 [20a841f]
     - [x] Add `commands` array and context menu permissions to `manifest.ts`.
-- [~] Task: Implement Background Script Handlers
-    - [ ] Write Tests: Ensure background script correctly handles keyboard shortcuts and context menu clicks by sending messages to content scripts.
-    - [ ] Implement: `chrome.commands.onCommand.addListener` and `chrome.contextMenus.onClicked.addListener` in `src/background/handlers.ts`.
-- [ ] Task: Add Popup UI Trigger
+- [x] Task: Implement Background Script Handlers [68b4a7d]
+    - [x] Write Tests: Ensure background script correctly handles keyboard shortcuts and context menu clicks by sending messages to content scripts.
+    - [x] Implement: `chrome.commands.onCommand.addListener` and `chrome.contextMenus.onClicked.addListener` in `src/background/handlers.ts`.
+- [~] Task: Add Popup UI Trigger
     - [ ] Write Tests: Ensure popup UI button triggers the area-capture by sending a message to the background or active tab content script.
     - [ ] Implement: Add an `Area Capture` button to `src/popup/Popup.tsx`.
 - [ ] Task: Implement Content Script Listener
