@@ -48,7 +48,18 @@ export const AnalysisPopover = React.memo(({
   const [activeTab, setActiveTab] = useState<TabId>(enabledTabs[0] as TabId);
   const [showSettings, setShowSettings] = useState(false);
   const [isSelectingKeywords, setIsSelectingKeywords] = useState(false);
-  const [emphasizedWords, setEmphasizedWords] = useState<string[]>([]);
+  const [keywordGroups, setKeywordGroups] = useState<number[][]>([]);
+
+  const emphasizedWords = React.useMemo(() => {
+    if (!selectionText) return [];
+    const words = selectionText.split(/\s+/).filter(w => w.length > 0);
+    const cleanWord = (word: string) => word.replace(/[.,!?;:()]/g, '');
+    
+    return keywordGroups.map(group => 
+      group.map(idx => cleanWord(words[idx])).join(' ')
+    );
+  }, [selectionText, keywordGroups]);
+
   const [data, setData] = useState<Record<TabId, TabData>>({
     explain: { content: null, loading: false, error: null },
     'fact-check': { content: null, loading: false, error: null },
@@ -78,7 +89,7 @@ export const AnalysisPopover = React.memo(({
       setActiveTab(defaultTab);
       setShowSettings(false);
       setIsSelectingKeywords(false);
-      setEmphasizedWords([]);
+      setKeywordGroups([]);
       
       // Trigger initial fetch immediately
       fetchData(defaultTab, selectionText || '', [], imageUrl, imagePrompt);
@@ -135,14 +146,66 @@ export const AnalysisPopover = React.memo(({
     fetchDataRef.current(activeTab, selectionText, emphasizedWords);
   }, [activeTab, selectionText, emphasizedWords]);
 
-  const handleToggleWord = useCallback((word: string) => {
-    setEmphasizedWords(prev => {
-      if (prev.includes(word)) {
-        return prev.filter(w => w !== word);
+  const handleToggleKeyword = useCallback((index: number) => {
+    setKeywordGroups(prev => {
+      const groupIdx = prev.findIndex(g => g.includes(index));
+      if (groupIdx !== -1) {
+        let newGroups = [...prev];
+        const g = newGroups[groupIdx];
+        const before = g.filter(x => x < index);
+        const after = g.filter(x => x > index);
+        
+        newGroups.splice(groupIdx, 1);
+        if (after.length) newGroups.splice(groupIdx, 0, after);
+        if (before.length) newGroups.splice(groupIdx, 0, before);
+        
+        return newGroups;
+      } else {
+        let newGroups = [...prev];
+        let mergedGroup = [index];
+        const prevGroupIdx = newGroups.findIndex(g => g.includes(index - 1));
+        const nextGroupIdx = newGroups.findIndex(g => g.includes(index + 1));
+        
+        const groupsToRemove = new Set<number>();
+        if (prevGroupIdx !== -1) {
+           mergedGroup = [...newGroups[prevGroupIdx], ...mergedGroup];
+           groupsToRemove.add(prevGroupIdx);
+        }
+        if (nextGroupIdx !== -1) {
+           mergedGroup = [...mergedGroup, ...newGroups[nextGroupIdx]];
+           groupsToRemove.add(nextGroupIdx);
+        }
+        
+        newGroups = newGroups.filter((_, i) => !groupsToRemove.has(i));
+        newGroups.push(mergedGroup);
+        // Sort by first element
+        newGroups.sort((a, b) => a[0] - b[0]);
+        
+        // FIFO if more than 3
+        if (newGroups.length > 3) {
+          return newGroups.slice(-3);
+        }
+        return newGroups;
       }
-      // FIFO if more than 3
-      const next = [...prev, word];
-      return next.slice(-3);
+    });
+  }, []);
+
+  const handleBreakLink = useCallback((indexLeft: number) => {
+    setKeywordGroups(prev => {
+      const groupIdx = prev.findIndex(g => g.includes(indexLeft) && g.includes(indexLeft + 1));
+      if (groupIdx === -1) return prev;
+      
+      const newGroups = [...prev];
+      const g = newGroups[groupIdx];
+      const before = g.filter(x => x <= indexLeft);
+      const after = g.filter(x => x > indexLeft);
+      
+      newGroups.splice(groupIdx, 1, before, after);
+      
+      if (newGroups.length > 3) {
+        return newGroups.slice(-3);
+      }
+      return newGroups;
     });
   }, []);
 
@@ -208,8 +271,9 @@ export const AnalysisPopover = React.memo(({
               <div className="border-b border-[#f1f5f9] dark:border-[#334155] bg-[#f8fafc] dark:bg-[#0f172a]/50">
                 <KeywordSelection 
                   text={selectionText}
-                  emphasizedWords={emphasizedWords}
-                  onToggleWord={handleToggleWord}
+                  keywordGroups={keywordGroups}
+                  onToggleWord={handleToggleKeyword}
+                  onBreakLink={handleBreakLink}
                   onAnalyze={handleAnalyze}
                   accentColor={accentColor}
                 />
