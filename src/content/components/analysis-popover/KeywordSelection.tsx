@@ -26,6 +26,25 @@ export const KeywordSelection: React.FC<KeywordSelectionProps> = ({
     return word.replace(/[.,!?;:()]/g, '');
   };
 
+  const blocks = useMemo(() => {
+    const blocksList: number[][] = [];
+    let currentBlock: number[] = [];
+    
+    for (let idx = 0; idx < words.length; idx++) {
+      currentBlock.push(idx);
+      
+      const group = keywordGroups.find(g => g.includes(idx));
+      const isLastInGroup = group ? group[group.length - 1] === idx : false;
+      const hasNextLinked = group && !isLastInGroup;
+      
+      if (!hasNextLinked) {
+        blocksList.push(currentBlock);
+        currentBlock = [];
+      }
+    }
+    return blocksList;
+  }, [words, keywordGroups]);
+
   return (
     <div className="p-[16px] text-[#475569] dark:text-[#cbd5e1] animate-in fade-in slide-in-from-top-1 duration-300">
       <div className="flex items-center gap-[8px] mb-[12px]">
@@ -35,46 +54,45 @@ export const KeywordSelection: React.FC<KeywordSelectionProps> = ({
         </h3>
       </div>
 
-      <div className="flex flex-wrap gap-y-[8px] mb-[16px] max-h-[140px] overflow-y-auto p-[2px] items-center">
-        {words.map((word, idx) => {
-          const cleaned = cleanWord(word);
-          const group = keywordGroups.find(g => g.includes(idx));
-          const isSelected = !!group;
-          const isLastInGroup = group ? group[group.length - 1] === idx : false;
-          const hasNextLinked = group && !isLastInGroup;
+      <div className="flex flex-wrap gap-y-[8px] gap-x-[4px] mb-[16px] max-h-[140px] overflow-y-auto p-[2px] items-center">
+        {blocks.map((block, blockIdx) => (
+          <div key={blockIdx} className="flex items-center">
+            {block.map((idx, i) => {
+              const word = words[idx];
+              const cleaned = cleanWord(word);
+              const group = keywordGroups.find(g => g.includes(idx));
+              const isSelected = !!group;
+              const isLastInGroup = group ? group[group.length - 1] === idx : false;
+              const hasNextLinked = group && !isLastInGroup;
 
-          return (
-            <React.Fragment key={`${cleaned}-${idx}`}>
-              <button
-                onClick={() => onToggleWord(idx)}
-                className={`px-[5px] py-[1.5px] rounded-md text-[12px] transition-all duration-200 border ${
-                  isSelected
-                    ? 'bg-accent-500 text-white border-accent-600 shadow-sm border-b-2 font-medium z-10'
-                    : 'bg-[#f1f5f9] dark:bg-[#334155] text-[#475569] dark:text-[#cbd5e1] border-[#e2e8f0] dark:border-[#475569] hover:border-accent-500 hover:z-10'
-                }`}
-              >
-                {word}
-              </button>
-              
-              {/* If this word has a link to the next word, draw a connecting line */}
-              {hasNextLinked && (
-                <button
-                  onClick={() => onBreakLink(idx)}
-                  className="group relative h-[4px] w-[12px] bg-accent-500 hover:bg-red-500 transition-colors mx-[-2px] z-0 cursor-pointer flex items-center justify-center"
-                  title="Click to break link"
-                  aria-label="Break phrase link"
-                >
-                  <div className="absolute inset-[-6px]" /> {/* Larger hit area */}
-                </button>
-              )}
-              
-              {/* Add spacing between unlinked words */}
-              {!hasNextLinked && idx < words.length - 1 && (
-                <div className="w-[4px]" />
-              )}
-            </React.Fragment>
-          );
-        })}
+              return (
+                <React.Fragment key={`${cleaned}-${idx}`}>
+                  <button
+                    onClick={() => onToggleWord(idx)}
+                    className={`px-[5px] py-[1.5px] rounded-md text-[12px] transition-all duration-200 border ${
+                      isSelected
+                        ? 'bg-accent-500 text-white border-accent-600 shadow-sm border-b-2 font-medium z-10'
+                        : 'bg-[#f1f5f9] dark:bg-[#334155] text-[#475569] dark:text-[#cbd5e1] border-[#e2e8f0] dark:border-[#475569] hover:border-accent-500 hover:z-10'
+                    }`}
+                  >
+                    {word}
+                  </button>
+                  
+                  {hasNextLinked && (
+                    <button
+                      onClick={() => onBreakLink(idx)}
+                      className="group relative h-[4px] w-[12px] bg-accent-500 hover:bg-red-500 transition-colors mx-[-2px] z-0 cursor-pointer flex items-center justify-center"
+                      title="Click to break link"
+                      aria-label="Break phrase link"
+                    >
+                      <div className="absolute inset-[-6px]" />
+                    </button>
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </div>
+        ))}
       </div>
 
       <button
