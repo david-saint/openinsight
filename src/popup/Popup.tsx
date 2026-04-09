@@ -60,9 +60,10 @@ const Popup: React.FC = () => {
       <div className="space-y-2 mt-4">
         <button 
           onClick={handleCaptureArea}
-          className="w-full py-2.5 bg-accent-600 text-white dark:bg-accent-600 dark:text-white rounded-lg hover:bg-accent-700 dark:hover:bg-accent-700 transition-colors text-xs font-medium uppercase tracking-wide shadow-sm"
+          className="flex flex-col items-center justify-center w-full py-2 bg-accent-600 text-white dark:bg-accent-600 dark:text-white rounded-lg hover:bg-accent-700 dark:hover:bg-accent-700 transition-colors shadow-sm"
         >
-          Capture Area
+          <span className="text-xs font-medium uppercase tracking-wide">Capture Area</span>
+          <span className="text-[9px] text-accent-100/80 font-medium mt-0.5 tracking-wider">CMD/CTRL + SHIFT + X</span>
         </button>
 
         <button 
