@@ -366,7 +366,7 @@ describe('ContentApp Component', () => {
     expect(queryByTestId('capture-overlay')).toBeNull();
 
     act(() => {
-      window.dispatchEvent(new Event('openinsight:capture-activated'));
+      document.dispatchEvent(new Event('openinsight:capture-activated'));
     });
 
     // The overlay should now be active

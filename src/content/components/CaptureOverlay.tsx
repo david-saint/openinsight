@@ -54,13 +54,18 @@ export const CaptureOverlay: React.FC<CaptureOverlayProps> = ({
     }
 
     // Hover highlighting (only when not drawing)
-    const overlay = e.currentTarget;
-    const oldPointerEvents = overlay.style.pointerEvents;
-    overlay.style.pointerEvents = 'none';
-    const target = document.elementFromPoint(e.clientX, e.clientY);
-    overlay.style.pointerEvents = oldPointerEvents;
+    // Use elementsFromPoint to find the element underneath the overlay
+    // without modifying pointer-events, which can cause layout thrashing
+    // or trigger unwanted mouseover/mouseout events on the host page.
+    const elements = document.elementsFromPoint(e.clientX, e.clientY);
+    
+    // Find the first element that is not the overlay itself
+    const target = elements.find(el => 
+      el.getAttribute('data-testid') !== 'capture-overlay' && 
+      el.getAttribute('data-testid') !== 'capture-highlight'
+    );
 
-    if (target && (target.tagName.toLowerCase() === 'img' || target.tagName.toLowerCase() === 'svg')) {
+    if (target && target.tagName && (target.tagName.toLowerCase() === 'img' || target.tagName.toLowerCase() === 'svg')) {
       const rect = target.getBoundingClientRect();
       setHighlightRect({
         x: rect.left,

@@ -62,9 +62,9 @@ export const ContentApp: React.FC = () => {
       setIsCaptureActive(true);
     };
 
-    window.addEventListener('openinsight:capture-activated', handleCaptureActivated);
+    document.addEventListener('openinsight:capture-activated', handleCaptureActivated);
     return () => {
-      window.removeEventListener('openinsight:capture-activated', handleCaptureActivated);
+      document.removeEventListener('openinsight:capture-activated', handleCaptureActivated);
     };
   }, []);
 
