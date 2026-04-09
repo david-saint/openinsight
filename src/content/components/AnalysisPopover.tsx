@@ -45,7 +45,13 @@ export const AnalysisPopover = React.memo(({
   position,
   enabledTabs = DEFAULT_ENABLED_TABS
 }: AnalysisPopoverProps) => {
-  const [activeTab, setActiveTab] = useState<TabId>(enabledTabs[0] as TabId);
+  // Image captures strictly require the 'explain' tab
+  const actualEnabledTabs = React.useMemo(() => {
+    if (imageUrl) return ['explain'];
+    return enabledTabs;
+  }, [imageUrl, enabledTabs]);
+
+  const [activeTab, setActiveTab] = useState<TabId>(actualEnabledTabs[0] as TabId);
   const [showSettings, setShowSettings] = useState(false);
   const [isSelectingKeywords, setIsSelectingKeywords] = useState(false);
   const [keywordGroups, setKeywordGroups] = useState<number[][]>([]);
@@ -77,13 +83,13 @@ export const AnalysisPopover = React.memo(({
         'fact-check': { content: null, loading: false, error: null },
       });
       
-      // Determine default active tab based on enabledTabs and visibility
-      let defaultTab = enabledTabs[0] as TabId;
+      // Determine default active tab based on actualEnabledTabs and visibility
+      let defaultTab = actualEnabledTabs[0] as TabId;
       const isFactCheckVisible = selectionText ? selectionText.length > 50 : false;
       if (defaultTab === 'fact-check' && !isFactCheckVisible) {
         // If first tab is fact-check but not visible, try second tab if it exists
-        if (enabledTabs.length > 1) {
-          defaultTab = enabledTabs[1] as TabId;
+        if (actualEnabledTabs.length > 1) {
+          defaultTab = actualEnabledTabs[1] as TabId;
         }
       }
       
@@ -95,7 +101,7 @@ export const AnalysisPopover = React.memo(({
       // Trigger initial fetch immediately
       fetchData(defaultTab, selectionText || '', [], imageUrl, imagePrompt);
     }
-  }, [isOpen, selectionText, imageUrl, imagePrompt, enabledTabs]);
+  }, [isOpen, selectionText, imageUrl, imagePrompt, actualEnabledTabs]);
 
   const fetchData = async (tab: TabId, text: string, keywords: string[] = [], img?: string, prompt?: string) => {
     setData(prev => ({ ...prev, [tab]: { ...prev[tab], loading: true, error: null } }));
@@ -252,7 +258,7 @@ export const AnalysisPopover = React.memo(({
           onSettingsClick={handleSettingsClick}
           onBackClick={handleBackClick}
           isFactCheckVisible={isFactCheckVisible}
-          enabledTabs={enabledTabs}
+          enabledTabs={actualEnabledTabs}
           isSelectingKeywords={isSelectingKeywords}
           onToggleKeywords={handleToggleKeywords}
           showKeywordsTool={!imageUrl && !!selectionText}
