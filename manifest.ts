@@ -14,11 +14,12 @@ export default defineManifest({
   /**
    * Permissions:
    * - storage: Required for chrome.storage.local (settings, encrypted API keys)
+   * - activeTab: Required for capturing the visible tab (screenshot) via background script
    *
    * Note: host_permissions are not needed as content_scripts.matches covers injection.
    * The content script CSS is injected programmatically via Shadow DOM to ensure isolation.
    */
-  permissions: ["storage"],
+  permissions: ["storage", "activeTab"],
   commands: {
     "activate-area-capture": {
       suggested_key: {
