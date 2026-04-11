@@ -156,7 +156,9 @@ describe("Background Handlers", () => {
 
     it("should use the area capture model and settings for image explanations", async () => {
       vi.mocked(settings.getSettings).mockResolvedValue(mockSettings as any);
-      vi.mocked(ModelManager.modelSupportsImageInput).mockResolvedValue(true);
+      vi.mocked(ModelManager.getModels).mockResolvedValue([
+        { id: "vision-model", architecture: { input_modalities: ["text", "image"] }, pricing: { prompt: "0", completion: "0" } },
+      ] as any);
       vi.mocked(ModelManager.supportsStructuredOutputs).mockResolvedValue(true);
       vi.mocked(OpenRouterService.chatCompletion).mockResolvedValue({
         summary: "Image explanation result",
@@ -256,7 +258,9 @@ describe("Background Handlers", () => {
 
     it("should retry image explanations with area capture settings in compatibility mode", async () => {
       vi.mocked(settings.getSettings).mockResolvedValue(mockSettings as any);
-      vi.mocked(ModelManager.modelSupportsImageInput).mockResolvedValue(true);
+      vi.mocked(ModelManager.getModels).mockResolvedValue([
+        { id: "vision-model", architecture: { input_modalities: ["text", "image"] }, pricing: { prompt: "0", completion: "0" } },
+      ] as any);
       vi.mocked(ModelManager.supportsStructuredOutputs).mockResolvedValue(true);
 
       vi.mocked(OpenRouterService.chatCompletion)
@@ -286,9 +290,10 @@ describe("Background Handlers", () => {
 
     it("should fall back to the explain model when area capture model is not image-capable", async () => {
       vi.mocked(settings.getSettings).mockResolvedValue(mockSettings as any);
-      vi.mocked(ModelManager.modelSupportsImageInput)
-        .mockResolvedValueOnce(false)
-        .mockResolvedValueOnce(true);
+      vi.mocked(ModelManager.getModels).mockResolvedValue([
+        { id: "vision-model", architecture: { input_modalities: ["text"] }, pricing: { prompt: "0", completion: "0" } },
+        { id: "test-model", architecture: { input_modalities: ["text", "image"] }, pricing: { prompt: "0", completion: "0" } },
+      ] as any);
       vi.mocked(ModelManager.supportsStructuredOutputs).mockResolvedValue(true);
       vi.mocked(OpenRouterService.chatCompletion).mockResolvedValue({
         summary: "Fallback explanation result",
@@ -296,8 +301,6 @@ describe("Background Handlers", () => {
 
       await handleExplain("Explain this screenshot", [], "data:image/png;base64,image");
 
-      expect(ModelManager.modelSupportsImageInput).toHaveBeenNthCalledWith(1, "vision-model");
-      expect(ModelManager.modelSupportsImageInput).toHaveBeenNthCalledWith(2, "test-model");
       expect(OpenRouterService.chatCompletion).toHaveBeenCalledWith(expect.objectContaining({
         model: "test-model",
         temperature: 0.5,
@@ -307,7 +310,10 @@ describe("Background Handlers", () => {
 
     it("should reject image explanations when no configured model supports images", async () => {
       vi.mocked(settings.getSettings).mockResolvedValue(mockSettings as any);
-      vi.mocked(ModelManager.modelSupportsImageInput).mockResolvedValue(false);
+      vi.mocked(ModelManager.getModels).mockResolvedValue([
+        { id: "vision-model", architecture: { input_modalities: ["text"] }, pricing: { prompt: "0", completion: "0" } },
+        { id: "test-model", architecture: { input_modalities: ["text"] }, pricing: { prompt: "0", completion: "0" } },
+      ] as any);
 
       await expect(
         handleExplain("Explain this screenshot", [], "data:image/png;base64,image")

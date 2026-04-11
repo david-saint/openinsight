@@ -62,14 +62,16 @@ export class ModelManager {
 
   /**
    * Checks whether the given model ID accepts image input.
+   * Returns `null` when support cannot be determined due to a fetch/storage error.
    */
-  static async modelSupportsImageInput(modelId: string): Promise<boolean> {
+  static async modelSupportsImageInput(modelId: string): Promise<boolean | null> {
     try {
       const models = await ModelManager.getModels();
       const model = models.find((m) => m.id === modelId);
       return model ? ModelManager.supportsImageInput(model) : false;
-    } catch {
-      return false;
+    } catch (error) {
+      console.warn(`Failed to determine image input support for model "${modelId}"`, error);
+      return null;
     }
   }
 

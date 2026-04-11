@@ -79,6 +79,27 @@ describe('IntelligenceSection', () => {
     }));
   });
 
+  it('should update areaCaptureSettings when Style Preference changes', () => {
+    render(
+      <IntelligenceSection 
+        settings={mockSettings} 
+        onSave={onSave} 
+        models={mockModels} 
+      />
+    );
+
+    const styleSelect = screen.getAllByRole('combobox').find(c => (c as HTMLSelectElement).value === 'Concise');
+    fireEvent.change(styleSelect!, { target: { value: 'Detailed' } });
+
+    expect(onSave).toHaveBeenCalledWith(expect.objectContaining({
+      stylePreference: 'Detailed',
+      areaCaptureSettings: expect.objectContaining({
+        temperature: 0.3,
+        max_tokens: 1536,
+      }),
+    }));
+  });
+
   it('should toggle advanced settings and NOT show system prompt', () => {
     render(
       <IntelligenceSection 

@@ -181,6 +181,12 @@ describe("ModelManager", () => {
       await expect(ModelManager.modelSupportsImageInput("text")).resolves.toBe(false);
       await expect(ModelManager.modelSupportsImageInput("missing")).resolves.toBe(false);
     });
+
+    it("should return null when model list cannot be fetched", async () => {
+      vi.mocked(storage.getStorage).mockRejectedValue(new Error("Storage error"));
+
+      await expect(ModelManager.modelSupportsImageInput("any-model")).resolves.toBeNull();
+    });
   });
 
   describe("formatPrice", () => {

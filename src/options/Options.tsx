@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { getSettings, saveSettings, getApiKey, saveApiKey, DEFAULT_SETTINGS } from '../lib/settings.js';
 import type { Settings } from '../lib/settings.js';
 import { THEME_COLORS, MODELS } from './constants.js';
@@ -118,9 +118,12 @@ const Options: React.FC = () => {
     }
   };
 
-  const availableModels = modelModalContext === 'areaCapture'
-    ? ModelManager.filterImageInputModels(allModels)
-    : allModels;
+  const availableModels = useMemo(
+    () => modelModalContext === 'areaCapture'
+      ? ModelManager.filterImageInputModels(allModels)
+      : allModels,
+    [allModels, modelModalContext]
+  );
 
   useEffect(() => {
     const isDark = settings.theme === 'dark' || (settings.theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);

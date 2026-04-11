@@ -60,6 +60,7 @@ const ModelSettings: React.FC<{
               type="button"
               onClick={onBrowseMore}
               title="Browse all models"
+              aria-label="Browse all models"
               className="flex items-center justify-center p-1.5 text-accent-600 dark:text-accent-400 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-md transition-colors"
             >
               <MoreHorizontal size={14} />
@@ -69,6 +70,8 @@ const ModelSettings: React.FC<{
           <button 
             onClick={() => setIsOpen(!isOpen)}
             title="Advanced Settings"
+            aria-label="Advanced Settings"
+            aria-expanded={isOpen}
             className={`flex items-center justify-center p-1.5 rounded-md transition-colors ${
               isOpen 
                 ? 'bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-white' 

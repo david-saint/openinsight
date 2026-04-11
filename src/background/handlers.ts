@@ -48,17 +48,21 @@ export async function handleExplain(
   let llmSettings = explainSettings;
 
   if (imageUrl) {
-    const areaCaptureSupportsImages = await ModelManager.modelSupportsImageInput(
-      areaCaptureModel
-    );
+    const models = await ModelManager.getModels();
+    const supportsImageInput = (modelId: string) =>
+      models.some(
+        (candidate) =>
+          candidate.id === modelId &&
+          (candidate.architecture?.input_modalities?.includes("image") ?? false)
+      );
+
+    const areaCaptureSupportsImages = supportsImageInput(areaCaptureModel);
 
     if (areaCaptureSupportsImages) {
       model = areaCaptureModel;
       llmSettings = areaCaptureSettings;
     } else {
-      const explainSupportsImages = await ModelManager.modelSupportsImageInput(
-        explainModel
-      );
+      const explainSupportsImages = supportsImageInput(explainModel);
 
       if (explainSupportsImages) {
         model = explainModel;
