@@ -56,6 +56,7 @@ vi.mock("../../src/lib/model-manager", () => ({
   ModelManager: {
     getModels: vi.fn(),
     supportsStructuredOutputs: vi.fn(),
+    modelSupportsImageInput: vi.fn(),
   },
 }));
 
@@ -77,29 +78,20 @@ describe("Background Handlers", () => {
       max_tokens: 200,
       system_prompt: "You are a fact-checker.",
     },
+    areaCaptureModel: "vision-model",
+    areaCaptureSettings: {
+      temperature: 0.9,
+      max_tokens: 300,
+      system_prompt: "You are a vision model.",
+    },
+    stylePreference: "Concise",
   };
 
   describe("initializeCaptureListeners", () => {
-    it("should register contextMenus, commands, and onInstalled listeners", () => {
+    it("should register commands listener", () => {
       initializeCaptureListeners();
 
       expect(chromeMock.commands.onCommand.addListener).toHaveBeenCalled();
-      expect(chromeMock.contextMenus.onClicked.addListener).toHaveBeenCalled();
-      expect(chromeMock.runtime.onInstalled.addListener).toHaveBeenCalled();
-    });
-
-    it("should create context menu on installed", () => {
-      initializeCaptureListeners();
-
-      const onInstalledListener =
-        chromeMock.runtime.onInstalled.addListener.mock.calls[0][0];
-      onInstalledListener();
-
-      expect(chromeMock.contextMenus.create).toHaveBeenCalledWith({
-        id: "activate-area-capture",
-        title: "Capture Area for OpenInsight",
-        contexts: ["all"],
-      });
     });
 
     it("should send ACTIVATE_CAPTURE message to active tab on command", async () => {
@@ -120,28 +112,13 @@ describe("Background Handlers", () => {
         type: "ACTIVATE_CAPTURE",
       });
     });
-
-    it("should send ACTIVATE_CAPTURE message to active tab on context menu click", async () => {
-      initializeCaptureListeners();
-
-      const onClickedListener =
-        chromeMock.contextMenus.onClicked.addListener.mock.calls[0][0];
-      
-      chromeMock.tabs.query.mockResolvedValue([{ id: 456 }]);
-      
-      await onClickedListener({ menuItemId: "activate-area-capture" }, { id: 456 });
-
-      // If tab is provided in the callback, it can just use that
-      expect(chromeMock.tabs.sendMessage).toHaveBeenCalledWith(456, {
-        type: "ACTIVATE_CAPTURE",
-      });
-    });
   });
 
   describe("handleExplain", () => {
     it("should call OpenRouterService with correct parameters", async () => {
       vi.mocked(settings.getSettings).mockResolvedValue(mockSettings as any);
       vi.mocked(ModelManager.supportsStructuredOutputs).mockResolvedValue(true);
+      vi.mocked(ModelManager.modelSupportsImageInput).mockResolvedValue(false);
       vi.mocked(OpenRouterService.chatCompletion).mockResolvedValue({
         summary: "Explanation result",
       });
@@ -167,6 +144,7 @@ describe("Background Handlers", () => {
     it("should include emphasized words in the system prompt", async () => {
       vi.mocked(settings.getSettings).mockResolvedValue(mockSettings as any);
       vi.mocked(ModelManager.supportsStructuredOutputs).mockResolvedValue(true);
+      vi.mocked(ModelManager.modelSupportsImageInput).mockResolvedValue(false);
       vi.mocked(OpenRouterService.chatCompletion).mockResolvedValue({});
 
       await handleExplain("text", ["keyword1", "keyword2"]);
@@ -176,9 +154,44 @@ describe("Background Handlers", () => {
       expect(systemPrompt).toContain("THE USER HAS EMPHASIZED THESE KEYWORDS: keyword1, keyword2");
     });
 
+    it("should use the area capture model and settings for image explanations", async () => {
+      vi.mocked(settings.getSettings).mockResolvedValue(mockSettings as any);
+      vi.mocked(ModelManager.getModels).mockResolvedValue([
+        { id: "vision-model", architecture: { input_modalities: ["text", "image"] }, pricing: { prompt: "0", completion: "0" } },
+      ] as any);
+      vi.mocked(ModelManager.supportsStructuredOutputs).mockResolvedValue(true);
+      vi.mocked(OpenRouterService.chatCompletion).mockResolvedValue({
+        summary: "Image explanation result",
+      });
+
+      await handleExplain("Explain this screenshot", [], "data:image/png;base64,image");
+
+      expect(ModelManager.supportsStructuredOutputs).toHaveBeenCalledWith("vision-model");
+      expect(OpenRouterService.chatCompletion).toHaveBeenCalledWith({
+        model: "vision-model",
+        messages: [
+          {
+            role: "system",
+            content: expect.stringContaining("You are an expert explainer."),
+          },
+          {
+            role: "user",
+            content: [
+              { type: "text", text: "Explain this screenshot" },
+              { type: "image_url", image_url: { url: "data:image/png;base64,image" } },
+            ],
+          },
+        ],
+        temperature: 0.9,
+        max_tokens: 300,
+        response_format: EXPLAIN_RESPONSE_SCHEMA,
+      });
+    });
+
     it("should propagate errors from OpenRouterService", async () => {
       vi.mocked(settings.getSettings).mockResolvedValue(mockSettings as any);
       vi.mocked(ModelManager.supportsStructuredOutputs).mockResolvedValue(true);
+      vi.mocked(ModelManager.modelSupportsImageInput).mockResolvedValue(false);
       const mockError = { type: "auth", message: "Unauthorized" };
       vi.mocked(OpenRouterService.chatCompletion).mockRejectedValue(mockError);
 
@@ -188,6 +201,7 @@ describe("Background Handlers", () => {
     it("should retry with compatibility mode if first attempt fails", async () => {
       vi.mocked(settings.getSettings).mockResolvedValue(mockSettings as any);
       vi.mocked(ModelManager.supportsStructuredOutputs).mockResolvedValue(true);
+      vi.mocked(ModelManager.modelSupportsImageInput).mockResolvedValue(false);
 
       const mockError = {
         type: "llm",
@@ -241,12 +255,82 @@ describe("Background Handlers", () => {
 
       expect(result).toEqual(mockSuccess);
     });
+
+    it("should retry image explanations with area capture settings in compatibility mode", async () => {
+      vi.mocked(settings.getSettings).mockResolvedValue(mockSettings as any);
+      vi.mocked(ModelManager.getModels).mockResolvedValue([
+        { id: "vision-model", architecture: { input_modalities: ["text", "image"] }, pricing: { prompt: "0", completion: "0" } },
+      ] as any);
+      vi.mocked(ModelManager.supportsStructuredOutputs).mockResolvedValue(true);
+
+      vi.mocked(OpenRouterService.chatCompletion)
+        .mockRejectedValueOnce({ type: "llm", message: "Primary request failed" })
+        .mockResolvedValueOnce({ summary: "Success after retry" });
+
+      await handleExplain("Explain this screenshot", [], "data:image/png;base64,image");
+
+      expect(OpenRouterService.chatCompletion).toHaveBeenNthCalledWith(2, {
+        model: "vision-model",
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: expect.stringContaining("Explain this screenshot"),
+              },
+              { type: "image_url", image_url: { url: "data:image/png;base64,image" } },
+            ],
+          },
+        ],
+        temperature: 0.9,
+        max_tokens: 300,
+      });
+    });
+
+    it("should fall back to the explain model when area capture model is not image-capable", async () => {
+      vi.mocked(settings.getSettings).mockResolvedValue(mockSettings as any);
+      vi.mocked(ModelManager.getModels).mockResolvedValue([
+        { id: "vision-model", architecture: { input_modalities: ["text"] }, pricing: { prompt: "0", completion: "0" } },
+        { id: "test-model", architecture: { input_modalities: ["text", "image"] }, pricing: { prompt: "0", completion: "0" } },
+      ] as any);
+      vi.mocked(ModelManager.supportsStructuredOutputs).mockResolvedValue(true);
+      vi.mocked(OpenRouterService.chatCompletion).mockResolvedValue({
+        summary: "Fallback explanation result",
+      });
+
+      await handleExplain("Explain this screenshot", [], "data:image/png;base64,image");
+
+      expect(OpenRouterService.chatCompletion).toHaveBeenCalledWith(expect.objectContaining({
+        model: "test-model",
+        temperature: 0.5,
+        max_tokens: 100,
+      }));
+    });
+
+    it("should reject image explanations when no configured model supports images", async () => {
+      vi.mocked(settings.getSettings).mockResolvedValue(mockSettings as any);
+      vi.mocked(ModelManager.getModels).mockResolvedValue([
+        { id: "vision-model", architecture: { input_modalities: ["text"] }, pricing: { prompt: "0", completion: "0" } },
+        { id: "test-model", architecture: { input_modalities: ["text"] }, pricing: { prompt: "0", completion: "0" } },
+      ] as any);
+
+      await expect(
+        handleExplain("Explain this screenshot", [], "data:image/png;base64,image")
+      ).rejects.toEqual({
+        type: "llm",
+        message: "No image-capable model is configured. Choose a vision model for Area Capture in settings.",
+      });
+
+      expect(OpenRouterService.chatCompletion).not.toHaveBeenCalled();
+    });
   });
 
   describe("handleFactCheck", () => {
     it("should call OpenRouterService with correct parameters", async () => {
       vi.mocked(settings.getSettings).mockResolvedValue(mockSettings as any);
       vi.mocked(ModelManager.supportsStructuredOutputs).mockResolvedValue(true);
+      vi.mocked(ModelManager.modelSupportsImageInput).mockResolvedValue(false);
       vi.mocked(OpenRouterService.chatCompletion).mockResolvedValue({
         summary: "Fact check result",
       });
@@ -272,6 +356,7 @@ describe("Background Handlers", () => {
     it("should include emphasized words in the system prompt", async () => {
       vi.mocked(settings.getSettings).mockResolvedValue(mockSettings as any);
       vi.mocked(ModelManager.supportsStructuredOutputs).mockResolvedValue(true);
+      vi.mocked(ModelManager.modelSupportsImageInput).mockResolvedValue(false);
       vi.mocked(OpenRouterService.chatCompletion).mockResolvedValue({});
 
       await handleFactCheck({ text: "text", emphasizedWords: ["word1"] });

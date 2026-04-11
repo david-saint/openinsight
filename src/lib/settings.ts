@@ -13,10 +13,12 @@ export interface Settings {
   enabledTabs: string[];
   explainModel: string;
   factCheckModel: string;
+  areaCaptureModel: string;
   triggerMode: "icon" | "immediate";
   stylePreference: StylePreference;
   explainSettings: LLMSettings;
   factCheckSettings: LLMSettings;
+  areaCaptureSettings: LLMSettings;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -25,6 +27,7 @@ export const DEFAULT_SETTINGS: Settings = {
   enabledTabs: ["explain", "fact-check"],
   explainModel: "nvidia/nemotron-3-nano-30b-a3b:free",
   factCheckModel: "google/gemini-2.0-flash-exp:free",
+  areaCaptureModel: "google/gemini-2.0-flash-exp:free",
   triggerMode: "icon",
   stylePreference: "Concise",
   explainSettings: {
@@ -36,6 +39,11 @@ export const DEFAULT_SETTINGS: Settings = {
     temperature: 0.1,
     max_tokens: 1024,
     system_prompt: "", // No longer used for direct user editing
+  },
+  areaCaptureSettings: {
+    temperature: 0.1,
+    max_tokens: 1024,
+    system_prompt: "",
   },
 };
 

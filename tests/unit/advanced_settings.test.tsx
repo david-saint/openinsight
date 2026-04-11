@@ -48,8 +48,8 @@ describe('IntelligenceSection Advanced Settings', () => {
       />
     );
 
-    // Click both "Advanced" buttons
-    const advancedButtons = screen.getAllByText(/advanced/i);
+    // Click both "Advanced Settings" buttons
+    const advancedButtons = screen.getAllByTitle(/advanced settings/i);
     fireEvent.click(advancedButtons[0]);
     fireEvent.click(advancedButtons[1]);
 
@@ -74,7 +74,7 @@ describe('IntelligenceSection Advanced Settings', () => {
       />
     );
 
-    const advancedButtons = screen.getAllByText(/advanced/i);
+    const advancedButtons = screen.getAllByTitle(/advanced settings/i);
     fireEvent.click(advancedButtons[0]);
 
     const explainTemp = screen.getAllByLabelText(/temperature/i)[0];

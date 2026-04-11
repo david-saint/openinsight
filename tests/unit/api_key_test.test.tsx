@@ -24,7 +24,7 @@ vi.stubGlobal('chrome', mockChrome);
 vi.mock('../../src/lib/backend-client.js', () => ({
   BackendClient: {
     fetchModels: vi.fn().mockResolvedValue([]),
-    testKey: vi.fn().mockResolvedValue(true),
+    testApiKey: vi.fn(),
   },
 }));
 
@@ -40,16 +40,11 @@ vi.mock('../../src/lib/settings', () => ({
     enabledTabs: ['explain', 'fact-check'],
     explainModel: 'nvidia/nemotron-3-nano-30b-a3b:free',
     factCheckModel: 'm',
+    areaCaptureModel: 'm',
     triggerMode: 'icon',
     explainSettings: { temperature: 0.7, max_tokens: 512, system_prompt: 's' },
     factCheckSettings: { temperature: 0.3, max_tokens: 512, system_prompt: 's' },
-  },
-}));
-
-// Mock BackendClient
-vi.mock('../../src/lib/backend-client', () => ({
-  BackendClient: {
-    testApiKey: vi.fn(),
+    areaCaptureSettings: { temperature: 0.3, max_tokens: 512, system_prompt: 's' },
   },
 }));
 

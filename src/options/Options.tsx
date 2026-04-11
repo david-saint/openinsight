@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { getSettings, saveSettings, getApiKey, saveApiKey, DEFAULT_SETTINGS } from '../lib/settings.js';
 import type { Settings } from '../lib/settings.js';
 import { THEME_COLORS, MODELS } from './constants.js';
 import { BackendClient } from '../lib/backend-client.js';
 import type { AppError, OpenRouterModel } from '../lib/types.js';
+import { ModelManager } from '../lib/model-manager.js';
 
 // Components
 import { Header } from './components/Header.js';
@@ -28,7 +29,7 @@ const Options: React.FC = () => {
   // Model selector modal state
   const [allModels, setAllModels] = useState<OpenRouterModel[]>([]);
   const [isModelModalOpen, setIsModelModalOpen] = useState(false);
-  const [modelModalContext, setModelModalContext] = useState<'explain' | 'factCheck'>('explain');
+  const [modelModalContext, setModelModalContext] = useState<'explain' | 'factCheck' | 'areaCapture'>('explain');
 
   useEffect(() => {
     const load = async () => {
@@ -96,7 +97,7 @@ const Options: React.FC = () => {
     }
   };
 
-  const handleBrowseModels = (context: 'explain' | 'factCheck') => {
+  const handleBrowseModels = (context: 'explain' | 'factCheck' | 'areaCapture') => {
     setModelModalContext(context);
     setIsModelModalOpen(true);
   };
@@ -104,10 +105,25 @@ const Options: React.FC = () => {
   const handleModelSelect = (modelId: string) => {
     if (modelModalContext === 'explain') {
       handleSave({ ...settings, explainModel: modelId });
-    } else {
+    } else if (modelModalContext === 'factCheck') {
       handleSave({ ...settings, factCheckModel: modelId });
+    } else {
+      const selectedModel = allModels.find((model) => model.id === modelId);
+      if (selectedModel && !ModelManager.supportsImageInput(selectedModel)) {
+        setToast({ message: 'Area Capture requires a vision-capable model.', type: 'error' });
+        return;
+      }
+
+      handleSave({ ...settings, areaCaptureModel: modelId });
     }
   };
+
+  const availableModels = useMemo(
+    () => modelModalContext === 'areaCapture'
+      ? ModelManager.filterImageInputModels(allModels)
+      : allModels,
+    [allModels, modelModalContext]
+  );
 
   useEffect(() => {
     const isDark = settings.theme === 'dark' || (settings.theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -126,7 +142,11 @@ const Options: React.FC = () => {
     );
   }
 
-  const currentModelId = modelModalContext === 'explain' ? settings.explainModel : settings.factCheckModel;
+  const currentModelId = modelModalContext === 'explain' 
+    ? settings.explainModel 
+    : modelModalContext === 'factCheck' 
+      ? settings.factCheckModel 
+      : settings.areaCaptureModel;
 
   return (
     <div 
@@ -182,7 +202,7 @@ const Options: React.FC = () => {
         isOpen={isModelModalOpen}
         onClose={() => setIsModelModalOpen(false)}
         onSelect={handleModelSelect}
-        models={allModels}
+        models={availableModels}
         currentModelId={currentModelId}
       />
     </div>
