@@ -17,11 +17,33 @@ export type OpenRouterSupportedParameter =
   | "presence_penalty"
   | "seed";
 
+export type OpenRouterInputModality =
+  | "text"
+  | "image"
+  | "file"
+  | "audio"
+  | "video";
+
+export type OpenRouterOutputModality =
+  | "text"
+  | "image"
+  | "embeddings"
+  | "audio"
+  | "video"
+  | "rerank";
+
+export interface OpenRouterModelArchitecture {
+  input_modalities?: OpenRouterInputModality[];
+  output_modalities?: OpenRouterOutputModality[];
+  modality?: string | null;
+}
+
 export interface OpenRouterModel {
   id: string;
   name: string;
   description?: string;
   context_length: number;
+  architecture?: OpenRouterModelArchitecture;
   pricing: {
     prompt: string;
     completion: string;

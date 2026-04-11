@@ -16,10 +16,12 @@ const mockSettings = {
   accentColor: 'teal',
   explainModel: 'google/gemini-2.0-flash-exp:free',
   factCheckModel: 'meta-llama/llama-3.3-70b-instruct:free',
+  areaCaptureModel: 'google/gemini-2.0-flash-exp:free',
   triggerMode: 'icon',
   stylePreference: 'Concise',
   explainSettings: { temperature: 0.7, max_tokens: 512, system_prompt: '' },
   factCheckSettings: { temperature: 0.3, max_tokens: 512, system_prompt: '' },
+  areaCaptureSettings: { temperature: 0.5, max_tokens: 512, system_prompt: '' },
 } as any;
 
 describe('IntelligenceSection', () => {
@@ -30,7 +32,7 @@ describe('IntelligenceSection', () => {
     vi.clearAllMocks();
   });
 
-  it('should render both Explain and Fact-Check sections', () => {
+  it('should render Explain, Fact-Check, and Area Capture sections', () => {
     render(
       <IntelligenceSection 
         settings={mockSettings} 
@@ -41,6 +43,7 @@ describe('IntelligenceSection', () => {
 
     expect(screen.getByText('Explain Model')).toBeInTheDocument();
     expect(screen.getByText('Fact-Check Model')).toBeInTheDocument();
+    expect(screen.getByText('Area Capture Model')).toBeInTheDocument();
   });
 
   it('should render Style Preference dropdown', () => {
@@ -85,11 +88,42 @@ describe('IntelligenceSection', () => {
       />
     );
 
-    const advancedButtons = screen.getAllByText('Advanced');
+    const advancedButtons = screen.getAllByTitle(/advanced settings/i);
     fireEvent.click(advancedButtons[0]!);
 
     expect(screen.getByLabelText('Temperature')).toBeInTheDocument();
     expect(screen.getByLabelText('Max Tokens')).toBeInTheDocument();
     expect(screen.queryByLabelText('System Prompt')).not.toBeInTheDocument();
+  });
+
+  it('should limit area capture inline options to image-capable models when all models are available', () => {
+    render(
+      <IntelligenceSection 
+        settings={mockSettings} 
+        onSave={onSave} 
+        models={mockModels}
+        allModels={[
+          {
+            id: 'google/gemini-2.0-flash-exp:free',
+            name: 'Gemini 2.0 Flash',
+            context_length: 1000,
+            architecture: { input_modalities: ['text', 'image'] },
+            pricing: { prompt: '0', completion: '0' },
+          },
+          {
+            id: 'meta-llama/llama-3.3-70b-instruct:free',
+            name: 'Llama 3.3 70B',
+            context_length: 1000,
+            architecture: { input_modalities: ['text'] },
+            pricing: { prompt: '0', completion: '0' },
+          },
+        ] as any}
+      />
+    );
+
+    const areaCaptureSelect = screen.getByLabelText(/area capture model/i) as HTMLSelectElement;
+    const optionValues = Array.from(areaCaptureSelect.options).map((option) => option.value);
+
+    expect(optionValues).toEqual(['google/gemini-2.0-flash-exp:free']);
   });
 });

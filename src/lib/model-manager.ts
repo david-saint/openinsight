@@ -47,6 +47,33 @@ export class ModelManager {
   }
 
   /**
+   * Checks if a model accepts image input.
+   */
+  static supportsImageInput(model: OpenRouterModel): boolean {
+    return model.architecture?.input_modalities?.includes("image") ?? false;
+  }
+
+  /**
+   * Filters a list to models that accept image input.
+   */
+  static filterImageInputModels(models: OpenRouterModel[]): OpenRouterModel[] {
+    return models.filter((model) => ModelManager.supportsImageInput(model));
+  }
+
+  /**
+   * Checks whether the given model ID accepts image input.
+   */
+  static async modelSupportsImageInput(modelId: string): Promise<boolean> {
+    try {
+      const models = await ModelManager.getModels();
+      const model = models.find((m) => m.id === modelId);
+      return model ? ModelManager.supportsImageInput(model) : false;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
    * Formats price per 1M tokens for display.
    */
   static formatPrice(pricePerToken: string): string {

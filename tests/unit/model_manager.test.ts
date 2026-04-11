@@ -140,6 +140,49 @@ describe("ModelManager", () => {
     });
   });
 
+  describe("supportsImageInput", () => {
+    it("should identify models with image input support", () => {
+      expect(
+        ModelManager.supportsImageInput({
+          architecture: { input_modalities: ["text", "image"] },
+        } as any)
+      ).toBe(true);
+
+      expect(
+        ModelManager.supportsImageInput({
+          architecture: { input_modalities: ["text"] },
+        } as any)
+      ).toBe(false);
+
+      expect(ModelManager.supportsImageInput({} as any)).toBe(false);
+    });
+
+    it("should filter image-capable models", () => {
+      const filtered = ModelManager.filterImageInputModels([
+        { id: "vision", architecture: { input_modalities: ["text", "image"] } },
+        { id: "text", architecture: { input_modalities: ["text"] } },
+      ] as any);
+
+      expect(filtered).toEqual([
+        { id: "vision", architecture: { input_modalities: ["text", "image"] } },
+      ]);
+    });
+
+    it("should look up image support by model id", async () => {
+      vi.mocked(storage.getStorage).mockResolvedValue({
+        models: [
+          { id: "vision", architecture: { input_modalities: ["text", "image"] } },
+          { id: "text", architecture: { input_modalities: ["text"] } },
+        ],
+        timestamp: Date.now(),
+      } as any);
+
+      await expect(ModelManager.modelSupportsImageInput("vision")).resolves.toBe(true);
+      await expect(ModelManager.modelSupportsImageInput("text")).resolves.toBe(false);
+      await expect(ModelManager.modelSupportsImageInput("missing")).resolves.toBe(false);
+    });
+  });
+
   describe("formatPrice", () => {
     it("should format different price values correctly", () => {
       expect(ModelManager.formatPrice("0")).toBe("Free");

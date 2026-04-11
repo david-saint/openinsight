@@ -36,11 +36,46 @@ export async function handleExplain(
   imageUrl?: string
 ): Promise<any> {
   const settings = await getSettings();
-  const { explainModel, explainSettings, stylePreference } = settings;
+  const {
+    explainModel,
+    explainSettings,
+    areaCaptureModel,
+    areaCaptureSettings,
+    stylePreference,
+  } = settings;
+
+  let model = explainModel;
+  let llmSettings = explainSettings;
+
+  if (imageUrl) {
+    const areaCaptureSupportsImages = await ModelManager.modelSupportsImageInput(
+      areaCaptureModel
+    );
+
+    if (areaCaptureSupportsImages) {
+      model = areaCaptureModel;
+      llmSettings = areaCaptureSettings;
+    } else {
+      const explainSupportsImages = await ModelManager.modelSupportsImageInput(
+        explainModel
+      );
+
+      if (explainSupportsImages) {
+        model = explainModel;
+        llmSettings = explainSettings;
+      } else {
+        throw {
+          type: "llm",
+          message:
+            "No image-capable model is configured. Choose a vision model for Area Capture in settings.",
+        };
+      }
+    }
+  }
 
   // Check if the model supports structured outputs
   const supportsStructured = await ModelManager.supportsStructuredOutputs(
-    explainModel
+    model
   );
 
   const systemPrompt = PromptManager.getExplainPrompt(
@@ -57,7 +92,7 @@ export async function handleExplain(
 
   try {
     return await OpenRouterService.chatCompletion({
-      model: explainModel,
+      model,
       messages: [
         {
           role: "system",
@@ -65,8 +100,8 @@ export async function handleExplain(
         },
         { role: "user", content: userContent },
       ],
-      temperature: explainSettings.temperature,
-      max_tokens: explainSettings.max_tokens,
+      temperature: llmSettings.temperature,
+      max_tokens: llmSettings.max_tokens,
       // Only use response_format for models that support it
       ...(supportsStructured && { response_format: EXPLAIN_RESPONSE_SCHEMA }),
     });
@@ -79,7 +114,7 @@ export async function handleExplain(
     );
 
     return OpenRouterService.chatCompletion({
-      model: explainModel,
+      model,
       messages: [
         // Merge system prompt into user message for maximum compatibility
         { role: "user", content: imageUrl ? [
@@ -87,8 +122,8 @@ export async function handleExplain(
           { type: "image_url", image_url: { url: imageUrl } },
         ] : `${systemPrompt}\n\n${text}` },
       ],
-      temperature: explainSettings.temperature,
-      max_tokens: explainSettings.max_tokens,
+      temperature: llmSettings.temperature,
+      max_tokens: llmSettings.max_tokens,
     });
   }
 }
@@ -308,4 +343,3 @@ export async function handleCaptureVisibleTab(rect: { x: number; y: number; widt
     );
   });
 }
-

@@ -40,9 +40,12 @@ vi.mock('../../src/lib/settings.js', () => ({
     enabledTabs: ['explain', 'fact-check'],
     explainModel: 'nvidia/nemotron-3-nano-30b-a3b:free',
     factCheckModel: 'google/gemini-2.0-flash-exp:free',
+    areaCaptureModel: 'google/gemini-2.0-flash-exp:free',
     triggerMode: 'icon',
+    stylePreference: 'Concise',
     explainSettings: { temperature: 0.1, max_tokens: 1024, system_prompt: '' },
     factCheckSettings: { temperature: 0.1, max_tokens: 1024, system_prompt: '' },
+    areaCaptureSettings: { temperature: 0.1, max_tokens: 1024, system_prompt: '' },
   },
 }));
 
@@ -88,19 +91,58 @@ describe('Options Component', () => {
     expect(settings.saveApiKey).toHaveBeenCalledWith('new-api-key');
   });
 
-  it('allows changing model preferences', async () => {
+  it('allows changing model preferences, including area capture with vision-capable models', async () => {
     render(<Options />);
     
     const explainSelect = await screen.findByLabelText(/explain model/i);
     const factCheckSelect = await screen.findByLabelText(/fact-check model/i);
+    const areaCaptureSelect = await screen.findByLabelText(/area capture model/i);
     
     fireEvent.change(explainSelect, { target: { value: 'meta-llama/llama-3.3-70b-instruct:free' } });
     fireEvent.change(factCheckSelect, { target: { value: 'nvidia/nemotron-3-nano-30b-a3b:free' } });
+    fireEvent.change(areaCaptureSelect, { target: { value: 'google/gemini-2.0-flash-exp:free' } });
     
     expect(settings.saveSettings).toHaveBeenCalledWith(expect.objectContaining({
       explainModel: 'meta-llama/llama-3.3-70b-instruct:free',
       factCheckModel: 'nvidia/nemotron-3-nano-30b-a3b:free',
+      areaCaptureModel: 'google/gemini-2.0-flash-exp:free',
     }));
+  });
+
+  it('allows selecting the area capture model from the browse modal', async () => {
+    vi.mocked(BackendClient.fetchModels).mockResolvedValue([
+      { id: 'google/gemini-2.0-flash-exp:free', name: 'Gemini 2.0 Flash', architecture: { input_modalities: ['text', 'image'] }, pricing: { prompt: '0', completion: '0' } },
+      { id: 'meta-llama/llama-3.3-70b-instruct:free', name: 'Llama 3.3 70B', architecture: { input_modalities: ['text'] }, pricing: { prompt: '0', completion: '0' } },
+      { id: 'meta-llama/llama-3.1-405b-instruct:free', name: 'Llama 3.1 405B', architecture: { input_modalities: ['text'] }, pricing: { prompt: '0', completion: '0' } },
+      { id: 'anthropic/claude-3.5-haiku', name: 'Claude 3.5 Haiku', architecture: { input_modalities: ['text'] }, pricing: { prompt: '0.000001', completion: '0.000002' } },
+      { id: 'qwen/qwen-2.5-vl-72b-instruct', name: 'Qwen 2.5 VL 72B', architecture: { input_modalities: ['text', 'image'] }, pricing: { prompt: '0.000001', completion: '0.000002' } },
+      { id: 'deepseek/deepseek-chat-v3', name: 'DeepSeek Chat V3', architecture: { input_modalities: ['text'] }, pricing: { prompt: '0.000001', completion: '0.000002' } },
+      { id: 'openai/gpt-4o-mini', name: 'GPT-4o Mini', architecture: { input_modalities: ['text', 'image'] }, pricing: { prompt: '0.000001', completion: '0.000002' } },
+    ] as any);
+
+    render(<Options />);
+
+    const browseButtons = await screen.findAllByTitle(/browse all models/i);
+    fireEvent.click(browseButtons[2]!);
+
+    expect(screen.queryByText('Claude 3.5 Haiku')).toBeNull();
+    expect(screen.queryByText('DeepSeek Chat V3')).toBeNull();
+
+    fireEvent.click(await screen.findByText('GPT-4o Mini'));
+
+    expect(settings.saveSettings).toHaveBeenCalledWith(expect.objectContaining({
+      areaCaptureModel: 'openai/gpt-4o-mini',
+    }));
+  });
+
+  it('shows only vision-capable inline options for area capture', async () => {
+    render(<Options />);
+
+    const areaCaptureSelect = await screen.findByLabelText(/area capture model/i) as HTMLSelectElement;
+    const optionValues = Array.from(areaCaptureSelect.options).map((option) => option.value);
+
+    expect(optionValues).toEqual(['google/gemini-2.0-flash-exp:free']);
+    expect(optionValues).not.toContain('meta-llama/llama-3.1-405b-instruct:free');
   });
 
   it('allows changing the theme mode', async () => {
